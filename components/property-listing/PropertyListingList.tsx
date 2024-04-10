@@ -143,7 +143,7 @@ const PropertyListingList: React.FC<PropertyListingListProps> = ({
     <Link href={`/property-listing/${item.id}`} asChild>
       <TouchableOpacity activeOpacity={0.8}>
         <AnimatedView
-          style={styles.listing}
+          style={{ gap: 10, paddingVertical: 8 }}
           entering={
             Platform.OS === "android"
               ? isLoading
@@ -187,7 +187,7 @@ const PropertyListingList: React.FC<PropertyListingListProps> = ({
   const renderRowForLoading = ({ item }: { item: PropertyListing }) => {
     return (
       <AnimatedView
-        style={styles.listing}
+        style={{ gap: 10, paddingVertical: 8 }}
         entering={FadeInRight}
         exiting={FadeOutLeft}
       >
@@ -248,6 +248,7 @@ const PropertyListingList: React.FC<PropertyListingListProps> = ({
                 ? dummyPropertyListingsData
                 : listings?.pages.map((page) => page.data).flat()
             }
+            contentContainerStyle={styles.listingContainer}
             keyExtractor={(item) => String(item.id)}
             estimatedItemSize={200}
             renderItem={isLoading ? renderRowForLoading : renderRow}
@@ -265,6 +266,7 @@ const PropertyListingList: React.FC<PropertyListingListProps> = ({
           }
           initialNumToRender={200}
           renderItem={flatListRenderRow}
+          contentContainerStyle={styles.listingContainer}
           keyExtractor={(item) => item.id.toString()}
           showsVerticalScrollIndicator={false}
           onEndReached={loadMorePropertyListings}
@@ -279,10 +281,9 @@ const styles = StyleSheet.create({
     height: Dimensions.get("screen").height,
     width: Dimensions.get("screen").width,
   },
-  listing: {
+  listingContainer: {
     paddingHorizontal: 16,
-    paddingVertical: 8,
-    gap: 10,
+    paddingBottom: Platform.OS === "android" ? 14 : 20,
   },
   image: {
     width: "100%",

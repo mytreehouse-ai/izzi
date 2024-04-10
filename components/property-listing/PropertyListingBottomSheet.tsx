@@ -47,7 +47,10 @@ const PropertyListingsBottomSheet: React.FC<
           colorScheme === "light" ? Colors.light.primary : Colors.dark.primary,
       }}
       backgroundStyle={{ backgroundColor: backgroundColor }}
-      style={[styles.sheetContainer, { backgroundColor: backgroundColor }]}
+      style={[
+        styles.sheetContainerShadow,
+        { backgroundColor: backgroundColor },
+      ]}
     >
       <PropertyListingList propertyListingsQuery={propertyListingsQuery} />
       <View style={styles.absoluteBtn}>
@@ -75,6 +78,17 @@ const PropertyListingsBottomSheet: React.FC<
 };
 
 const styles = StyleSheet.create({
+  sheetContainerShadow: {
+    borderRadius: 10,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    shadowOffset: {
+      width: 1,
+      height: 1,
+    },
+  },
   absoluteBtn: {
     position: "absolute",
     bottom: 20,
@@ -90,17 +104,6 @@ const styles = StyleSheet.create({
     gap: 4,
     paddingHorizontal: 16,
     paddingVertical: 12,
-  },
-  sheetContainer: {
-    borderRadius: 10,
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    shadowOffset: {
-      width: 1,
-      height: 1,
-    },
   },
 });
 
