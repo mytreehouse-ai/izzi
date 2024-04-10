@@ -137,7 +137,7 @@ const PropertyListingList: React.FC<PropertyListingListProps> = ({
     if (Platform.OS === "android") {
       flatListRef.current?.scrollToOffset(offset);
     }
-  }, []);
+  }, [store.propertyListingFilters.property_type]);
 
   const renderRow = ({ item }: { item: PropertyListing }) => (
     <Link href={`/property-listing/${item.id}`} asChild>
@@ -160,7 +160,7 @@ const PropertyListingList: React.FC<PropertyListingListProps> = ({
           }
         >
           <PropertyListingCard
-            adoptWidth
+            adoptWidth={true}
             enableAnimation={false}
             image={<PropertyListingImage imageUrl={item.main_image_url} />}
             info={
@@ -224,7 +224,7 @@ const PropertyListingList: React.FC<PropertyListingListProps> = ({
   const Row = memo(
     isLoading ? renderRowForLoading : renderRow,
     (prevProps, nextProps) => {
-      return prevProps.item.id === nextProps.item.id;
+      return String(prevProps.item.id) === String(nextProps.item.id);
     }
   );
 
