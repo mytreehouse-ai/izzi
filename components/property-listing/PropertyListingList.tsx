@@ -248,7 +248,7 @@ const PropertyListingList: React.FC<PropertyListingListProps> = ({
                 ? dummyPropertyListingsData
                 : listings?.pages.map((page) => page.data).flat()
             }
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => String(item.id)}
             estimatedItemSize={200}
             renderItem={isLoading ? renderRowForLoading : renderRow}
             showsVerticalScrollIndicator={false}
