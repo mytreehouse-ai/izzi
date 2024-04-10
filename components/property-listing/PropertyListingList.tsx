@@ -253,7 +253,12 @@ const PropertyListingList: React.FC<PropertyListingListProps> = ({
             estimatedItemSize={200}
             renderItem={isLoading ? renderRowForLoading : renderRow}
             showsVerticalScrollIndicator={false}
-            onEndReached={loadMorePropertyListings}
+            onScrollBeginDrag={() => {
+              return setTimeout(
+                async () => await loadMorePropertyListings(),
+                1000
+              );
+            }}
           />
         </View>
       ) : (
