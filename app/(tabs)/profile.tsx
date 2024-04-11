@@ -20,7 +20,7 @@ const profile = () => {
       style={[defaultStyles.container, styles.safeAreaViewContainer]}
     >
       <Text>profile</Text>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => signOut()}>
         <Text>Singout</Text>
       </TouchableOpacity>
       <View

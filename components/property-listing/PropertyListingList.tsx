@@ -256,7 +256,7 @@ const PropertyListingList: React.FC<PropertyListingListProps> = ({
             onScrollBeginDrag={() => {
               return setTimeout(
                 async () => await loadMorePropertyListings(),
-                1000
+                500
               );
             }}
           />
