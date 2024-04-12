@@ -2373,10 +2373,10 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-11.3.1.tgz#4539371a2f4bd402d932031be82c2449ed63a1a5"
   integrity sha512-UBnJxyV0b7i9Moa97Av+HKho1ByzX0DtbJXzUQS5E3xhQs6P2D/Os0iw3ouy7joY1TVd6uIhplPbr7l1SJNaNQ==
 
-"@react-native-community/slider@4.4.2":
-  version "4.4.2"
-  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-4.4.2.tgz#1fea0eb3ae31841fe87bd6c4fc67569066e9cf4b"
-  integrity sha512-D9bv+3Vd2gairAhnRPAghwccgEmoM7g562pm8i4qB3Esrms5mggF81G3UvCyc0w3jjtFHh8dpQkfEoKiP0NW/Q==
+"@react-native-community/slider@4.5.1":
+  version "4.5.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-4.5.1.tgz#b708b32e18d21ee1204878b03f3968a28924fa38"
+  integrity sha512-s3PChKU3tj/7i3z+VjxeO6n9YkoCg2omW9EYmN66bFjqsi4/aynX/nbPbFun1K97Zz8/eP5dl9YTeS0l2sLmNA==
 
 "@react-native-picker/picker@2.6.1":
   version "2.6.1"
