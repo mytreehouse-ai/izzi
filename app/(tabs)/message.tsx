@@ -1,12 +1,11 @@
+import PageUnderConstruction from "@/components/PageUnderConstruction";
 import React from "react";
-import { Text, View } from "react-native";
+import { StyleSheet } from "react-native";
 
 const message = () => {
-  return (
-    <View>
-      <Text>message</Text>
-    </View>
-  );
+  return <PageUnderConstruction />;
 };
+
+const style = StyleSheet.create({});
 
 export default message;

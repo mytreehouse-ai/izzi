@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
 import React from "react";
-import { useColorScheme } from "react-native";
+import { Platform, StatusBar, StyleSheet, useColorScheme } from "react-native";
 
 import { Ionicons, SafeAreaView, Text, View } from "@/components/Themed";
 import Colors from "@/constants/Colors";
@@ -77,16 +77,25 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="menu"
         options={{
-          title: "Profile",
+          title: "Menu",
           header: () => (
-            <View>
-              <Text>aa</Text>
-              <SafeAreaView>
-                <Text>asd</Text>
-              </SafeAreaView>
-            </View>
+            <SafeAreaView
+              style={[styles.safeAreaViewContainer]}
+              lightColor={Colors.light.primary}
+              darkColor={Colors.dark.primary}
+            >
+              <View
+                style={{ padding: 16 }}
+                lightColor={Colors.light.primary}
+                darkColor={Colors.dark.primary}
+              >
+                <Text fontWeight="semibold" fontSize={18}>
+                  Menu
+                </Text>
+              </View>
+            </SafeAreaView>
           ),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person-sharp" color={color} size={size} />
@@ -96,3 +105,9 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  safeAreaViewContainer: {
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+});

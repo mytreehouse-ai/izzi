@@ -1,12 +1,8 @@
-import { Text, View } from "@/components/Themed";
+import PropertyListingFilter from "@/components/property-listing/PropertyListingFilter";
 import React from "react";
 
-const Page = () => {
-  return (
-    <View>
-      <Text>Page</Text>
-    </View>
-  );
+const PropertyListingFilterPage = () => {
+  return <PropertyListingFilter />;
 };
 
-export default Page;
+export default PropertyListingFilterPage;

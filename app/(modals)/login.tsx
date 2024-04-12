@@ -15,7 +15,7 @@ enum Strategy {
   LinkedIn = "oauth_linkedin",
 }
 
-const Login = () => {
+const LoginPage = () => {
   const redirectUri = makeRedirectUri();
   const router = useRouter();
 
@@ -159,4 +159,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+export default LoginPage;

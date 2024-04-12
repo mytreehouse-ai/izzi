@@ -5,6 +5,7 @@ import { create } from "zustand";
 type PartialPropertyListingFilters = Partial<PropertyListingFilters>;
 
 const propertyListingFilterInitialState: PartialPropertyListingFilters = {
+  listing_type: "for-sale",
   property_type: "house",
 };
 
@@ -20,7 +21,7 @@ type StoreActions = {
   setLocationErrorMessage: (locationErrorMessage: string) => void;
 };
 
-const zustandStore = create<StoreData & StoreActions>((set) => ({
+export const globalStateStore = create<StoreData & StoreActions>((set) => ({
   propertyListingFilters: propertyListingFilterInitialState,
   userLocation: null,
   locationErrorMessage: null,
@@ -32,5 +33,3 @@ const zustandStore = create<StoreData & StoreActions>((set) => ({
   setLocationErrorMessage: (locationErrorMessage: string) =>
     set({ locationErrorMessage }),
 }));
-
-export default zustandStore;

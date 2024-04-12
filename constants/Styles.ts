@@ -18,9 +18,12 @@ export const defaultStyles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  btnText: {
-    fontFamily: "MontserratSemiBold",
-    fontSize: 16,
+  btnSmall: {
+    borderRadius: 8,
+    padding: 8,
+    paddingHorizontal: 12,
+    justifyContent: "center",
+    alignItems: "center",
   },
   removedBackground: {
     backgroundColor: "transparent",

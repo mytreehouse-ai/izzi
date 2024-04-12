@@ -5,13 +5,13 @@ import PropertyListingSearch from "@/components/property-listing/PropertyListing
 import PropertyListingTypeStack from "@/components/property-listing/PropertyListingTypeStack";
 import { defaultStyles } from "@/constants/Styles";
 import { usePropertyListingsQuery } from "@/hooks/usePropertyListingsQuery";
-import globalStateStore from "@/store";
+import { globalStateStore } from "@/store";
 import { useAuth } from "@clerk/clerk-react";
 import { Stack } from "expo-router";
 import { Platform, StatusBar, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-export default function TabTwoScreen() {
+export default function Explore() {
   const { getToken } = useAuth();
   const store = globalStateStore();
 

@@ -2,7 +2,7 @@ import { AnimatedView, View } from "@/components/Themed";
 import { defaultStyles } from "@/constants/Styles";
 import { ApiBaseResponse } from "@/interfaces/apiBaseResponse";
 import { PropertyListing } from "@/interfaces/propertyListing";
-import globalStateStore from "@/store";
+import { globalStateStore } from "@/store";
 import {
   BottomSheetFlatList,
   BottomSheetFlatListMethods,

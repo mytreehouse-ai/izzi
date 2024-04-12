@@ -1,8 +1,8 @@
 import { PBlurView } from "@/components/CustomBlurView";
-import { Ionicons, SafeAreaView, Text, View } from "@/components/Themed";
+import { Ionicons, Text, View } from "@/components/Themed";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
-import globalStateStore from "@/store";
+import { globalStateStore } from "@/store";
 import { AntDesign } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import { useRouter } from "expo-router";
@@ -16,6 +16,8 @@ import {
   useColorScheme,
 } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
+
+const { height } = Dimensions.get("window");
 
 type FilterState = {
   search: string;
@@ -62,8 +64,7 @@ function filterReducer(state: FilterState, action: FilterAction): FilterState {
   }
 }
 
-const PropertyListingFilterHeader = () => {
-  const { height } = Dimensions.get("window");
+const PropertyListingFilter = () => {
   const router = useRouter();
   const store = globalStateStore();
   const colorScheme = useColorScheme();
@@ -118,29 +119,9 @@ const PropertyListingFilterHeader = () => {
       tint={colorScheme as "light" | "dark"}
       style={{ width: "100%", height }}
     >
-      <SafeAreaView
+      <View
         style={[{ backgroundColor: "transparent" }, styles.androidSafeAreaView]}
       >
-        <View style={styles.closeBtnContainer}>
-          <TouchableOpacity
-            style={[
-              styles.closeBtn,
-              {
-                borderColor:
-                  colorScheme === "light"
-                    ? Colors.light.border
-                    : Colors.dark.border,
-              },
-            ]}
-            onPress={() => router.back()}
-            activeOpacity={0.75}
-          >
-            <Ionicons name="close-outline" size={24} />
-          </TouchableOpacity>
-          <Text fontWeight="semibold" fontSize={16}>
-            Customize Property Search
-          </Text>
-        </View>
         <View
           style={{
             margin: 16,
@@ -485,10 +466,12 @@ const PropertyListingFilterHeader = () => {
             activeOpacity={0.75}
             onPress={() => onSubmitPropertyListingFilter(state)}
           >
-            <Text style={defaultStyles.btnText}>Submit</Text>
+            <Text fontWeight="semibold" fontSize={16}>
+              Submit
+            </Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </View>
     </PBlurView>
   );
 };
@@ -497,20 +480,6 @@ const styles = StyleSheet.create({
   androidSafeAreaView: {
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
-  closeBtnContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 16,
-  },
-  closeBtn: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: StyleSheet.hairlineWidth,
-  },
 });
 
-export default PropertyListingFilterHeader;
+export default PropertyListingFilter;

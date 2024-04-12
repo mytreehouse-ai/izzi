@@ -1,7 +1,7 @@
 import { Ionicons, View } from "@/components/Themed";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
-import globalStateStore from "@/store";
+import { globalStateStore } from "@/store";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { TextInput, TouchableOpacity, useColorScheme } from "react-native";
@@ -18,7 +18,6 @@ const PropertyListingSearch = () => {
         gap: 4,
         padding: 12,
         borderRadius: 100,
-        marginHorizontal: 16,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",

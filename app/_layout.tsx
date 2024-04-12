@@ -15,10 +15,16 @@ import * as SecureStore from "expo-secure-store";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 
-import { Ionicons } from "@/components/Themed";
-import PropertyListingFilterHeader from "@/components/property-listing/PropertyListingFilterHeader";
-import zustandStore from "@/store";
-import { TouchableOpacity, useColorScheme } from "react-native";
+import { Ionicons, SafeAreaView, View } from "@/components/Themed";
+import PropertyListingSearch from "@/components/property-listing/PropertyListingSearch";
+import Colors from "@/constants/Colors";
+import { globalStateStore } from "@/store";
+import {
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  useColorScheme,
+} from "react-native";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -42,7 +48,7 @@ const tokenCache = {
   },
 };
 
-export default function RootLayout() {
+function RootLayout() {
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     Montserrat: require("@/assets/fonts/Montserrat-Regular.ttf"),
@@ -84,7 +90,7 @@ function RootLayoutNav() {
   const router = useRouter();
   const { isLoaded, isSignedIn } = useAuth();
   const colorScheme = useColorScheme();
-  const store = zustandStore();
+  const store = globalStateStore();
 
   useEffect(() => {
     const removeNetInfoSubscription = NetInfo.addEventListener((state) => {
@@ -112,19 +118,44 @@ function RootLayoutNav() {
     }
   }, [isLoaded, isSignedIn]);
 
+  function HeaderCloseBtn() {
+    return (
+      <TouchableOpacity
+        style={[
+          styles.closeBtn,
+          {
+            borderColor:
+              colorScheme === "light"
+                ? Colors.light.border
+                : Colors.dark.border,
+          },
+        ]}
+        onPress={() => router.back()}
+        activeOpacity={0.75}
+      >
+        <Ionicons name="close-outline" size={24} />
+      </TouchableOpacity>
+    );
+  }
+
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+        <Stack.Screen
+          name="property-listing/[id]"
+          options={{
+            headerTitle: "",
+            headerTransparent: true,
+          }}
+        />
         <Stack.Screen
           name="(modals)/login"
           options={{
-            presentation: "modal",
             title: "Login or signup",
             headerTitleStyle: {
               fontFamily: "MontserratSemiBold",
-              fontSize: 16,
+              fontSize: 18,
             },
             headerLeft: () => (
               <TouchableOpacity onPress={() => router.back()}>
@@ -134,22 +165,70 @@ function RootLayoutNav() {
           }}
         />
         <Stack.Screen
-          name="property-listing/[id]"
+          name="(modals)/property-listing-filter"
           options={{
-            headerTitle: "",
-            headerTransparent: true,
+            title: "Customize Property Search",
+            presentation: "transparentModal",
+            animation: Platform.OS === "ios" ? "ios" : "fade",
+            headerTitleStyle: {
+              fontFamily: "MontserratSemiBold",
+              fontSize: 18,
+            },
+            headerLeft: () => <HeaderCloseBtn />,
           }}
         />
         <Stack.Screen
-          name="(modals)/property-listing-filter"
+          name="(modals)/property-listing-advance-filter"
           options={{
+            title: "",
             presentation: "transparentModal",
-            animation: "fade",
+            animation: Platform.OS === "ios" ? "ios" : "fade",
+            headerTitleStyle: {
+              fontFamily: "MontserratSemiBold",
+              fontSize: 18,
+            },
+            header: () => (
+              <SafeAreaView>
+                <View style={{ padding: 16, gap: 16 }}>
+                  <HeaderCloseBtn />
+                  <PropertyListingSearch />
+                </View>
+              </SafeAreaView>
+            ),
+          }}
+        />
+        <Stack.Screen
+          name="(modals)/property-listings"
+          options={{
+            title: "",
+            headerShown: false,
             headerTransparent: true,
-            header: () => <PropertyListingFilterHeader />,
+            headerTitleStyle: {
+              fontFamily: "MontserratSemiBold",
+              fontSize: 18,
+            },
           }}
         />
       </Stack>
     </ThemeProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  closeBtnContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 16,
+  },
+  closeBtn: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+});
+
+export default RootLayout;

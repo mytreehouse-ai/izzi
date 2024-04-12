@@ -1,12 +1,8 @@
+import PageUnderConstruction from "@/components/PageUnderConstruction";
 import React from "react";
-import { Text, View } from "react-native";
 
 const wishlist = () => {
-  return (
-    <View>
-      <Text>wishlist</Text>
-    </View>
-  );
+  return <PageUnderConstruction />;
 };
 
 export default wishlist;
