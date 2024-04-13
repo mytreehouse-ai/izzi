@@ -1,10 +1,9 @@
-import { Tabs } from "expo-router";
-import React from "react";
-import { Platform, StatusBar, StyleSheet, useColorScheme } from "react-native";
-
 import { Ionicons, SafeAreaView, Text, View } from "@/components/Themed";
 import Colors from "@/constants/Colors";
 import { useClientOnlyValue } from "@/hooks/useClientOnlyValue";
+import { Tabs } from "expo-router";
+import React from "react";
+import { Platform, StatusBar, StyleSheet, useColorScheme } from "react-native";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -59,18 +58,18 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="wishlist"
+        name="favorites"
         options={{
-          title: "Wishlist",
+          title: "Favorites",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="heart" color={color} size={size} />
           ),
         }}
       />
       <Tabs.Screen
-        name="message"
+        name="chat"
         options={{
-          title: "Message",
+          title: "Chat",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="chatbox-ellipses" color={color} size={size} />
           ),

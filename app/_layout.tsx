@@ -1,3 +1,7 @@
+import { Ionicons, SafeAreaView, View } from "@/components/Themed";
+import PropertyListingSearch from "@/components/property-listing/PropertyListingSearch";
+import Colors from "@/constants/Colors";
+import { globalStateStore } from "@/store";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import NetInfo from "@react-native-community/netinfo";
@@ -14,11 +18,6 @@ import { Stack, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-
-import { Ionicons, SafeAreaView, View } from "@/components/Themed";
-import PropertyListingSearch from "@/components/property-listing/PropertyListingSearch";
-import Colors from "@/constants/Colors";
-import { globalStateStore } from "@/store";
 import {
   Platform,
   StyleSheet,
