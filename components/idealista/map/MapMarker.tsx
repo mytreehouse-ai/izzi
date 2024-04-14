@@ -15,7 +15,7 @@ interface CustomMapMarkerProps {
   onPress: () => void;
 }
 
-const CustomMapMarker: React.FC<CustomMapMarkerProps> = ({
+const MapMarker: React.FC<CustomMapMarkerProps> = ({
   id,
   price,
   coordinate,
@@ -68,4 +68,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default React.memo(CustomMapMarker, areEqual);
+export default React.memo(MapMarker, areEqual);

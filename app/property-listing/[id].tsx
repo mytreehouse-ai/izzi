@@ -5,7 +5,7 @@ import {
   Text,
   View,
 } from "@/components/Themed";
-import RnsSinglePropertyListingMapView from "@/components/map/RnSinglePropertyListingMapView";
+import RnMapView from "@/components/idealista/map/RnMapView";
 import PropertyListingInfo from "@/components/property-listing/PropertyListingInfo";
 import PropertyListingPrice from "@/components/property-listing/PropertyListingPrice";
 import PropertyListingRating from "@/components/property-listing/PropertyListingRating";
@@ -380,9 +380,7 @@ const PropertyListing = () => {
             <Text fontWeight="semibold" fontSize={16}>
               Location
             </Text>
-            <RnsSinglePropertyListingMapView
-              formattedPrice={propertyListing?.data.price_formatted}
-            />
+            <RnMapView formattedPrice={propertyListing?.data.price_formatted} />
           </View>
         </SafeAreaView>
       </Animated.ScrollView>

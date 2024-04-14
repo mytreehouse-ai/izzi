@@ -1,6 +1,7 @@
 import { Ionicons, SafeAreaView, View } from "@/components/Themed";
 import PropertyListingSearch from "@/components/property-listing/PropertyListingSearch";
 import Colors from "@/constants/Colors";
+import { defaultStyles } from "@/constants/Styles";
 import { globalStateStore } from "@/store";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
@@ -187,7 +188,27 @@ function RootLayoutNav() {
               fontSize: 18,
             },
             header: () => (
-              <SafeAreaView>
+              <SafeAreaView style={defaultStyles.safeAreaViewContainer}>
+                <View style={{ padding: 16, gap: 16 }}>
+                  <HeaderCloseBtn />
+                  <PropertyListingSearch />
+                </View>
+              </SafeAreaView>
+            ),
+          }}
+        />
+        <Stack.Screen
+          name="(modals)/property-listing-map-search"
+          options={{
+            title: "",
+            presentation: "fullScreenModal",
+            animation: Platform.OS === "ios" ? "ios" : "fade",
+            headerTitleStyle: {
+              fontFamily: "MontserratSemiBold",
+              fontSize: 18,
+            },
+            header: () => (
+              <SafeAreaView style={defaultStyles.safeAreaViewContainer}>
                 <View style={{ padding: 16, gap: 16 }}>
                   <HeaderCloseBtn />
                   <PropertyListingSearch />

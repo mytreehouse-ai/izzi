@@ -6,7 +6,6 @@ type PartialPropertyListingFilters = Partial<PropertyListingFilters>;
 
 const propertyListingFilterInitialState: PartialPropertyListingFilters = {
   listing_type: "for-sale",
-  property_type: "house",
 };
 
 type StoreData = {

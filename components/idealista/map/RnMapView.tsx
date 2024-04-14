@@ -10,7 +10,7 @@ import {
   StyleSheet,
   useColorScheme,
 } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Circle, Marker } from "react-native-maps";
 import { FadeIn, FadeOut } from "react-native-reanimated";
 
 interface RnsSinglePropertyListingMapViewProps {
@@ -35,8 +35,6 @@ const RnsSinglePropertyListingMapView: React.FC<
         showsUserLocation={true}
         moveOnMarkerPress={false}
         showsMyLocationButton={true}
-        minZoomLevel={10}
-        maxZoomLevel={20}
         initialRegion={{
           latitude: 14.5547,
           longitude: 121.0244,
@@ -44,6 +42,16 @@ const RnsSinglePropertyListingMapView: React.FC<
           longitudeDelta: 0.005,
         }}
       >
+        <Circle
+          center={{
+            latitude: 14.5547,
+            longitude: 121.0244,
+          }}
+          radius={100}
+          strokeColor={Colors.common.primary}
+          fillColor={Colors.common.primary}
+          strokeWidth={10}
+        />
         <Marker
           key={1}
           tracksViewChanges={false}

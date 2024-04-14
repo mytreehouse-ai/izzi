@@ -1,8 +1,11 @@
-import { StyleSheet } from "react-native";
+import { Platform, StatusBar, StyleSheet } from "react-native";
 
 export const defaultStyles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  safeAreaViewContainer: {
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   inpField: {
     height: 48,

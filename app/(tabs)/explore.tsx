@@ -1,5 +1,5 @@
 import { SafeAreaView } from "@/components/Themed";
-import RnMapView from "@/components/map/RnMapView";
+import RnMapViews from "@/components/idealista/map/RnMapViews";
 import PropertyListingsBottomSheet from "@/components/property-listing/PropertyListingBottomSheet";
 import PropertyListingSearch from "@/components/property-listing/PropertyListingSearch";
 import PropertyListingTypeStack from "@/components/property-listing/PropertyListingTypeStack";
@@ -8,12 +8,19 @@ import { usePropertyListingsQuery } from "@/hooks/usePropertyListingsQuery";
 import { globalStateStore } from "@/store";
 import { useAuth } from "@clerk/clerk-react";
 import { Stack } from "expo-router";
+import { useEffect } from "react";
 import { Platform, StatusBar, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function Explore() {
   const { getToken } = useAuth();
   const store = globalStateStore();
+
+  useEffect(() => {
+    store.updateFilters({
+      property_type: "house",
+    });
+  }, []);
 
   const propertyListingsQuery = usePropertyListingsQuery(
     getToken,
@@ -42,7 +49,7 @@ export default function Explore() {
           ),
         }}
       />
-      <RnMapView propertyListingsQuery={propertyListingsQuery} />
+      <RnMapViews />
       <PropertyListingsBottomSheet
         propertyListingsQuery={propertyListingsQuery}
       />

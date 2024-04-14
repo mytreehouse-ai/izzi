@@ -1,9 +1,7 @@
 import { View } from "@/components/Themed";
 import { mapDarkModeStyle } from "@/constants/MapStyles";
 import { defaultStyles } from "@/constants/Styles";
-import { ApiBaseResponse } from "@/interfaces/apiBaseResponse";
 import { PropertyListing } from "@/interfaces/propertyListing";
-import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
@@ -13,24 +11,13 @@ import {
   useColorScheme,
 } from "react-native";
 import MapView from "react-native-map-clustering";
-import CustomMapMarker from "./CustomMapMarker";
+import MapMarker from "./MapMarker";
 
-interface RnMapViewProps {
-  propertyListingsQuery: UseInfiniteQueryResult<
-    InfiniteData<ApiBaseResponse<PropertyListing[]>, unknown>,
-    Error
-  >;
-}
+const data: PropertyListing[] = [];
 
-const RnMapView = ({ propertyListingsQuery }: RnMapViewProps) => {
+const RnMapViews = () => {
   const router = useRouter();
   const colorScheme = useColorScheme();
-
-  const {
-    isLoading,
-    isFetchingNextPage,
-    data: propertyListings,
-  } = propertyListingsQuery;
 
   return (
     <View style={defaultStyles.container}>
@@ -46,14 +33,7 @@ const RnMapView = ({ propertyListingsQuery }: RnMapViewProps) => {
         moveOnMarkerPress={false}
         showsMyLocationButton={true}
         clusterFontFamily="MontserratSemiBold"
-        onRegionChangeComplete={({ longitude, latitude }) => {
-          !isFetchingNextPage &&
-            setTimeout(async () => {
-              await propertyListingsQuery.fetchNextPage();
-            }, 2000);
-        }}
-        minZoomLevel={10}
-        maxZoomLevel={20}
+        onRegionChangeComplete={({ longitude, latitude }) => {}}
         initialRegion={{
           latitude: 14.5547,
           longitude: 121.0244,
@@ -61,26 +41,22 @@ const RnMapView = ({ propertyListingsQuery }: RnMapViewProps) => {
           longitudeDelta: 0.005,
         }}
       >
-        {propertyListings?.pages.flatMap((page) =>
-          page.data
-            .filter((p) => p.coordinates.length > 0)
-            .map((propertyListing) => (
-              <CustomMapMarker
-                key={propertyListing.id}
-                id={String(propertyListing.id)}
-                price={propertyListing.price_formatted}
-                coordinate={{
-                  latitude: propertyListing.coordinates[0],
-                  longitude: propertyListing.coordinates[1],
-                }}
-                onPress={() =>
-                  router.push(`/property-listing/${propertyListing.id}`)
-                }
-              />
-            ))
-        )}
+        {data.map((propertyListing) => (
+          <MapMarker
+            key={propertyListing.id}
+            id={String(propertyListing.id)}
+            price={propertyListing.price_formatted}
+            coordinate={{
+              latitude: propertyListing.coordinates[0],
+              longitude: propertyListing.coordinates[1],
+            }}
+            onPress={() =>
+              router.push(`/property-listing/${propertyListing.id}`)
+            }
+          />
+        ))}
       </MapView>
-      {isLoading && (
+      {false && (
         <View style={styles.loader}>
           <ActivityIndicator size="large" />
         </View>
@@ -103,4 +79,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RnMapView;
+export default RnMapViews;

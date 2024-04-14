@@ -95,6 +95,7 @@ export default function TabOneScreen() {
               </SafeAreaView>
               <Image
                 defaultSource={require("@/assets/images/real-state/dan-gold-4HG3Ca3EzWw-unsplash.jpg")}
+                source={require("@/assets/images/real-state/dan-gold-4HG3Ca3EzWw-unsplash.jpg")}
                 style={{ height: 300 }}
               />
               <View
