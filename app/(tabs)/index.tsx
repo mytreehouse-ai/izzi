@@ -3,7 +3,7 @@ import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
 import { globalStateStore } from "@/store";
 import { Link, Stack } from "expo-router";
-import { useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import {
   Dimensions,
   Image,
@@ -13,7 +13,6 @@ import {
   TouchableOpacity,
   useColorScheme,
 } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 import SelectDropdown from "react-native-select-dropdown";
 
@@ -58,7 +57,7 @@ export default function TabOneScreen() {
   const [selectedListingTypeIndex, setSelectedListingTypeIndex] = useState(0);
 
   return (
-    <GestureHandlerRootView
+    <View
       style={[
         defaultStyles.container,
         {
@@ -72,7 +71,7 @@ export default function TabOneScreen() {
       <Stack.Screen
         options={{
           header: () => (
-            <View>
+            <Fragment>
               <SafeAreaView
                 style={styles.safeAreaViewContainer}
                 lightColor={Colors.light.primary}
@@ -81,14 +80,14 @@ export default function TabOneScreen() {
                 <View
                   style={[
                     {
-                      padding: 16,
+                      paddingVertical: 8,
                       width: windowWidth,
                       alignItems: "center",
                       justifyContent: "center",
                     },
                   ]}
                 >
-                  <Text fontWeight="semibold" fontSize={18}>
+                  <Text fontWeight="semibold" fontSize={30}>
                     izzi
                   </Text>
                 </View>
@@ -168,6 +167,7 @@ export default function TabOneScreen() {
                 </View>
                 <SelectDropdown
                   data={emojisWithIcons}
+                  defaultValue={store.propertyListingFilters.property_type}
                   onSelect={(selectedItem, _index) => {
                     store.updateFilters({
                       property_type: String(selectedItem.value),
@@ -278,7 +278,7 @@ export default function TabOneScreen() {
                   </TouchableOpacity>
                 </Link>
               </View>
-            </View>
+            </Fragment>
           ),
         }}
       />
@@ -348,7 +348,7 @@ export default function TabOneScreen() {
           </View>
         </View>
       </Animated.ScrollView>
-    </GestureHandlerRootView>
+    </View>
   );
 }
 

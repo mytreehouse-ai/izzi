@@ -49,7 +49,7 @@ const PropertyListingsPage = () => {
         : Colors.common.gray["600"],
   };
 
-  function FlastListRowItem({ item }: { item: PropertyListing }) {
+  function FlashListRowItem({ item }: { item: PropertyListing }) {
     return (
       <Link href={`/property-listing/${item.id}`} asChild>
         <TouchableOpacity activeOpacity={0.8}>
@@ -243,22 +243,12 @@ const PropertyListingsPage = () => {
                   </Text>
                 </TouchableOpacity>
               </View>
-              <View
-                style={{ flexDirection: "row", gap: 12, alignItems: "center" }}
-              >
-                <Ionicons
-                  name="trash-outline"
-                  size={20}
-                  lightColor={Colors.light.primary}
-                  darkColor={Colors.dark.primary}
-                />
-                <Ionicons
-                  name="heart-outline"
-                  size={20}
-                  lightColor={Colors.light.primary}
-                  darkColor={Colors.dark.primary}
-                />
-              </View>
+              <Ionicons
+                name="heart-outline"
+                size={24}
+                lightColor={Colors.common.red["600"]}
+                darkColor={Colors.common.darkRed}
+              />
             </View>
           </AnimatedView>
         </TouchableOpacity>
@@ -445,9 +435,9 @@ const PropertyListingsPage = () => {
         contentContainerStyle={styles.listingContainer}
         keyExtractor={(item) => String(item.id)}
         estimatedItemSize={200}
-        renderItem={isLoading ? RenderRowForLoading : FlastListRowItem}
+        renderItem={isLoading ? RenderRowForLoading : FlashListRowItem}
         showsVerticalScrollIndicator={false}
-        onEndReachedThreshold={0.5}
+        onEndReachedThreshold={0.75}
         onEndReached={fetchNextPage}
       />
       {isFetchingNextPage && (

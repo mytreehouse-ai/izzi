@@ -5,6 +5,7 @@ import { create } from "zustand";
 type PartialPropertyListingFilters = Partial<PropertyListingFilters>;
 
 const propertyListingFilterInitialState: PartialPropertyListingFilters = {
+  property_type: null,
   listing_type: "for-sale",
 };
 
