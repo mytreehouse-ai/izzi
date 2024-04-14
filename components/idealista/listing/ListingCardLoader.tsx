@@ -5,7 +5,7 @@ import React from "react";
 import { useColorScheme } from "react-native";
 import { FadeInRight, FadeOutLeft } from "react-native-reanimated";
 
-const Loader = () => {
+const ListingCardLoader = () => {
   const colorScheme = useColorScheme();
 
   return (
@@ -44,4 +44,4 @@ const Loader = () => {
   );
 };
 
-export default Loader;
+export default ListingCardLoader;
