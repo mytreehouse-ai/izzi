@@ -1,3 +1,4 @@
+import { dummyPropertyListingsData } from "@/assets/data/propertyListings";
 import {
   AnimatedView,
   Ionicons,
@@ -13,7 +14,9 @@ import { PropertyListing } from "@/interfaces/propertyListing";
 import { globalStateStore } from "@/store";
 import { useAuth } from "@clerk/clerk-expo";
 import { FlashList } from "@shopify/flash-list";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
+import { MotiView } from "moti";
+import { Skeleton } from "moti/skeleton";
 import React, { useRef } from "react";
 import {
   Dimensions,
@@ -48,40 +51,63 @@ const PropertyListingsPage = () => {
 
   function FlastListRowItem({ item }: { item: PropertyListing }) {
     return (
-      <TouchableOpacity activeOpacity={0.8}>
-        <AnimatedView
-          style={[
-            {
-              borderWidth: StyleSheet.hairlineWidth,
-              borderRadius: 8,
-              marginBottom: 16,
-              borderColor:
-                colorScheme === "light"
-                  ? Colors.common.gray["300"]
-                  : Colors.common.gray["600"],
-            },
-            styles.propertyListingContainerShadow,
-          ]}
-          entering={
-            Platform.OS === "android"
-              ? isLoading
-                ? FadeInRight.delay(100)
-                : undefined
-              : FadeInRight
-          }
-          exiting={
-            Platform.OS === "android"
-              ? isLoading
-                ? FadeOutLeft.delay(100)
-                : undefined
-              : FadeOutLeft
-          }
-        >
-          {item.property_images && item.property_images.length > 0 ? (
-            <PagerView
-              style={[defaultStyles.container, { height: IMAGE_HEIGHT }]}
-              initialPage={0}
-            >
+      <Link href={`/property-listing/${item.id}`} asChild>
+        <TouchableOpacity activeOpacity={0.8}>
+          <AnimatedView
+            style={[
+              {
+                borderWidth: StyleSheet.hairlineWidth,
+                borderRadius: 8,
+                marginBottom: 16,
+                borderColor:
+                  colorScheme === "light"
+                    ? Colors.common.gray["300"]
+                    : Colors.common.gray["600"],
+              },
+              styles.propertyListingContainerShadow,
+            ]}
+            entering={
+              Platform.OS === "android"
+                ? isLoading
+                  ? FadeInRight.delay(100)
+                  : undefined
+                : FadeInRight
+            }
+            exiting={
+              Platform.OS === "android"
+                ? isLoading
+                  ? FadeOutLeft.delay(100)
+                  : undefined
+                : FadeOutLeft
+            }
+          >
+            {item.property_images && item.property_images.length > 0 ? (
+              <PagerView
+                style={[defaultStyles.container, { height: IMAGE_HEIGHT }]}
+                initialPage={0}
+              >
+                <Image
+                  style={{
+                    height: IMAGE_HEIGHT,
+                    borderTopLeftRadius: 8,
+                    borderTopRightRadius: 8,
+                  }}
+                  defaultSource={require("@/assets/images/dark-placeholder.webp")}
+                  source={{ uri: item.main_image_url }}
+                />
+                {item.property_images.map((image) => (
+                  <Image
+                    key={image.id}
+                    style={{
+                      height: IMAGE_HEIGHT,
+                      borderRadius: 8,
+                    }}
+                    defaultSource={require("@/assets/images/dark-placeholder.webp")}
+                    source={{ uri: image.url }}
+                  />
+                ))}
+              </PagerView>
+            ) : (
               <Image
                 style={{
                   height: IMAGE_HEIGHT,
@@ -91,175 +117,191 @@ const PropertyListingsPage = () => {
                 defaultSource={require("@/assets/images/dark-placeholder.webp")}
                 source={{ uri: item.main_image_url }}
               />
-              {item.property_images.map((image) => (
-                <Image
-                  key={image.id}
-                  style={{
-                    height: IMAGE_HEIGHT,
-                    borderRadius: 8,
-                  }}
-                  defaultSource={require("@/assets/images/dark-placeholder.webp")}
-                  source={{ uri: image.url }}
-                />
-              ))}
-            </PagerView>
-          ) : (
-            <Image
-              style={{
-                height: IMAGE_HEIGHT,
-                borderTopLeftRadius: 8,
-                borderTopRightRadius: 8,
-              }}
-              defaultSource={require("@/assets/images/dark-placeholder.webp")}
-              source={{ uri: item.main_image_url }}
-            />
-          )}
-          <View style={{ padding: 16, gap: 8 }}>
-            <View
-              style={{ flexDirection: "row", gap: 8, alignItems: "center" }}
-            >
-              <View
-                style={{
-                  padding: 6,
-                  borderRadius: 6,
-                  borderWidth: StyleSheet.hairlineWidth,
-                  borderColor:
-                    colorScheme === "light"
-                      ? Colors.common.gray["400"]
-                      : Colors.common.gray["600"],
-                }}
-              >
-                <Ionicons name="image-outline" size={20} />
-              </View>
-              <View
-                style={{
-                  padding: 6,
-                  borderRadius: 6,
-                  borderWidth: StyleSheet.hairlineWidth,
-                  borderColor:
-                    colorScheme === "light"
-                      ? Colors.common.gray["400"]
-                      : Colors.common.gray["600"],
-                }}
-              >
-                <MaterialCommunityIcons name="floor-plan" size={20} />
-              </View>
-              <View
-                style={{
-                  padding: 6,
-                  borderRadius: 6,
-                  borderWidth: StyleSheet.hairlineWidth,
-                  borderColor:
-                    colorScheme === "light"
-                      ? Colors.common.gray["400"]
-                      : Colors.common.gray["600"],
-                }}
-              >
-                <Ionicons name="videocam-outline" size={20} />
-              </View>
-            </View>
-            <View style={[defaultStyles.removedBackground, { gap: 4 }]}>
-              <Text numberOfLines={2} fontWeight="semibold">
-                {item.listing_title}
-              </Text>
-              <Text>{`${item.city}${item.area && ","} ${
-                item.area ? item.area : ""
-              }`}</Text>
-            </View>
-            <View style={[defaultStyles.removedBackground, { gap: 4 }]}>
-              <Text numberOfLines={1} fontWeight="semibold" fontSize={18}>
-                {item.price_formatted}
-              </Text>
+            )}
+            <View style={{ padding: 16, gap: 8 }}>
               <View
                 style={{ flexDirection: "row", gap: 8, alignItems: "center" }}
               >
-                <Text>135 sqm</Text>
-                <Text>1,135 price/sqm</Text>
+                <View
+                  style={{
+                    padding: 6,
+                    borderRadius: 6,
+                    borderWidth: StyleSheet.hairlineWidth,
+                    borderColor:
+                      colorScheme === "light"
+                        ? Colors.common.gray["400"]
+                        : Colors.common.gray["600"],
+                  }}
+                >
+                  <Ionicons name="image-outline" size={20} />
+                </View>
+                <View
+                  style={{
+                    padding: 6,
+                    borderRadius: 6,
+                    borderWidth: StyleSheet.hairlineWidth,
+                    borderColor:
+                      colorScheme === "light"
+                        ? Colors.common.gray["400"]
+                        : Colors.common.gray["600"],
+                  }}
+                >
+                  <MaterialCommunityIcons name="floor-plan" size={20} />
+                </View>
+                <View
+                  style={{
+                    padding: 6,
+                    borderRadius: 6,
+                    borderWidth: StyleSheet.hairlineWidth,
+                    borderColor:
+                      colorScheme === "light"
+                        ? Colors.common.gray["400"]
+                        : Colors.common.gray["600"],
+                  }}
+                >
+                  <Ionicons name="videocam-outline" size={20} />
+                </View>
+              </View>
+              <View style={[defaultStyles.removedBackground, { gap: 4 }]}>
+                <Text numberOfLines={2} fontWeight="semibold">
+                  {item.listing_title}
+                </Text>
+                <Text>{`${item.city}${item.area && ","} ${
+                  item.area ? item.area : ""
+                }`}</Text>
+              </View>
+              <View style={[defaultStyles.removedBackground, { gap: 4 }]}>
+                <Text numberOfLines={1} fontWeight="semibold" fontSize={18}>
+                  {item.price_formatted}
+                </Text>
+                <View
+                  style={{ flexDirection: "row", gap: 8, alignItems: "center" }}
+                >
+                  <Text>135 sqm</Text>
+                  <Text>1,135 price/sqm</Text>
+                </View>
               </View>
             </View>
-          </View>
-          <View
-            style={{
-              borderBottomWidth: StyleSheet.hairlineWidth,
-              ...borderColor,
-            }}
-          />
-          <View
-            style={[
-              defaultStyles.removedBackground,
-              {
-                padding: 16,
-                alignItems: "center",
-                flexDirection: "row",
-                justifyContent: "space-between",
-              },
-            ]}
-          >
             <View
               style={{
-                gap: 12,
-                flexDirection: "row",
-                alignItems: "center",
+                borderBottomWidth: StyleSheet.hairlineWidth,
+                ...borderColor,
               }}
-            >
-              <TouchableOpacity
-                style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
-                activeOpacity={0.75}
-              >
-                <Ionicons
-                  name="call"
-                  size={20}
-                  lightColor={Colors.light.primary}
-                  darkColor={Colors.dark.primary}
-                />
-                <Text
-                  fontWeight="semibold"
-                  lightColor={Colors.light.primary}
-                  darkColor={Colors.dark.primary}
-                >
-                  Call
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
-                activeOpacity={0.75}
-              >
-                <Ionicons
-                  name="chatbox-ellipses"
-                  size={20}
-                  lightColor={Colors.light.primary}
-                  darkColor={Colors.dark.primary}
-                />
-                <Text
-                  fontWeight="semibold"
-                  lightColor={Colors.light.primary}
-                  darkColor={Colors.dark.primary}
-                >
-                  Chat
-                </Text>
-              </TouchableOpacity>
-            </View>
+            />
             <View
-              style={{ flexDirection: "row", gap: 12, alignItems: "center" }}
+              style={[
+                defaultStyles.removedBackground,
+                {
+                  padding: 16,
+                  alignItems: "center",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                },
+              ]}
             >
-              <Ionicons
-                name="trash-outline"
-                size={20}
-                lightColor={Colors.light.primary}
-                darkColor={Colors.dark.primary}
-              />
-              <Ionicons
-                name="heart-outline"
-                size={20}
-                lightColor={Colors.light.primary}
-                darkColor={Colors.dark.primary}
-              />
+              <View
+                style={{
+                  gap: 12,
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <TouchableOpacity
+                  style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
+                  activeOpacity={0.75}
+                >
+                  <Ionicons
+                    name="call"
+                    size={20}
+                    lightColor={Colors.light.primary}
+                    darkColor={Colors.dark.primary}
+                  />
+                  <Text
+                    fontWeight="semibold"
+                    lightColor={Colors.light.primary}
+                    darkColor={Colors.dark.primary}
+                  >
+                    Call
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
+                  activeOpacity={0.75}
+                >
+                  <Ionicons
+                    name="chatbox-ellipses"
+                    size={20}
+                    lightColor={Colors.light.primary}
+                    darkColor={Colors.dark.primary}
+                  />
+                  <Text
+                    fontWeight="semibold"
+                    lightColor={Colors.light.primary}
+                    darkColor={Colors.dark.primary}
+                  >
+                    Chat
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View
+                style={{ flexDirection: "row", gap: 12, alignItems: "center" }}
+              >
+                <Ionicons
+                  name="trash-outline"
+                  size={20}
+                  lightColor={Colors.light.primary}
+                  darkColor={Colors.dark.primary}
+                />
+                <Ionicons
+                  name="heart-outline"
+                  size={20}
+                  lightColor={Colors.light.primary}
+                  darkColor={Colors.dark.primary}
+                />
+              </View>
             </View>
-          </View>
-        </AnimatedView>
-      </TouchableOpacity>
+          </AnimatedView>
+        </TouchableOpacity>
+      </Link>
     );
   }
+
+  const RenderRowForLoading = ({ item }: { item: PropertyListing }) => {
+    return (
+      <AnimatedView
+        style={{ gap: 10, paddingVertical: 8 }}
+        entering={FadeInRight}
+        exiting={FadeOutLeft}
+      >
+        <MotiView
+          style={{ gap: 10 }}
+          animate={{ backgroundColor: "transparent" }}
+        >
+          <Skeleton
+            colorMode={colorScheme as "light" | "dark"}
+            width="100%"
+            height={300}
+          >
+            {true ? null : <View />}
+          </Skeleton>
+          <Skeleton
+            colorMode={colorScheme as "light" | "dark"}
+            width="100%"
+            height={30}
+          >
+            {true ? null : <View />}
+          </Skeleton>
+          <Skeleton
+            colorMode={colorScheme as "light" | "dark"}
+            width="100%"
+            height={30}
+          >
+            {true ? null : <View />}
+          </Skeleton>
+        </MotiView>
+      </AnimatedView>
+    );
+  };
 
   return (
     <View style={defaultStyles.container}>
@@ -395,11 +437,15 @@ const PropertyListingsPage = () => {
       </View>
       <FlashList
         ref={flashListRef}
-        data={data?.pages.map((page) => page.data).flat()}
+        data={
+          isLoading
+            ? dummyPropertyListingsData
+            : data?.pages.map((page) => page.data).flat()
+        }
         contentContainerStyle={styles.listingContainer}
         keyExtractor={(item) => String(item.id)}
         estimatedItemSize={200}
-        renderItem={FlastListRowItem}
+        renderItem={isLoading ? RenderRowForLoading : FlastListRowItem}
         showsVerticalScrollIndicator={false}
         onEndReachedThreshold={0.5}
         onEndReached={fetchNextPage}
@@ -419,7 +465,13 @@ const PropertyListingsPage = () => {
             },
           ]}
         >
-          <Text fontWeight="semibold">Loading more property...</Text>
+          <Text
+            fontWeight="semibold"
+            fontSize={12}
+            lightColor={Colors.common.gray["600"]}
+          >
+            Loading more property...
+          </Text>
         </View>
       )}
     </View>

@@ -99,7 +99,7 @@ export default function TabOneScreen() {
                 style={{ height: 300 }}
               />
               <View
-                style={{ padding: 16, gap: 16 }}
+                style={{ padding: 8, gap: 16 }}
                 lightColor={Colors.light.primary}
                 darkColor={Colors.dark.primary}
               >
@@ -357,7 +357,7 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   mainScrollViewContainer: {
-    padding: 16,
+    padding: 8,
   },
   dropdownButtonStyle: {
     height: 45,

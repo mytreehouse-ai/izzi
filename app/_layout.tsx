@@ -1,5 +1,4 @@
 import { Ionicons, SafeAreaView, View } from "@/components/Themed";
-import PropertyListingSearch from "@/components/property-listing/PropertyListingSearch";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
 import { globalStateStore } from "@/store";
@@ -143,13 +142,6 @@ function RootLayoutNav() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
-          name="property-listing/[id]"
-          options={{
-            headerTitle: "",
-            headerTransparent: true,
-          }}
-        />
-        <Stack.Screen
           name="(modals)/login"
           options={{
             title: "Login or signup",
@@ -162,19 +154,6 @@ function RootLayoutNav() {
                 <Ionicons name="close-outline" size={24} />
               </TouchableOpacity>
             ),
-          }}
-        />
-        <Stack.Screen
-          name="(modals)/property-listing-filter"
-          options={{
-            title: "Customize Property Search",
-            presentation: "transparentModal",
-            animation: Platform.OS === "ios" ? "ios" : "fade",
-            headerTitleStyle: {
-              fontFamily: "MontserratSemiBold",
-              fontSize: 18,
-            },
-            headerLeft: () => <HeaderCloseBtn />,
           }}
         />
         <Stack.Screen
@@ -191,7 +170,6 @@ function RootLayoutNav() {
               <SafeAreaView style={defaultStyles.safeAreaViewContainer}>
                 <View style={{ padding: 16, gap: 16 }}>
                   <HeaderCloseBtn />
-                  <PropertyListingSearch />
                 </View>
               </SafeAreaView>
             ),
@@ -211,7 +189,6 @@ function RootLayoutNav() {
               <SafeAreaView style={defaultStyles.safeAreaViewContainer}>
                 <View style={{ padding: 16, gap: 16 }}>
                   <HeaderCloseBtn />
-                  <PropertyListingSearch />
                 </View>
               </SafeAreaView>
             ),
@@ -227,6 +204,13 @@ function RootLayoutNav() {
               fontFamily: "MontserratSemiBold",
               fontSize: 18,
             },
+          }}
+        />
+        <Stack.Screen
+          name="property-listing/[id]"
+          options={{
+            headerTitle: "",
+            headerTransparent: true,
           }}
         />
       </Stack>

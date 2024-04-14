@@ -39,3 +39,6 @@ yarn-error.*
 
 expo-env.d.ts
 # @end expo-cli
+# GCP Service Account Key
+kmc-savills-1559029049725-160d6479c7c9.json
+

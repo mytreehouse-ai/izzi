@@ -25,7 +25,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "bundleIdentifier": "prime-padd.com",
+      "bundleIdentifier": "izzi.com",
       "supportsTablet": true
     },
     "android": {

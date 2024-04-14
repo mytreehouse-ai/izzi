@@ -7,12 +7,8 @@ export const defaultStyles = StyleSheet.create({
   safeAreaViewContainer: {
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
-  inpField: {
-    height: 48,
-    borderWidth: 1,
-    borderColor: "#ababab",
-    borderRadius: 8,
-    padding: 10,
+  removedBackground: {
+    backgroundColor: "transparent",
   },
   btn: {
     borderRadius: 8,
@@ -27,9 +23,6 @@ export const defaultStyles = StyleSheet.create({
     paddingHorizontal: 12,
     justifyContent: "center",
     alignItems: "center",
-  },
-  removedBackground: {
-    backgroundColor: "transparent",
   },
   footer: {
     position: "absolute",

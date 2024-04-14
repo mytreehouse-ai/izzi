@@ -1,10 +1,9 @@
-import { PBlurView } from "@/components/CustomBlurView";
+import { RnBlurView } from "@/components/RnBlurView";
 import { Text, View } from "@/components/Themed";
 import React from "react";
 import {
   Dimensions,
   Image,
-  Platform,
   TouchableOpacity,
   useColorScheme,
 } from "react-native";
@@ -42,10 +41,10 @@ const PropertyListingAdvanceFilterPage = () => {
   const colorScheme = useColorScheme();
 
   return (
-    <PBlurView
-      intensity={Platform.OS === "ios" ? 75 : 80}
+    <RnBlurView
+      intensity={75}
       tint={colorScheme as "light" | "dark"}
-      style={{ width, height, padding: 16, gap: 16 }}
+      style={{ width, height, padding: 8, gap: 16 }}
     >
       {advanceFilters.map((filter) => (
         <TouchableOpacity key={filter.id} activeOpacity={0.8}>
@@ -54,17 +53,18 @@ const PropertyListingAdvanceFilterPage = () => {
               flexDirection: "row",
               gap: 8,
               borderRadius: 8,
-              width: width - 32,
+              width: width - 16,
             }}
           >
             <Image
-              defaultSource={filter.image}
               style={{
                 width: 100,
                 height: 100,
                 borderTopLeftRadius: 8,
                 borderBottomLeftRadius: 8,
               }}
+              defaultSource={filter.image}
+              source={filter.image}
             />
             <View
               style={{
@@ -80,7 +80,7 @@ const PropertyListingAdvanceFilterPage = () => {
           </View>
         </TouchableOpacity>
       ))}
-    </PBlurView>
+    </RnBlurView>
   );
 };
 
