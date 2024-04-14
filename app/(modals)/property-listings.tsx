@@ -7,6 +7,7 @@ import {
   Text,
   View,
 } from "@/components/Themed";
+import Loader from "@/components/idealista/listing/Loader";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
 import { usePropertyListingsQuery } from "@/hooks/usePropertyListingsQuery";
@@ -15,8 +16,6 @@ import { globalStateStore } from "@/store";
 import { useAuth } from "@clerk/clerk-expo";
 import { FlashList } from "@shopify/flash-list";
 import { Link, useRouter } from "expo-router";
-import { MotiView } from "moti";
-import { Skeleton } from "moti/skeleton";
 import React, { useRef } from "react";
 import {
   Dimensions,
@@ -257,40 +256,7 @@ const PropertyListingsPage = () => {
   }
 
   const RenderRowForLoading = ({ item }: { item: PropertyListing }) => {
-    return (
-      <AnimatedView
-        style={{ gap: 10, paddingVertical: 8 }}
-        entering={FadeInRight}
-        exiting={FadeOutLeft}
-      >
-        <MotiView
-          style={{ gap: 10 }}
-          animate={{ backgroundColor: "transparent" }}
-        >
-          <Skeleton
-            colorMode={colorScheme as "light" | "dark"}
-            width="100%"
-            height={300}
-          >
-            {true ? null : <View />}
-          </Skeleton>
-          <Skeleton
-            colorMode={colorScheme as "light" | "dark"}
-            width="100%"
-            height={30}
-          >
-            {true ? null : <View />}
-          </Skeleton>
-          <Skeleton
-            colorMode={colorScheme as "light" | "dark"}
-            width="100%"
-            height={30}
-          >
-            {true ? null : <View />}
-          </Skeleton>
-        </MotiView>
-      </AnimatedView>
-    );
+    return <Loader />;
   };
 
   return (
