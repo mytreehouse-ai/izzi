@@ -27,8 +27,9 @@ export const defaultStyles = StyleSheet.create({
   footer: {
     position: "absolute",
     alignItems: "center",
-    paddingVertical: 16,
-    height: 100,
+    paddingVertical: 8,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    height: 70,
     bottom: 0,
     left: 0,
     right: 0,

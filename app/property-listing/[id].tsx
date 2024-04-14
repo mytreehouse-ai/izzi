@@ -8,12 +8,15 @@ import React, { useLayoutEffect } from "react";
 import {
   Dimensions,
   Image,
+  Platform,
   Share,
   StyleSheet,
   TouchableOpacity,
   useColorScheme,
 } from "react-native";
 import {
+  Easing,
+  SlideInDown,
   interpolate,
   useAnimatedScrollHandler,
   useAnimatedStyle,
@@ -131,6 +134,72 @@ const PropertyListing = () => {
       <View style={[defaultStyles.container, { padding: 8 }]}>
         <Text>Description here...</Text>
       </View>
+      <AnimatedView
+        style={[
+          defaultStyles.footer,
+          {
+            borderColor:
+              colorScheme === "light"
+                ? Colors.common.gray["300"]
+                : Colors.common.gray["700"],
+          },
+        ]}
+        entering={SlideInDown.duration(1000).easing(Easing.out(Easing.cubic))}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            paddingHorizontal: Platform.OS === "ios" ? 32 : 16,
+            gap: 16,
+            width: Dimensions.get("window").width,
+          }}
+        >
+          <TouchableOpacity
+            style={[
+              defaultStyles.btn,
+              {
+                backgroundColor:
+                  colorScheme === "light"
+                    ? Colors.common.emerald["300"]
+                    : Colors.common.darkEmerald300,
+                alignItems: "center",
+                flexDirection: "row",
+                width: "50%",
+                gap: 4,
+              },
+            ]}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="call" size={20} />
+            <Text fontWeight="semibold" fontSize={16}>
+              Call
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              defaultStyles.btn,
+              {
+                backgroundColor:
+                  colorScheme === "light"
+                    ? Colors.common.emerald["300"]
+                    : Colors.common.darkEmerald300,
+                alignItems: "center",
+                flexDirection: "row",
+                width: "50%",
+                gap: 4,
+              },
+            ]}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="chatbox-ellipses" size={20} />
+            <Text fontWeight="semibold" fontSize={16}>
+              Chat
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </AnimatedView>
     </View>
   );
 };
