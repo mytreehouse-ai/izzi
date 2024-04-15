@@ -3,15 +3,19 @@ import Colors from "@/constants/Colors";
 import React from "react";
 import { StyleSheet, useColorScheme } from "react-native";
 
-const ListingMedia = () => {
+interface ListingMediaProps {
+  singleView?: boolean;
+}
+
+const ListingMedia: React.FC<ListingMediaProps> = ({ singleView }) => {
   const colorScheme = useColorScheme();
 
   return (
     <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
       <View
         style={{
-          padding: 6,
-          borderRadius: 6,
+          padding: singleView ? 6 : 8,
+          borderRadius: singleView ? 6 : 8,
           borderWidth: StyleSheet.hairlineWidth,
           borderColor:
             colorScheme === "light"
@@ -19,12 +23,12 @@ const ListingMedia = () => {
               : Colors.common.gray["600"],
         }}
       >
-        <Ionicons name="image-outline" size={20} />
+        <Ionicons name="image-outline" size={singleView ? 26 : 20} />
       </View>
       <View
         style={{
-          padding: 6,
-          borderRadius: 6,
+          padding: singleView ? 6 : 8,
+          borderRadius: singleView ? 6 : 8,
           borderWidth: StyleSheet.hairlineWidth,
           borderColor:
             colorScheme === "light"
@@ -32,12 +36,12 @@ const ListingMedia = () => {
               : Colors.common.gray["600"],
         }}
       >
-        <MaterialCommunityIcons name="floor-plan" size={20} />
+        <MaterialCommunityIcons name="floor-plan" size={singleView ? 26 : 20} />
       </View>
       <View
         style={{
-          padding: 6,
-          borderRadius: 6,
+          padding: singleView ? 6 : 8,
+          borderRadius: singleView ? 6 : 8,
           borderWidth: StyleSheet.hairlineWidth,
           borderColor:
             colorScheme === "light"
@@ -45,7 +49,7 @@ const ListingMedia = () => {
               : Colors.common.gray["600"],
         }}
       >
-        <Ionicons name="videocam-outline" size={20} />
+        <Ionicons name="videocam-outline" size={singleView ? 26 : 20} />
       </View>
     </View>
   );

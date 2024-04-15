@@ -1,21 +1,29 @@
 import { AnimatedView, Ionicons, Text, View } from "@/components/Themed";
+import ListingAgent from "@/components/idealista/listing/ListingAgent";
+import ListingDescription from "@/components/idealista/listing/ListingDescription";
+import ListingFeatures from "@/components/idealista/listing/ListingFeatures";
+import ListingInfo from "@/components/idealista/listing/ListingInfo";
+import ListingMedia from "@/components/idealista/listing/ListingMedia";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
 import { usePropertyListingQuery } from "@/hooks/usePropertyListingQuery";
 import { useAuth } from "@clerk/clerk-expo";
 import { useLocalSearchParams, useNavigation } from "expo-router";
-import React, { useLayoutEffect } from "react";
+import { MotiView } from "moti";
+import { Skeleton } from "moti/skeleton";
+import React, { Fragment, useLayoutEffect } from "react";
 import {
   Dimensions,
-  Image,
   Platform,
   Share,
   StyleSheet,
   TouchableOpacity,
   useColorScheme,
 } from "react-native";
-import {
+import Animated, {
   Easing,
+  FadeInRight,
+  FadeOutLeft,
   SlideInDown,
   interpolate,
   useAnimatedScrollHandler,
@@ -124,82 +132,162 @@ const PropertyListing = () => {
     });
   }, []);
 
+  function SkeletonLoader() {
+    return (
+      <AnimatedView
+        style={{ gap: 10, paddingVertical: 8 }}
+        entering={FadeInRight}
+        exiting={FadeOutLeft}
+      >
+        <MotiView
+          style={{ gap: 10 }}
+          animate={{ backgroundColor: "transparent" }}
+        >
+          <Skeleton
+            colorMode={colorScheme as "light" | "dark"}
+            width="100%"
+            height={30}
+          >
+            {true ? null : <View />}
+          </Skeleton>
+          <Skeleton
+            colorMode={colorScheme as "light" | "dark"}
+            width="100%"
+            height={30}
+          >
+            {true ? null : <View />}
+          </Skeleton>
+          <Skeleton
+            colorMode={colorScheme as "light" | "dark"}
+            width="100%"
+            height={30}
+          >
+            {true ? null : <View />}
+          </Skeleton>
+          <Skeleton
+            colorMode={colorScheme as "light" | "dark"}
+            width="100%"
+            height={30}
+          >
+            {true ? null : <View />}
+          </Skeleton>
+        </MotiView>
+      </AnimatedView>
+    );
+  }
+
   return (
     <View style={defaultStyles.container}>
-      <Image
-        defaultSource={require("@/assets/images/dark-placeholder.webp")}
-        source={{ uri: propertyListing?.data.main_image_url }}
-        style={styles.image}
-      />
-      <View style={[defaultStyles.container, { padding: 8 }]}>
-        <Text>Description here...</Text>
-      </View>
-      <AnimatedView
-        style={[
-          defaultStyles.footer,
-          {
-            borderColor:
-              colorScheme === "light"
-                ? Colors.common.gray["300"]
-                : Colors.common.gray["700"],
-          },
-        ]}
-        entering={SlideInDown.duration(1000).easing(Easing.out(Easing.cubic))}
+      <Animated.ScrollView
+        onScroll={scrollHandler}
+        contentContainerStyle={{ paddingBottom: 80 }}
+        showsVerticalScrollIndicator={false}
+        scrollEventThrottle={16}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            paddingHorizontal: Platform.OS === "ios" ? 32 : 16,
-            gap: 16,
-            width: Dimensions.get("window").width,
-          }}
-        >
-          <TouchableOpacity
-            style={[
-              defaultStyles.btn,
-              {
-                backgroundColor:
-                  colorScheme === "light"
-                    ? Colors.common.emerald["300"]
-                    : Colors.common.darkEmerald300,
-                alignItems: "center",
-                flexDirection: "row",
-                width: "50%",
-                gap: 4,
-              },
-            ]}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="call" size={20} />
-            <Text fontWeight="semibold" fontSize={16}>
-              Call
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              defaultStyles.btn,
-              {
-                backgroundColor:
-                  colorScheme === "light"
-                    ? Colors.common.emerald["300"]
-                    : Colors.common.darkEmerald300,
-                alignItems: "center",
-                flexDirection: "row",
-                width: "50%",
-                gap: 4,
-              },
-            ]}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="chatbox-ellipses" size={20} />
-            <Text fontWeight="semibold" fontSize={16}>
-              Chat
-            </Text>
-          </TouchableOpacity>
+        <Animated.Image
+          defaultSource={require("@/assets/images/dark-placeholder.webp")}
+          source={{ uri: propertyListing?.data.main_image_url }}
+          style={[styles.image, imageAnimatedStyle]}
+        />
+        <View style={[defaultStyles.container, { padding: 8, gap: 8 }]}>
+          {isLoading && !propertyListing ? (
+            <SkeletonLoader />
+          ) : (
+            <Fragment>
+              <ListingMedia singleView={true} />
+              {propertyListing?.data && (
+                <Fragment>
+                  <ListingInfo
+                    data={{
+                      listing_title: propertyListing.data.listing_title,
+                      price_formatted: propertyListing.data.price_formatted,
+                      price_sqm: "893.87 price/sqm",
+                      city: propertyListing.data.city,
+                      area: propertyListing.data.area,
+                      sqm: "1000 sqm",
+                    }}
+                    singleView={true}
+                  />
+                  <ListingAgent />
+                  <ListingDescription
+                    description={propertyListing.data.description}
+                    showDescriptionTitle={true}
+                  />
+                  <ListingFeatures />
+                </Fragment>
+              )}
+            </Fragment>
+          )}
         </View>
-      </AnimatedView>
+      </Animated.ScrollView>
+      {!isLoading && propertyListing && (
+        <AnimatedView
+          style={[
+            defaultStyles.footer,
+            {
+              borderColor:
+                colorScheme === "light"
+                  ? Colors.common.gray["300"]
+                  : Colors.common.gray["700"],
+            },
+          ]}
+          entering={SlideInDown.duration(1000).easing(Easing.out(Easing.cubic))}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              paddingHorizontal: Platform.OS === "ios" ? 32 : 16,
+              gap: 16,
+              width: Dimensions.get("window").width,
+            }}
+          >
+            <TouchableOpacity
+              style={[
+                defaultStyles.btn,
+                {
+                  backgroundColor:
+                    colorScheme === "light"
+                      ? Colors.common.emerald["300"]
+                      : Colors.common.darkEmerald300,
+                  alignItems: "center",
+                  flexDirection: "row",
+                  width: "50%",
+                  gap: 4,
+                },
+              ]}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="call" size={20} />
+              <Text fontWeight="semibold" fontSize={16}>
+                Call
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                defaultStyles.btn,
+                {
+                  backgroundColor:
+                    colorScheme === "light"
+                      ? Colors.common.emerald["300"]
+                      : Colors.common.darkEmerald300,
+                  alignItems: "center",
+                  flexDirection: "row",
+                  width: "50%",
+                  gap: 4,
+                },
+              ]}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="chatbox-ellipses" size={20} />
+              <Text fontWeight="semibold" fontSize={16}>
+                Chat
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </AnimatedView>
+      )}
     </View>
   );
 };

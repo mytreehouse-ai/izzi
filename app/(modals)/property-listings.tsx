@@ -56,19 +56,20 @@ const PropertyListingsPage = () => {
             image={
               <ListingImages
                 mainImage={item.main_image_url}
-                propertyImages={item.property_images}
                 IMAGE_HEIGHT={IMAGE_HEIGHT}
               />
             }
             media={<ListingMedia />}
             info={
               <ListingInfo
-                listing_title={item.listing_title}
-                price_formatted={item.price_formatted}
-                city={item.city}
-                area={item.area}
-                sqm="135 sqm"
-                price_sqm="1,135 price/sqm"
+                data={{
+                  listing_title: item.listing_title,
+                  price_formatted: item.price_formatted,
+                  price_sqm: "1,135 price/sqm",
+                  city: item.city,
+                  area: item.area,
+                  sqm: "135 sqm",
+                }}
               />
             }
             footer={<ListingFooter />}
