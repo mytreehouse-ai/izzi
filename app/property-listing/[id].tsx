@@ -13,26 +13,28 @@ import { MotiView } from "moti";
 import { Skeleton } from "moti/skeleton";
 import React, { Fragment, useLayoutEffect } from "react";
 import {
-  Dimensions,
-  Platform,
-  Share,
-  StyleSheet,
-  TouchableOpacity,
-  useColorScheme,
+	Dimensions,
+	Platform,
+	PlatformIOSStatic,
+	Share,
+	StyleSheet,
+	TouchableOpacity,
+	useColorScheme,
 } from "react-native";
 import Animated, {
-  Easing,
-  FadeInRight,
-  FadeOutLeft,
-  SlideInDown,
-  interpolate,
-  useAnimatedScrollHandler,
-  useAnimatedStyle,
-  useSharedValue,
+	Easing,
+	FadeInRight,
+	FadeOutLeft,
+	SlideInDown,
+	interpolate,
+	useAnimatedScrollHandler,
+	useAnimatedStyle,
+	useSharedValue,
 } from "react-native-reanimated";
 
 const IMAGE_HEIGHT = 300;
 const { width } = Dimensions.get("window");
+const platformIOS = Platform as PlatformIOSStatic
 
 const PropertyListing = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -189,7 +191,7 @@ const PropertyListing = () => {
           source={{ uri: propertyListing?.data.main_image_url }}
           style={[styles.image, imageAnimatedStyle]}
         />
-        <View style={[defaultStyles.container, { padding: 8, gap: 8 }]}>
+        <View style={[defaultStyles.container, { padding: 8, gap: 12 }]}>
           {isLoading && !propertyListing ? (
             <SkeletonLoader />
           ) : (
@@ -314,7 +316,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.common.gray["500"],
   },
   image: {
-    height: IMAGE_HEIGHT,
+    height: platformIOS.isPad ? IMAGE_HEIGHT * 2 : IMAGE_HEIGHT,
     width,
   },
 });

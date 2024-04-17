@@ -1,5 +1,7 @@
 import React from "react";
-import { Image } from "react-native";
+import { Image, Platform, PlatformIOSStatic } from "react-native";
+
+const platformIOS = Platform as PlatformIOSStatic
 
 interface ListingImagesProps {
   mainImage: string;
@@ -13,7 +15,7 @@ const ListingImages: React.FC<ListingImagesProps> = ({
   return (
     <Image
       style={{
-        height: IMAGE_HEIGHT,
+        height: platformIOS.isPad ? IMAGE_HEIGHT * 2 : IMAGE_HEIGHT,
         borderTopLeftRadius: 8,
         borderTopRightRadius: 8,
       }}

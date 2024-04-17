@@ -5,18 +5,20 @@ import { globalStateStore } from "@/store";
 import { Link, Stack } from "expo-router";
 import { Fragment, useRef, useState } from "react";
 import {
-  Dimensions,
-  Image,
-  Platform,
-  StatusBar,
-  StyleSheet,
-  TouchableOpacity,
-  useColorScheme,
+	Dimensions,
+	Image,
+	Platform,
+	PlatformIOSStatic,
+	StatusBar,
+	StyleSheet,
+	TouchableOpacity,
+	useColorScheme,
 } from "react-native";
 import Animated from "react-native-reanimated";
 import SelectDropdown from "react-native-select-dropdown";
 
 const windowWidth = Dimensions.get("window").width;
+const platformIOS = Platform as PlatformIOSStatic
 
 const listingTypes = [
   {
@@ -95,7 +97,7 @@ export default function TabOneScreen() {
               <Image
                 defaultSource={require("@/assets/images/real-state/dan-gold-4HG3Ca3EzWw-unsplash.jpg")}
                 source={require("@/assets/images/real-state/dan-gold-4HG3Ca3EzWw-unsplash.jpg")}
-                style={{ height: 300 }}
+                style={{ height: platformIOS.isPad ? 600 : 300, width: windowWidth }}
               />
               <View
                 style={{ padding: 8, gap: 16 }}
