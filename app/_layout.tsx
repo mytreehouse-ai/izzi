@@ -1,8 +1,8 @@
 import { Ionicons, SafeAreaView, View } from "@/components/Themed";
-import PropertyListingSearch from "@/components/property-listing/PropertyListingSearch";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
-import { globalStateStore } from "@/store";
+import { usePropertyListingFilter } from "@/store";
+import { useStore } from "@/store/slices";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import NetInfo from "@react-native-community/netinfo";
@@ -18,7 +18,7 @@ import * as Location from "expo-location";
 import { Stack, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Platform,
   StyleSheet,
@@ -90,7 +90,10 @@ function RootLayoutNav() {
   const router = useRouter();
   const { isLoaded, isSignedIn } = useAuth();
   const colorScheme = useColorScheme();
-  const store = globalStateStore();
+  const [disableAuthAndMapPermission, _] = useState(true);
+  const propertyListingFilter = usePropertyListingFilter();
+  const resetBedroomFilter = useStore((action) => action.resetBedroomFilter);
+  const resetBathroomFilter = useStore((action) => action.resetBathroomFilter);
 
   useEffect(() => {
     const removeNetInfoSubscription = NetInfo.addEventListener((state) => {
@@ -102,21 +105,54 @@ function RootLayoutNav() {
   }, []);
 
   useEffect(() => {
-    if (isLoaded && !isSignedIn) {
+    if (isLoaded && !isSignedIn && disableAuthAndMapPermission === false) {
       setTimeout(() => router.push("/(modals)/login"), 100);
     } else {
       (async () => {
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") {
-          store.setLocationErrorMessage(
+          propertyListingFilter.setLocationErrorMessage(
             "Permission to access location was denied"
           );
         }
         const location = await Location.getCurrentPositionAsync({});
-        store.setUserLocation(location);
+        propertyListingFilter.setUserLocation(location);
       })();
     }
   }, [isLoaded, isSignedIn]);
+
+  // TODO: Property listing filter reset for warehouse and land
+  useEffect(() => {
+    const propertyType =
+      propertyListingFilter.propertyListingFilters.property_type!;
+
+    if (["warehouse", "land"].includes(propertyType)) {
+      const minBedroom =
+        propertyListingFilter.propertyListingFilters.min_bedrooms;
+      const maxBedroom =
+        propertyListingFilter.propertyListingFilters.max_bedrooms;
+      const minBathroom =
+        propertyListingFilter.propertyListingFilters.min_bathrooms;
+      const maxBathroom =
+        propertyListingFilter.propertyListingFilters.max_bathrooms;
+
+      if (minBedroom && maxBedroom) {
+        propertyListingFilter.updateFilters({
+          min_bedrooms: 0,
+          max_bedrooms: 0,
+        });
+        resetBedroomFilter();
+      }
+
+      if (minBathroom && maxBathroom) {
+        propertyListingFilter.updateFilters({
+          min_bathrooms: 0,
+          max_bathrooms: 0,
+        });
+        resetBathroomFilter();
+      }
+    }
+  }, [propertyListingFilter.propertyListingFilters]);
 
   function HeaderCloseBtn() {
     return (
@@ -143,13 +179,6 @@ function RootLayoutNav() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
-          name="property-listing/[id]"
-          options={{
-            headerTitle: "",
-            headerTransparent: true,
-          }}
-        />
-        <Stack.Screen
           name="(modals)/login"
           options={{
             title: "Login or signup",
@@ -165,16 +194,22 @@ function RootLayoutNav() {
           }}
         />
         <Stack.Screen
-          name="(modals)/property-listing-filter"
+          name="(modals)/property-listing-basic-filter"
           options={{
-            title: "Customize Property Search",
-            presentation: "transparentModal",
+            title: "",
+            presentation: "fullScreenModal",
             animation: Platform.OS === "ios" ? "ios" : "fade",
             headerTitleStyle: {
               fontFamily: "MontserratSemiBold",
               fontSize: 18,
             },
-            headerLeft: () => <HeaderCloseBtn />,
+            header: () => (
+              <SafeAreaView style={defaultStyles.safeAreaViewContainer}>
+                <View style={{ padding: 16, gap: 16 }}>
+                  <HeaderCloseBtn />
+                </View>
+              </SafeAreaView>
+            ),
           }}
         />
         <Stack.Screen
@@ -191,7 +226,6 @@ function RootLayoutNav() {
               <SafeAreaView style={defaultStyles.safeAreaViewContainer}>
                 <View style={{ padding: 16, gap: 16 }}>
                   <HeaderCloseBtn />
-                  <PropertyListingSearch />
                 </View>
               </SafeAreaView>
             ),
@@ -211,7 +245,6 @@ function RootLayoutNav() {
               <SafeAreaView style={defaultStyles.safeAreaViewContainer}>
                 <View style={{ padding: 16, gap: 16 }}>
                   <HeaderCloseBtn />
-                  <PropertyListingSearch />
                 </View>
               </SafeAreaView>
             ),
@@ -227,6 +260,13 @@ function RootLayoutNav() {
               fontFamily: "MontserratSemiBold",
               fontSize: 18,
             },
+          }}
+        />
+        <Stack.Screen
+          name="property-listing/[id]"
+          options={{
+            headerTitle: "",
+            headerTransparent: true,
           }}
         />
       </Stack>

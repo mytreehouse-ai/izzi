@@ -10,7 +10,7 @@ import {
   StyleSheet,
   useColorScheme,
 } from "react-native";
-import MapView from "react-native-map-clustering";
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import MapMarker from "./MapMarker";
 
 const data: PropertyListing[] = [];
@@ -24,16 +24,14 @@ const RnMapViews = () => {
       <MapView
         userInterfaceStyle={colorScheme as "light" | "dark"}
         customMapStyle={colorScheme === "dark" ? mapDarkModeStyle : undefined}
-        animationEnabled={false}
         loadingEnabled={Platform.OS === "android" ? true : false}
+        provider={PROVIDER_GOOGLE}
         style={StyleSheet.absoluteFill}
         zoomEnabled={true}
         zoomTapEnabled={false}
         showsUserLocation={true}
         moveOnMarkerPress={false}
         showsMyLocationButton={true}
-        clusterFontFamily="MontserratSemiBold"
-        onRegionChangeComplete={({ longitude, latitude }) => {}}
         initialRegion={{
           latitude: 14.5547,
           longitude: 121.0244,

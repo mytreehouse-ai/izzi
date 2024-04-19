@@ -78,7 +78,7 @@ const LoginPage = () => {
       >
         <Image
           style={styles.imageLogo}
-          source={require("@/assets/images/linkedin.png")}
+          source={require("@/assets/images/socials/linkedin.png")}
         />
         <Text
           style={{
@@ -96,7 +96,7 @@ const LoginPage = () => {
       >
         <Image
           style={styles.imageLogo}
-          source={require("@/assets/images/google.png")}
+          source={require("@/assets/images/socials/google.png")}
         />
         <Text
           style={{

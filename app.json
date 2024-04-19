@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Izzi",
-    "slug": "izzi",
+    "name": "Realst Izzi",
+    "slug": "realst-izzi",
     "owner": "kmc-savills",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,12 +10,12 @@
     "userInterfaceStyle": "automatic",
     "extra": {
       "clerkPublishableKey": "pk_test_Z2xhZC1ibG93ZmlzaC0yMS5jbGVyay5hY2NvdW50cy5kZXYk",
-      "apiUrl": "https://izzi-serverless-api.kmc-savills-inc-account.workers.dev",
+      "apiUrl": "https://izzi-azure-func.azurewebsites.net",
       "router": {
         "origin": false
       },
       "eas": {
-        "projectId": "030d5b18-9359-4beb-a83e-e1bac4bbd933"
+        "projectId": "edca28f9-56f5-4627-83c5-b82f891ffb4b"
       }
     },
     "splash": {
@@ -25,14 +25,27 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "bundleIdentifier": "prime-padd.com",
-      "supportsTablet": true
+      "bundleIdentifier": "realst-izzi.com",
+      "supportsTablet": false,
+      "config": {
+        "googleMapsApiKey": "AIzaSyAGjLINOZ1IY6g_iYWnuH9AvTovVkJ48Rk"
+      }
     },
     "android": {
       "package": "com.kmcsavills.izzi",
+      "supportsTablet": false,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAFbqGHGL6zgjcSk1RAKtptBFWEL-mVwUk"
+        }
       }
     },
     "web": {
@@ -58,7 +71,7 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/030d5b18-9359-4beb-a83e-e1bac4bbd933"
+      "url": "https://u.expo.dev/edca28f9-56f5-4627-83c5-b82f891ffb4b"
     }
   }
 }

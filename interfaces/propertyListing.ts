@@ -1,3 +1,8 @@
+export interface PropertyImage {
+  id: number;
+  url: string;
+}
+
 export interface PropertyListing {
   id: number;
   listing_title: string;
@@ -21,7 +26,7 @@ export interface PropertyListing {
   address: string;
   features: string[];
   main_image_url: string;
-  property_images: { id: number; url: string }[] | null;
+  property_images: PropertyImage[] | null;
   coordinates: [number, number];
   latitude_in_text: string | null;
   longitude_in_text: string | null;

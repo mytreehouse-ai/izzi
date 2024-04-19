@@ -1,64 +1,32 @@
 import { Ionicons, SafeAreaView, Text, View } from "@/components/Themed";
+import ListingTypes from "@/components/idealista/filters/ListingTypes";
+import PropertyTypes from "@/components/idealista/filters/PropertyTypes";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
-import { globalStateStore } from "@/store";
+import { usePropertyListingFilter } from "@/store";
 import { Link, Stack } from "expo-router";
-import { useRef, useState } from "react";
+import { Fragment, useRef } from "react";
 import {
   Dimensions,
   Image,
   Platform,
-  StatusBar,
+  PlatformIOSStatic,
   StyleSheet,
   TouchableOpacity,
   useColorScheme,
 } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
-import SelectDropdown from "react-native-select-dropdown";
 
 const windowWidth = Dimensions.get("window").width;
-
-const listingTypes = [
-  {
-    id: 1,
-    name: "Buy",
-    value: "for-sale",
-  },
-  {
-    id: 2,
-    name: "Rent",
-    value: "for-rent",
-  },
-];
-
-const emojisWithIcons = [
-  {
-    title: "House",
-    value: "house",
-  },
-  {
-    title: "Condominium",
-    value: "condominium",
-  },
-  {
-    title: "Warehouse",
-    value: "warehouse",
-  },
-  {
-    title: "Land",
-    value: "land",
-  },
-];
+const platformIOS = Platform as PlatformIOSStatic;
 
 export default function TabOneScreen() {
   const colorScheme = useColorScheme();
   const mainScrollViewRef = useRef<Animated.ScrollView>(null);
-  const store = globalStateStore();
-  const [selectedListingTypeIndex, setSelectedListingTypeIndex] = useState(0);
+  const store = usePropertyListingFilter();
 
   return (
-    <GestureHandlerRootView
+    <View
       style={[
         defaultStyles.container,
         {
@@ -72,163 +40,42 @@ export default function TabOneScreen() {
       <Stack.Screen
         options={{
           header: () => (
-            <View>
+            <Fragment>
               <SafeAreaView
-                style={styles.safeAreaViewContainer}
+                style={defaultStyles.safeAreaViewContainer}
                 lightColor={Colors.light.primary}
                 darkColor={Colors.dark.primary}
               >
                 <View
                   style={[
                     {
-                      padding: 16,
+                      paddingVertical: 8,
                       width: windowWidth,
                       alignItems: "center",
                       justifyContent: "center",
                     },
                   ]}
                 >
-                  <Text fontWeight="semibold" fontSize={18}>
+                  <Text fontWeight="semibold" fontSize={30}>
                     izzi
                   </Text>
                 </View>
               </SafeAreaView>
               <Image
-                defaultSource={require("@/assets/images/real-state/dan-gold-4HG3Ca3EzWw-unsplash.jpg")}
+                defaultSource={require("@/assets/images/dark-placeholder.webp")}
                 source={require("@/assets/images/real-state/dan-gold-4HG3Ca3EzWw-unsplash.jpg")}
-                style={{ height: 300 }}
+                style={{
+                  height: platformIOS.isPad ? 600 : 300,
+                  width: windowWidth,
+                }}
               />
               <View
-                style={{ padding: 16, gap: 16 }}
+                style={{ padding: 8, gap: 16 }}
                 lightColor={Colors.light.primary}
                 darkColor={Colors.dark.primary}
               >
-                <View
-                  style={{
-                    borderRadius: 8,
-                    borderWidth: StyleSheet.hairlineWidth,
-                    borderColor:
-                      colorScheme === "light"
-                        ? Colors.light.border
-                        : Colors.dark.border,
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-evenly",
-                  }}
-                  lightColor={Colors.light.background}
-                  darkColor={Colors.common.gray["800"]}
-                >
-                  {listingTypes.map((lt, index) => (
-                    <TouchableOpacity
-                      key={lt.id}
-                      delayPressIn={0}
-                      style={[
-                        {
-                          width: "50%",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          padding: 12,
-                        },
-                        selectedListingTypeIndex === index && {
-                          borderWidth: 1,
-                          borderColor:
-                            colorScheme === "light"
-                              ? Colors.light.accent
-                              : Colors.dark.accent,
-                          backgroundColor:
-                            colorScheme === "light"
-                              ? Colors.common.emerald["100"]
-                              : Colors.common.darkEmerald300,
-                        },
-                        lt.id === 1 && {
-                          borderTopLeftRadius: 8,
-                          borderBottomLeftRadius: 8,
-                        },
-                        lt.id === 2 && {
-                          borderTopRightRadius: 8,
-                          borderBottomRightRadius: 8,
-                        },
-                      ]}
-                      onPress={() => {
-                        setSelectedListingTypeIndex(index);
-                        store.updateFilters({ listing_type: lt.value });
-                      }}
-                      activeOpacity={0.8}
-                    >
-                      <Text
-                        fontWeight="semibold"
-                        fontSize={16}
-                        lightColor={Colors.light.text}
-                        darkColor={Colors.dark.text}
-                      >
-                        {lt.name}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-                <SelectDropdown
-                  data={emojisWithIcons}
-                  onSelect={(selectedItem, _index) => {
-                    store.updateFilters({
-                      property_type: String(selectedItem.value),
-                    });
-                  }}
-                  renderButton={(selectedItem, isOpened) => {
-                    return (
-                      <View
-                        style={[
-                          styles.dropdownButtonStyle,
-                          {
-                            backgroundColor:
-                              colorScheme === "light"
-                                ? Colors.light.background
-                                : Colors.common.gray["800"],
-                          },
-                        ]}
-                      >
-                        <Text
-                          style={styles.dropdownButtonTxtStyle}
-                          fontWeight="semibold"
-                          fontSize={16}
-                        >
-                          {(selectedItem && selectedItem.title) ||
-                            "Select property type"}
-                        </Text>
-                        <Ionicons
-                          name={isOpened ? "chevron-up" : "chevron-down"}
-                          size={24}
-                          lightColor={Colors.light.tabIconDefault}
-                          darkColor={Colors.common.gray["500"]}
-                        />
-                      </View>
-                    );
-                  }}
-                  renderItem={(item, _index, isSelected) => {
-                    return (
-                      <View
-                        style={{
-                          ...styles.dropdownItemStyle,
-                          ...(isSelected && {
-                            backgroundColor:
-                              colorScheme === "light"
-                                ? Colors.common.gray["200"]
-                                : Colors.common.gray["700"],
-                          }),
-                        }}
-                      >
-                        <Text fontSize={16}>{item.title}</Text>
-                      </View>
-                    );
-                  }}
-                  showsVerticalScrollIndicator={false}
-                  dropdownStyle={{
-                    borderRadius: 8,
-                    backgroundColor:
-                      colorScheme === "light"
-                        ? Colors.light.background
-                        : Colors.dark.background,
-                  }}
-                />
+                <ListingTypes />
+                <PropertyTypes />
                 <Link
                   href="/(modals)/property-listing-advance-filter"
                   style={{
@@ -278,7 +125,7 @@ export default function TabOneScreen() {
                   </TouchableOpacity>
                 </Link>
               </View>
-            </View>
+            </Fragment>
           ),
         }}
       />
@@ -310,6 +157,7 @@ export default function TabOneScreen() {
               },
             ]}
             activeOpacity={0.7}
+            onPress={() => alert("Feature not working")}
           >
             <Text
               fontWeight="semibold"
@@ -348,31 +196,12 @@ export default function TabOneScreen() {
           </View>
         </View>
       </Animated.ScrollView>
-    </GestureHandlerRootView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeAreaViewContainer: {
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-  },
   mainScrollViewContainer: {
-    padding: 16,
-  },
-  dropdownButtonStyle: {
-    height: 45,
-    borderRadius: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 12,
-  },
-  dropdownItemStyle: {
-    padding: 12,
-  },
-  dropdownButtonTxtStyle: {
-    flex: 1,
-  },
-  dropdownItemIconStyle: {
-    marginRight: 8,
+    padding: 8,
   },
 });

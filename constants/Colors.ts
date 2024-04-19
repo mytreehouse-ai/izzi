@@ -83,6 +83,7 @@ const darkYellow = neutralizeColor(colors.yellow["400"]);
 const darkBlue = neutralizeColor(colors.blue["600"]);
 const darkIndigo = neutralizeColor(colors.indigo["600"]);
 const darkAmber = neutralizeColor(colors.amber["600"]);
+const darkRed = neutralizeColor(colors.red["600"]);
 const darkCyan = neutralizeColor(colors.cyan["500"]);
 const darkEmerald300 = neutralizeColor(colors.emerald["300"]);
 
@@ -121,6 +122,7 @@ export default {
     darkIndigo,
     darkCyan,
     darkAmber,
+    darkRed,
     darkEmerald300,
   },
   light: lightTheme,
