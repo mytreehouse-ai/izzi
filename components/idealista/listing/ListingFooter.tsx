@@ -61,12 +61,14 @@ const ListingFooter = () => {
           </Text>
         </TouchableOpacity>
       </View>
-      <Ionicons
-        name="heart-outline"
-        size={24}
-        lightColor={Colors.common.red["600"]}
-        darkColor={Colors.common.darkRed}
-      />
+      <TouchableOpacity activeOpacity={0.5}>
+        <Ionicons
+          name="heart-outline"
+          size={24}
+          lightColor={Colors.common.red["600"]}
+          darkColor={Colors.common.darkRed}
+        />
+      </TouchableOpacity>
     </View>
   );
 };
