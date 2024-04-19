@@ -200,7 +200,7 @@ const PropertyListingsPage = () => {
                 )}
               </View>
             </View>
-            {store.propertyListingFilters.min_price! > 10000 ||
+            {store.propertyListingFilters.min_price! > 10_000 ||
             store.propertyListingFilters.min_sqm! > 10 ||
             store.propertyListingFilters?.min_bedrooms ||
             store.propertyListingFilters?.min_bathrooms ? (

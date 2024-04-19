@@ -402,6 +402,7 @@ const ListingPrice = () => {
           }
           onSelect={(selectedItem, _index) => {
             store.updateFilters({
+              min_price: 20_000,
               max_price:
                 selectedItem.title === "Unlimited"
                   ? selectedItem.value * 5

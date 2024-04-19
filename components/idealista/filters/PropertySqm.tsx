@@ -170,6 +170,7 @@ const PropertySqm = () => {
           }
           onSelect={(selectedItem, _index) => {
             store.updateFilters({
+              min_sqm: 20,
               max_sqm: selectedItem.value,
             });
           }}
