@@ -61,6 +61,15 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow Izzi to use your location for tailored property recommendations."
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableProguardInReleaseBuilds": true,
+            "enableSeparateBuildPerCPUArchitecture": true
+          }
+        }
       ]
     ],
     "experiments": {
