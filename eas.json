@@ -8,9 +8,6 @@
       "developmentClient": true,
       "distribution": "internal",
       "channel": "development",
-      "android": {
-        "buildType": "apk"
-      },
       "ios": {
         "simulator": true
       },
@@ -32,9 +29,6 @@
     },
     "production": {
       "channel": "production",
-      "android": {
-        "buildType": "apk"
-      },
       "env": {
         "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_Z2xhZC1ibG93ZmlzaC0yMS5jbGVyay5hY2NvdW50cy5kZXYk",
         "EXPO_PUBLIC_DJANGO_API_URL": "https://izzi-azure-func.azurewebsites.net"
