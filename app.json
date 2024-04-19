@@ -67,7 +67,7 @@
         {
           "android": {
             "enableProguardInReleaseBuilds": true,
-            "enableSeparateBuildPerCPUArchitecture": true
+            "enableShrinkResourcesInReleaseBuilds": true
           }
         }
       ]

@@ -24,6 +24,7 @@ interface StoreActions {
   updateFilters: (filters: PartialPropertyListingFilters) => void;
   setUserLocation: (location: LocationObject | null) => void;
   setLocationErrorMessage: (message: string | null) => void;
+  resetPropertyListingFilters: () => void;
 }
 
 export const usePropertyListingFilter = create<StoreState & StoreActions>(
@@ -38,5 +39,7 @@ export const usePropertyListingFilter = create<StoreState & StoreActions>(
     setUserLocation: (location) => set({ userLocation: location }),
     setLocationErrorMessage: (message) =>
       set({ locationErrorMessage: message }),
+    resetPropertyListingFilters: () =>
+      set({ propertyListingFilters: propertyListingFilterInitialState }),
   })
 );

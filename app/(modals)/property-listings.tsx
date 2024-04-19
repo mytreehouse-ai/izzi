@@ -17,6 +17,7 @@ import { defaultStyles } from "@/constants/Styles";
 import { usePropertyListingsQuery } from "@/hooks/usePropertyListingsQuery";
 import { PropertyListing } from "@/interfaces/propertyListing";
 import { usePropertyListingFilter } from "@/store";
+import { useStore } from "@/store/slices";
 import { useAuth } from "@clerk/clerk-expo";
 import { FlashList } from "@shopify/flash-list";
 import { Link, useRouter } from "expo-router";
@@ -39,6 +40,8 @@ const PropertyListingsPage = () => {
   const { getToken } = useAuth();
   const colorScheme = useColorScheme();
   const store = usePropertyListingFilter();
+  const resetBedroomFilter = useStore((action) => action.resetBedroomFilter);
+  const resetBathroomFilter = useStore((action) => action.resetBathroomFilter);
   const flashListRef = useRef<FlashList<any>>(null);
 
   const {
@@ -59,37 +62,37 @@ const PropertyListingsPage = () => {
 
   function FlashListRowItem({ item }: { item: PropertyListing }) {
     return (
-      <Link href={`/property-listing/${item.id}`} asChild>
-        <TouchableOpacity activeOpacity={0.8}>
-          <ListingCard
-            image={
+      <ListingCard
+        image={
+          <Link href={`/property-listing/${item.id}`} asChild>
+            <TouchableOpacity activeOpacity={0.8}>
               <ListingImages
                 mainImage={item.main_image_url}
                 IMAGE_HEIGHT={IMAGE_HEIGHT}
               />
-            }
-            media={<ListingMedia />}
-            info={
-              <ListingInfo
-                data={{
-                  listing_title: item.listing_title,
-                  price_formatted: item.price_formatted,
-                  price_sqm: "** price/sqm",
-                  city: item.city,
-                  area: item.area,
-                  sqm: `${
-                    item?.floor_area ||
-                    item?.lot_area ||
-                    item?.building_size ||
-                    "N/A"
-                  } sqm`,
-                }}
-              />
-            }
-            footer={<ListingFooter />}
+            </TouchableOpacity>
+          </Link>
+        }
+        media={<ListingMedia />}
+        info={
+          <ListingInfo
+            data={{
+              listing_title: item.listing_title,
+              price_formatted: item.price_formatted,
+              price_sqm: "** price/sqm",
+              city: item.city,
+              area: item.area,
+              sqm: `${
+                item?.floor_area ||
+                item?.lot_area ||
+                item?.building_size ||
+                "N/A"
+              } sqm`,
+            }}
           />
-        </TouchableOpacity>
-      </Link>
+        }
+        footer={<ListingFooter />}
+      />
     );
   }
 
@@ -146,7 +149,7 @@ const PropertyListingsPage = () => {
                     <MotiView animate={defaultStyles.removedBackground}>
                       <Skeleton
                         colorMode={colorScheme as "light" | "dark"}
-                        width="75%"
+                        width="60%"
                         height={20}
                       >
                         {true ? null : <View />}
@@ -177,7 +180,7 @@ const PropertyListingsPage = () => {
                     <MotiView animate={defaultStyles.removedBackground}>
                       <Skeleton
                         colorMode={colorScheme as "light" | "dark"}
-                        width="60%"
+                        width="50%"
                         height={18}
                       >
                         {true ? null : <View />}
@@ -197,21 +200,31 @@ const PropertyListingsPage = () => {
                 )}
               </View>
             </View>
-            <TouchableOpacity
-              style={[
-                defaultStyles.btnSmall,
-                {
-                  backgroundColor:
-                    colorScheme === "light"
-                      ? Colors.common.emerald["100"]
-                      : Colors.common.darkEmerald300,
-                },
-              ]}
-              disabled={isLoading}
-              activeOpacity={0.8}
-            >
-              <Text fontWeight="semibold">Save</Text>
-            </TouchableOpacity>
+            {store.propertyListingFilters.min_price! > 10000 ||
+            store.propertyListingFilters.min_sqm! > 10 ||
+            store.propertyListingFilters?.min_bedrooms ||
+            store.propertyListingFilters?.min_bathrooms ? (
+              <TouchableOpacity
+                style={[
+                  defaultStyles.btnSmall,
+                  {
+                    backgroundColor:
+                      colorScheme === "light"
+                        ? Colors.common.emerald["100"]
+                        : Colors.common.darkEmerald300,
+                  },
+                ]}
+                disabled={isLoading}
+                activeOpacity={0.8}
+                onPress={() => {
+                  store.resetPropertyListingFilters();
+                  resetBedroomFilter();
+                  resetBathroomFilter();
+                }}
+              >
+                <Text fontWeight="semibold">Reset Filters</Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
         </View>
       </SafeAreaView>
