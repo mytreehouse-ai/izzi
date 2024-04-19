@@ -15,13 +15,13 @@ const advanceFilters = [
     id: 1,
     title: "Draw your area",
     description: "Draw your search area on the map",
-    image: require("@/assets/images/real-state/avi-werde-8N46xC5YmKM-unsplash.jpg"),
+    image: require("@/assets/images/real-state/dan-gold-4HG3Ca3EzWw-unsplash.jpg"),
   },
   {
     id: 2,
     title: "Search on the map",
     description: "Move on the map to see available properties",
-    image: require("@/assets/images/real-state/bailey-anselme-Bkp3gLygyeA-unsplash.jpg"),
+    image: require("@/assets/images/real-state/dan-gold-4HG3Ca3EzWw-unsplash.jpg"),
   },
   {
     id: 3,
@@ -33,7 +33,7 @@ const advanceFilters = [
     id: 4,
     title: "Search by phone",
     description: "Insert a phone number to see the property it corresponds to",
-    image: require("@/assets/images/real-state/daniel-barnes-RKdLlTyjm5g-unsplash.jpg"),
+    image: require("@/assets/images/real-state/dan-gold-4HG3Ca3EzWw-unsplash.jpg"),
   },
 ];
 

@@ -16,7 +16,7 @@ export async function fetchPropertyListing(
       throw new Error("REST API URL not found");
     }
 
-    const url = `${API_URL}/v1/property-listings/${propertyListingId}`;
+    const url = `${API_URL}/api/property-listings/${propertyListingId}`;
 
     const response = await fetch(url, {
       headers: {

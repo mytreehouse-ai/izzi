@@ -1,5 +1,11 @@
 import { dummyPropertyListingsData } from "@/assets/data/propertyListings";
-import { Ionicons, SafeAreaView, Text, View } from "@/components/Themed";
+import {
+  AnimatedView,
+  Ionicons,
+  SafeAreaView,
+  Text,
+  View,
+} from "@/components/Themed";
 import ListingCard from "@/components/idealista/listing/ListingCard";
 import ListingCardLoader from "@/components/idealista/listing/ListingCardLoader";
 import ListingFooter from "@/components/idealista/listing/ListingFooter";
@@ -10,10 +16,12 @@ import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
 import { usePropertyListingsQuery } from "@/hooks/usePropertyListingsQuery";
 import { PropertyListing } from "@/interfaces/propertyListing";
-import { globalStateStore } from "@/store";
+import { usePropertyListingFilter } from "@/store";
 import { useAuth } from "@clerk/clerk-expo";
 import { FlashList } from "@shopify/flash-list";
 import { Link, useRouter } from "expo-router";
+import { MotiView } from "moti";
+import { Skeleton } from "moti/skeleton";
 import React, { useRef } from "react";
 import {
   Dimensions,
@@ -22,6 +30,7 @@ import {
   TouchableOpacity,
   useColorScheme,
 } from "react-native";
+import { FadeIn, FadeOut } from "react-native-reanimated";
 
 const IMAGE_HEIGHT = 300;
 
@@ -29,7 +38,7 @@ const PropertyListingsPage = () => {
   const router = useRouter();
   const { getToken } = useAuth();
   const colorScheme = useColorScheme();
-  const store = globalStateStore();
+  const store = usePropertyListingFilter();
   const flashListRef = useRef<FlashList<any>>(null);
 
   const {
@@ -65,10 +74,15 @@ const PropertyListingsPage = () => {
                 data={{
                   listing_title: item.listing_title,
                   price_formatted: item.price_formatted,
-                  price_sqm: "1,135 price/sqm",
+                  price_sqm: "** price/sqm",
                   city: item.city,
                   area: item.area,
-                  sqm: "135 sqm",
+                  sqm: `${
+                    item?.floor_area ||
+                    item?.lot_area ||
+                    item?.building_size ||
+                    "N/A"
+                  } sqm`,
                 }}
               />
             }
@@ -123,24 +137,64 @@ const PropertyListingsPage = () => {
                 <Ionicons name="arrow-back" size={24} />
               </TouchableOpacity>
               <View style={[defaultStyles.removedBackground, { gap: 2 }]}>
-                <Text numberOfLines={1} fontWeight="semibold" fontSize={16}>
-                  {`182 ${(
-                    store.propertyListingFilters.property_type ?? "Properties"
-                  ).replace(/\b\w/g, (l) => l.toUpperCase())} to ${
-                    store.propertyListingFilters.listing_type === "for-sale"
-                      ? "Buy"
-                      : "Rent"
-                  }`}
-                </Text>
-                <View
-                  style={[
-                    defaultStyles.removedBackground,
-                    { flexDirection: "row", gap: 4, alignItems: "center" },
-                  ]}
-                >
-                  <Text fontSize={12}>Your drawn search</Text>
-                  <Ionicons name="caret-down-sharp" size={12} />
-                </View>
+                {isLoading ? (
+                  <AnimatedView
+                    style={defaultStyles.removedBackground}
+                    entering={FadeIn}
+                    exiting={FadeOut}
+                  >
+                    <MotiView animate={defaultStyles.removedBackground}>
+                      <Skeleton
+                        colorMode={colorScheme as "light" | "dark"}
+                        width="75%"
+                        height={20}
+                      >
+                        {true ? null : <View />}
+                      </Skeleton>
+                    </MotiView>
+                  </AnimatedView>
+                ) : (
+                  <Text numberOfLines={1} fontWeight="semibold" fontSize={16}>
+                    {`${
+                      data?.pages.map((page) => page?.count).length
+                        ? data?.pages.map((page) => page.count)[0]
+                        : 0
+                    } ${(
+                      store.propertyListingFilters.property_type ?? "Properties"
+                    ).replace(/\b\w/g, (l) => l.toUpperCase())} to ${
+                      store.propertyListingFilters.listing_type === "for-sale"
+                        ? "Buy"
+                        : "Rent"
+                    }`}
+                  </Text>
+                )}
+                {isLoading ? (
+                  <AnimatedView
+                    style={defaultStyles.removedBackground}
+                    entering={FadeIn}
+                    exiting={FadeOut}
+                  >
+                    <MotiView animate={defaultStyles.removedBackground}>
+                      <Skeleton
+                        colorMode={colorScheme as "light" | "dark"}
+                        width="60%"
+                        height={18}
+                      >
+                        {true ? null : <View />}
+                      </Skeleton>
+                    </MotiView>
+                  </AnimatedView>
+                ) : (
+                  <View
+                    style={[
+                      defaultStyles.removedBackground,
+                      { flexDirection: "row", gap: 4, alignItems: "center" },
+                    ]}
+                  >
+                    <Text fontSize={12}>Your drawn search</Text>
+                    <Ionicons name="caret-down-sharp" size={12} />
+                  </View>
+                )}
               </View>
             </View>
             <TouchableOpacity
@@ -153,6 +207,7 @@ const PropertyListingsPage = () => {
                       : Colors.common.darkEmerald300,
                 },
               ]}
+              disabled={isLoading}
               activeOpacity={0.8}
             >
               <Text fontWeight="semibold">Save</Text>
@@ -173,7 +228,9 @@ const PropertyListingsPage = () => {
           },
         ]}
       >
-        <Pressable onPress={() => console.log("Filter press")}>
+        <Pressable
+          onPress={() => router.push("/(modals)/property-listing-basic-filter")}
+        >
           <View
             style={{
               flexDirection: "row",

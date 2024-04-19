@@ -16,11 +16,11 @@ const settings = [
 ];
 
 const services = [
-  {
-    id: 1,
-    title: "Post your property",
-    subtitle: "Your first 2 listings are free",
-  },
+  // {
+  //   id: 1,
+  //   title: "Post your property",
+  //   subtitle: "Your first 2 listings are free",
+  // },
   {
     id: 2,
     title: "Value your house",

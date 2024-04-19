@@ -13,28 +13,28 @@ import { MotiView } from "moti";
 import { Skeleton } from "moti/skeleton";
 import React, { Fragment, useLayoutEffect } from "react";
 import {
-	Dimensions,
-	Platform,
-	PlatformIOSStatic,
-	Share,
-	StyleSheet,
-	TouchableOpacity,
-	useColorScheme,
+  Dimensions,
+  Platform,
+  PlatformIOSStatic,
+  Share,
+  StyleSheet,
+  TouchableOpacity,
+  useColorScheme,
 } from "react-native";
 import Animated, {
-	Easing,
-	FadeInRight,
-	FadeOutLeft,
-	SlideInDown,
-	interpolate,
-	useAnimatedScrollHandler,
-	useAnimatedStyle,
-	useSharedValue,
+  Easing,
+  FadeInRight,
+  FadeOutLeft,
+  SlideInDown,
+  interpolate,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
 } from "react-native-reanimated";
 
 const IMAGE_HEIGHT = 300;
 const { width } = Dimensions.get("window");
-const platformIOS = Platform as PlatformIOSStatic
+const platformIOS = Platform as PlatformIOSStatic;
 
 const PropertyListing = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -203,10 +203,15 @@ const PropertyListing = () => {
                     data={{
                       listing_title: propertyListing.data.listing_title,
                       price_formatted: propertyListing.data.price_formatted,
-                      price_sqm: "893.87 price/sqm",
+                      price_sqm: "** price/sqm",
                       city: propertyListing.data.city,
                       area: propertyListing.data.area,
-                      sqm: "1000 sqm",
+                      sqm: `${
+                        propertyListing.data?.floor_area ||
+                        propertyListing.data?.lot_area ||
+                        propertyListing.data?.building_size ||
+                        "N/A"
+                      } sqm`,
                     }}
                     singleView={true}
                   />

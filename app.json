@@ -10,7 +10,7 @@
     "userInterfaceStyle": "automatic",
     "extra": {
       "clerkPublishableKey": "pk_test_Z2xhZC1ibG93ZmlzaC0yMS5jbGVyay5hY2NvdW50cy5kZXYk",
-      "apiUrl": "https://izzi-serverless-api.kmc-savills-inc-account.workers.dev",
+      "apiUrl": "https://izzi-azure-func.azurewebsites.net",
       "router": {
         "origin": false
       },
@@ -23,15 +23,17 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "bundleIdentifier": "realst-izzi.com",
-      "supportsTablet": true
+      "supportsTablet": false,
+      "config": {
+        "googleMapsApiKey": "AIzaSyAGjLINOZ1IY6g_iYWnuH9AvTovVkJ48Rk"
+      }
     },
     "android": {
       "package": "com.kmcsavills.izzi",
+      "supportsTablet": false,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -39,7 +41,12 @@
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
-      ]
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAFbqGHGL6zgjcSk1RAKtptBFWEL-mVwUk"
+        }
+      }
     },
     "web": {
       "bundler": "metro",
