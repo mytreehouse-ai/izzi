@@ -199,10 +199,6 @@ function RootLayoutNav() {
             title: "",
             presentation: "fullScreenModal",
             animation: Platform.OS === "ios" ? "ios" : "fade",
-            headerTitleStyle: {
-              fontFamily: "MontserratSemiBold",
-              fontSize: 18,
-            },
             header: () => (
               <SafeAreaView style={defaultStyles.safeAreaViewContainer}>
                 <View style={{ padding: 16, gap: 16 }}>
@@ -218,10 +214,6 @@ function RootLayoutNav() {
             title: "",
             presentation: "transparentModal",
             animation: Platform.OS === "ios" ? "ios" : "fade",
-            headerTitleStyle: {
-              fontFamily: "MontserratSemiBold",
-              fontSize: 18,
-            },
             header: () => (
               <SafeAreaView style={defaultStyles.safeAreaViewContainer}>
                 <View style={{ padding: 16, gap: 16 }}>
@@ -237,10 +229,6 @@ function RootLayoutNav() {
             title: "",
             presentation: "fullScreenModal",
             animation: Platform.OS === "ios" ? "ios" : "fade",
-            headerTitleStyle: {
-              fontFamily: "MontserratSemiBold",
-              fontSize: 18,
-            },
             header: () => (
               <SafeAreaView style={defaultStyles.safeAreaViewContainer}>
                 <View style={{ padding: 16, gap: 16 }}>
@@ -256,10 +244,14 @@ function RootLayoutNav() {
             title: "",
             headerShown: false,
             headerTransparent: true,
-            headerTitleStyle: {
-              fontFamily: "MontserratSemiBold",
-              fontSize: 18,
-            },
+          }}
+        />
+        <Stack.Screen
+          name="(modals)/property-valuation"
+          options={{
+            title: "",
+            headerShown: false,
+            headerTransparent: true,
           }}
         />
         <Stack.Screen

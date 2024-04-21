@@ -217,9 +217,18 @@ const PropertyListingsPage = () => {
                 disabled={isLoading}
                 activeOpacity={0.8}
                 onPress={() => {
-                  store.resetPropertyListingFilters();
+                  store.updateFilters({
+                    min_price: 10_000,
+                    max_price: 5_000_000_001,
+                    min_sqm: 10,
+                    max_sqm: 10_001,
+                  });
                   resetBedroomFilter();
                   resetBathroomFilter();
+                  flashListRef.current?.scrollToOffset({
+                    animated: true,
+                    offset: 0,
+                  });
                 }}
               >
                 <Text fontWeight="semibold">Reset Filters</Text>

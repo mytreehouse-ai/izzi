@@ -8,10 +8,10 @@ interface PartialPropertyListingFilters
 const propertyListingFilterInitialState = {
   property_type: "house",
   listing_type: "for-sale",
-  min_price: 10000,
-  max_price: 5000000001,
+  min_price: 10_000,
+  max_price: 5_000_000_001,
   min_sqm: 10,
-  max_sqm: 10001,
+  max_sqm: 10_001,
 };
 
 interface StoreState {

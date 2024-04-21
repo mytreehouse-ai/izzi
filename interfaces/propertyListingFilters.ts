@@ -4,6 +4,7 @@ interface PropertyListingBaseFilter {
 }
 
 export interface PropertyListingFilters extends PropertyListingBaseFilter {
+  city: string | null;
   search: string;
   property_type: string | null;
   listing_type: string | null;

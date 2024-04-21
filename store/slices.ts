@@ -69,6 +69,57 @@ const bathroomFilterSlice = createSlice({
   },
 });
 
+interface ValuationPropertyDetails {
+  propertyType: string;
+  propertySize: number | null;
+  userId: string;
+  address: string;
+  city: string;
+}
+
+const propertyValuationSlice = createSlice({
+  name: "propertyValuation",
+  value: {
+    steps: [
+      { id: 1, title: "Property Information", progress: 0.34 },
+      { id: 2, title: "Property Features", progress: 0.67 },
+      { id: 3, title: "Valuation Result", progress: 1.0 },
+    ],
+    currentStepIndex: 0,
+    propertyDetails: {
+      propertyType: "House",
+      propertySize: 0,
+      userId: "",
+      address: "",
+      city: "",
+    },
+  },
+  actions: {
+    nextStep: () => (state) => ({
+      ...state,
+      currentStepIndex:
+        state.currentStepIndex < state.steps.length - 1
+          ? state.currentStepIndex + 1
+          : state.currentStepIndex,
+    }),
+    prevStep: () => (state) => ({
+      ...state,
+      currentStepIndex:
+        state.currentStepIndex > 0
+          ? state.currentStepIndex - 1
+          : state.currentStepIndex,
+    }),
+    updatePropertyDetails:
+      (details: Partial<ValuationPropertyDetails>) => (state) => ({
+        ...state,
+        propertyDetails: {
+          ...state.propertyDetails,
+          ...(details as typeof state.propertyDetails),
+        },
+      }),
+  },
+});
+
 export const useStore = create(
-  withSlices(bedroomFilterSlice, bathroomFilterSlice)
+  withSlices(bedroomFilterSlice, bathroomFilterSlice, propertyValuationSlice)
 );

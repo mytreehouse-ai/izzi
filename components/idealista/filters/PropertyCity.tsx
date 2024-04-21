@@ -1,57 +1,51 @@
 import { Ionicons, Text, View } from "@/components/Themed";
 import Colors from "@/constants/Colors";
+import { usePropertyCitiesQuery } from "@/hooks/usePropertyCitiesQuery";
 import { usePropertyListingFilter } from "@/store";
 import { useStore } from "@/store/slices";
-import React from "react";
+import { useAuth } from "@clerk/clerk-expo";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, useColorScheme } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 
-interface PropertyTypesProps {
+interface PropertyCitiesProps {
   forPropertyValuation?: boolean;
-  onChange?: (propertyType: string) => void;
+  onChange?: (city: string) => void;
 }
 
-const dropDownValues = [
-  {
-    title: "House",
-    value: "house",
-  },
-  {
-    title: "Condominium",
-    value: "condominium",
-  },
-  {
-    title: "Warehouse",
-    value: "warehouse",
-  },
-  {
-    title: "Land",
-    value: "land",
-  },
-];
-
-const PropertyTypes: React.FC<PropertyTypesProps> = ({
+const PropertyCities: React.FC<PropertyCitiesProps> = ({
   forPropertyValuation = false,
   onChange,
 }) => {
   const colorScheme = useColorScheme();
+  const { getToken } = useAuth();
+  const [shit, setShit] = useState<{ title: string; value: string }[]>([]);
   const propertyListingFilter = usePropertyListingFilter();
   const valuationPropertyDetails = useStore(
     (state) => state.propertyValuation.propertyDetails
   );
+  const { isLoading, data: cities } = usePropertyCitiesQuery(getToken);
+
+  useEffect(() => {
+    if (!isLoading && cities) {
+      setShit(
+        cities.data.map((data) => ({ title: data.name, value: data.name }))
+      );
+    }
+  }, [isLoading]);
 
   function defaultValue(propertyType: string, key: "title" | "value") {
-    return dropDownValues.find((data) => data[key] === propertyType);
+    return shit.find((data) => data[key] === propertyType);
   }
 
   return (
     <SelectDropdown
-      data={dropDownValues}
+      data={shit}
       defaultValue={
         forPropertyValuation
-          ? defaultValue(valuationPropertyDetails.propertyType, "title")
+          ? defaultValue(valuationPropertyDetails.city, "title")
           : defaultValue(
-              propertyListingFilter.propertyListingFilters.property_type!,
+              propertyListingFilter.propertyListingFilters.city ?? "",
               "value"
             )
       }
@@ -60,7 +54,7 @@ const PropertyTypes: React.FC<PropertyTypesProps> = ({
           onChange && onChange(selectedItem.title);
         } else {
           propertyListingFilter.updateFilters({
-            property_type: String(selectedItem.value),
+            city: selectedItem.value,
           });
         }
       }}
@@ -82,7 +76,7 @@ const PropertyTypes: React.FC<PropertyTypesProps> = ({
               fontWeight="semibold"
               fontSize={16}
             >
-              {(selectedItem && selectedItem.title) || "Select property type"}
+              {(selectedItem && selectedItem.title) || "Select listing city"}
             </Text>
             <Ionicons
               name={isOpened ? "chevron-up" : "chevron-down"}
@@ -141,4 +135,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PropertyTypes;
+export default PropertyCities;

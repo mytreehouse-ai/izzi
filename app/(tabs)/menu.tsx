@@ -3,7 +3,7 @@ import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
-import React from "react";
+import React, { Fragment } from "react";
 import { StyleSheet, TouchableOpacity, useColorScheme } from "react-native";
 import Animated from "react-native-reanimated";
 
@@ -16,15 +16,17 @@ const settings = [
 ];
 
 const services = [
-  // {
-  //   id: 1,
-  //   title: "Post your property",
-  //   subtitle: "Your first 2 listings are free",
-  // },
+  {
+    id: 1,
+    title: "Post your property",
+    subtitle: "Your first 2 listings are free",
+    href: "/(modals)/property-listings",
+  },
   {
     id: 2,
-    title: "Value your house",
+    title: "Value your property",
     subtitle: "Free online valuation",
+    href: "/(modals)/property-valuation",
   },
 ];
 
@@ -32,7 +34,7 @@ const Menu = () => {
   const { user } = useUser();
   const router = useRouter();
   const colorScheme = useColorScheme();
-  const { signOut, isSignedIn, getToken } = useAuth();
+  const { signOut, isLoaded, isSignedIn, getToken } = useAuth();
 
   return (
     <View
@@ -41,33 +43,69 @@ const Menu = () => {
       darkColor={Colors.common.gray["900"]}
     >
       <View style={{ gap: 24, padding: 16 }}>
-        <View style={{ flexDirection: "row", gap: 4 }}>
-          <Ionicons name="person" size={24} />
-          <Text fontWeight="semibold" fontSize={18}>
-            Login into your account
-          </Text>
-        </View>
-        <Text>
-          Bring together your favorite properties and searches from your
-          computer, tablet and mobile
-        </Text>
-        <Link
-          style={[
-            defaultStyles.btn,
-            {
-              backgroundColor:
-                colorScheme === "light"
-                  ? Colors.light.accent
-                  : Colors.dark.accent,
-            },
-          ]}
-          href="/(modals)/login"
-          asChild
-        >
-          <TouchableOpacity activeOpacity={0.8}>
-            <Text fontWeight="semibold">Login into your account</Text>
-          </TouchableOpacity>
-        </Link>
+        {!isSignedIn && isLoaded ? (
+          <Fragment>
+            <View style={{ flexDirection: "row", gap: 4 }}>
+              <Ionicons name="person" size={24} />
+              <Text fontWeight="semibold" fontSize={18}>
+                Login into your account
+              </Text>
+            </View>
+            <Text>
+              Bring together your favorite properties and searches from your
+              computer, tablet and mobile
+            </Text>
+            <Link
+              style={[
+                defaultStyles.btn,
+                {
+                  backgroundColor:
+                    colorScheme === "light"
+                      ? Colors.common.emerald["200"]
+                      : Colors.common.darkEmerald300,
+                },
+              ]}
+              href="/(modals)/login"
+              asChild
+            >
+              <TouchableOpacity activeOpacity={0.8}>
+                <Text fontWeight="semibold" fontSize={16}>
+                  Login into your account
+                </Text>
+              </TouchableOpacity>
+            </Link>
+          </Fragment>
+        ) : (
+          <Fragment>
+            <View style={{ flexDirection: "row", gap: 4 }}>
+              <Ionicons name="person" size={24} />
+              <Text fontWeight="semibold" fontSize={18}>
+                {user?.fullName}
+              </Text>
+            </View>
+            <Text>
+              Bring together your favorite properties and searches from your
+              computer, tablet and mobile
+            </Text>
+            <TouchableOpacity
+              style={[
+                defaultStyles.btn,
+                {
+                  backgroundColor:
+                    colorScheme === "light"
+                      ? Colors.common.emerald["200"]
+                      : Colors.common.darkEmerald300,
+                },
+              ]}
+              activeOpacity={0.8}
+              onPress={async () => await signOut()}
+            >
+              <Text fontWeight="semibold" fontSize={16}>
+                Logout
+              </Text>
+            </TouchableOpacity>
+          </Fragment>
+        )}
       </View>
       <Animated.ScrollView
         style={{
@@ -92,6 +130,7 @@ const Menu = () => {
                 justifyContent: "space-between",
               }}
               activeOpacity={0.5}
+              onPress={() => (isSignedIn ? void signOut() : null)}
             >
               <View key={setting.id} style={{ gap: 6 }}>
                 <Text fontSize={16}>{setting.title}</Text>
@@ -109,7 +148,11 @@ const Menu = () => {
             Services for you
           </Text>
           {services.map((service) => (
-            <Link key={service.id} href="/(modals)/login" asChild>
+            <Link
+              key={service.id}
+              href={isSignedIn ? (service.href as any) : "/(modals)/login"}
+              asChild
+            >
               <TouchableOpacity
                 style={{
                   flexDirection: "row",

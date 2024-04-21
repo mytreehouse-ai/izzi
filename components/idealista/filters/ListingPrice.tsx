@@ -293,7 +293,7 @@ const dropDownValues = [
   },
   {
     title: "Unlimited",
-    value: 1_000_000_000,
+    value: 5_000_000_000,
   },
 ];
 
@@ -333,9 +333,24 @@ const ListingPrice = () => {
             ) || null
           }
           onSelect={(selectedItem, _index) => {
-            store.updateFilters({
-              min_price: selectedItem.value,
-            });
+            const maxPrice = store.propertyListingFilters.max_price!;
+            if (maxPrice <= selectedItem.value) {
+              const nextIndex =
+                dropDownValues.findIndex(
+                  (data) => data.value === selectedItem.value
+                ) + 1;
+              const nextValue = dropDownValues[nextIndex]
+                ? dropDownValues[nextIndex].value
+                : 5_000_000_001;
+              store.updateFilters({
+                min_price: selectedItem.value,
+                max_price: nextValue,
+              });
+            } else {
+              store.updateFilters({
+                min_price: selectedItem.value,
+              });
+            }
           }}
           renderButton={(selectedItem, isOpened) => {
             return (
@@ -401,13 +416,24 @@ const ListingPrice = () => {
             ) || null
           }
           onSelect={(selectedItem, _index) => {
-            store.updateFilters({
-              min_price: 20_000,
-              max_price:
-                selectedItem.title === "Unlimited"
-                  ? selectedItem.value * 5
-                  : selectedItem.value,
-            });
+            const minPrice = store.propertyListingFilters.min_price!;
+            if (minPrice >= selectedItem.value) {
+              const prevIndex =
+                dropDownValues.findIndex(
+                  (data) => data.value === selectedItem.value
+                ) - 1;
+              const prevValue = dropDownValues[prevIndex]
+                ? dropDownValues[prevIndex].value
+                : 10_000;
+              store.updateFilters({
+                min_price: prevValue,
+                max_price: selectedItem.value,
+              });
+            } else {
+              store.updateFilters({
+                max_price: selectedItem.value,
+              });
+            }
           }}
           renderButton={(selectedItem, isOpened) => {
             return (

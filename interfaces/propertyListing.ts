@@ -25,6 +25,7 @@ export interface PropertyListing {
   area: string;
   address: string;
   features: string[];
+  equipments: string[];
   main_image_url: string;
   property_images: PropertyImage[] | null;
   coordinates: [number, number];

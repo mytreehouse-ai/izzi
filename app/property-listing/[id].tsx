@@ -48,6 +48,8 @@ const PropertyListing = () => {
     Number(id)
   );
 
+  console.log(JSON.stringify(propertyListing, null, 2));
+
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
       scrollOffset.value = event.contentOffset.y;
@@ -246,8 +248,8 @@ const PropertyListing = () => {
               alignItems: "center",
               justifyContent: "center",
               paddingHorizontal: Platform.OS === "ios" ? 32 : 16,
-              gap: 16,
               width: Dimensions.get("window").width,
+              gap: 16,
             }}
           >
             <TouchableOpacity
