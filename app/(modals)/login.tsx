@@ -11,7 +11,6 @@ import { Image, Platform, StyleSheet, TouchableOpacity } from "react-native";
 enum Strategy {
   Google = "oauth_google",
   Apple = "oauth_apple",
-  Facebook = "oauth_facebook",
   LinkedIn = "oauth_linkedin",
 }
 
@@ -28,9 +27,6 @@ const LoginPage = () => {
   const { startOAuthFlow: appleAuth } = useOAuth({
     strategy: "oauth_apple",
   });
-  const { startOAuthFlow: facebookAuth } = useOAuth({
-    strategy: "oauth_facebook",
-  });
   const { startOAuthFlow: linkedinAuth } = useOAuth({
     strategy: "oauth_linkedin",
   });
@@ -39,7 +35,6 @@ const LoginPage = () => {
     const selectedAuth = {
       [Strategy.Google]: googleAuth,
       [Strategy.Apple]: appleAuth,
-      [Strategy.Facebook]: facebookAuth,
       [Strategy.LinkedIn]: linkedinAuth,
     }[strategy];
 
@@ -57,18 +52,21 @@ const LoginPage = () => {
   return (
     <View style={[defaultStyles.container, styles.loginBtnContainer]}>
       <TouchableOpacity
-        style={[styles.loginBtn, { backgroundColor: Colors.common.facebook }]}
-        onPress={() => void onSelectAuth(Strategy.Facebook)}
+        style={styles.loginBtn}
+        onPress={() => void onSelectAuth(Strategy.Google)}
         activeOpacity={0.7}
       >
-        <Ionicons
-          style={styles.iconLogo}
-          name="logo-facebook"
-          size={24}
-          color={Colors.common.white}
+        <Image
+          style={styles.imageLogo}
+          source={require("@/assets/images/socials/google.png")}
         />
-        <Text fontWeight="semibold" style={{ color: Colors.common.white }}>
-          Continue With Facebook
+        <Text
+          style={{
+            color: Colors.common.black,
+          }}
+          fontWeight="semibold"
+        >
+          Continue With Google
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
@@ -87,24 +85,6 @@ const LoginPage = () => {
           fontWeight="semibold"
         >
           Continue With LinkedIn
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.loginBtn}
-        onPress={() => void onSelectAuth(Strategy.Google)}
-        activeOpacity={0.7}
-      >
-        <Image
-          style={styles.imageLogo}
-          source={require("@/assets/images/socials/google.png")}
-        />
-        <Text
-          style={{
-            color: Colors.common.black,
-          }}
-          fontWeight="semibold"
-        >
-          Continue With Google
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
