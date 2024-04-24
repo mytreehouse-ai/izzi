@@ -22,6 +22,7 @@ import {
 } from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import * as Progress from "react-native-progress";
+import RadioGroup, { RadioButtonProps } from "react-native-radio-buttons-group";
 import Animated, {
   Easing,
   SlideInDown,
@@ -29,7 +30,6 @@ import Animated, {
   SlideOutLeft,
 } from "react-native-reanimated";
 
-// Reducer and actions for property listing bedrooms and bathrooms
 type PropertyListingAction =
   | {
       type:
@@ -38,16 +38,19 @@ type PropertyListingAction =
         | "ADD_BATHROOM"
         | "REMOVE_BATHROOM";
     }
+  | { type: "SET_LISTING_TYPE_ID"; payload: string }
   | { type: "SET_DEFAULT"; payload?: { bedrooms: number; bathrooms: number } };
 
 interface PropertyListingState {
   bedrooms: number;
   bathrooms: number;
+  selectedListingtypeId: string;
 }
 
 const initialState: PropertyListingState = {
   bedrooms: 0,
   bathrooms: 1,
+  selectedListingtypeId: "1",
 };
 
 function propertyListingReducer(
@@ -63,6 +66,8 @@ function propertyListingReducer(
       return { ...state, bathrooms: state.bathrooms + 1 };
     case "REMOVE_BATHROOM":
       return { ...state, bathrooms: Math.max(1, state.bathrooms - 1) };
+    case "SET_LISTING_TYPE_ID":
+      return { ...state, selectedListingtypeId: action.payload };
     case "SET_DEFAULT":
       return {
         ...state,
@@ -79,14 +84,27 @@ const PropertyListingCreate = () => {
   const colorScheme = useColorScheme();
   const store = useStore((state) => state.propertyListingCreate);
   const [state, dispatch] = useReducer(propertyListingReducer, initialState);
-  const toggleListingTypeCheck = useStore(
-    (action) => action.toggleListingTypeCheck
-  );
   const nextStep = useStore((action) => action.propertyListingCreateNextStep);
   const prevStep = useStore((action) => action.propertyListingCreatePrevStep);
 
   const newPropertyListingUpdatePropertyDetails = useStore(
     (action) => action.newPropertyListingUpdatePropertyDetails
+  );
+
+  const radioButtons: RadioButtonProps[] = useMemo(
+    () => [
+      {
+        id: "1",
+        label: "Sale",
+        value: "for-sale",
+      },
+      {
+        id: "2",
+        label: "Rent",
+        value: "for-rent",
+      },
+    ],
+    []
   );
 
   const checkbox = useMemo(
@@ -114,6 +132,9 @@ const PropertyListingCreate = () => {
 
   useEffect(() => {
     newPropertyListingUpdatePropertyDetails({
+      listingType: radioButtons.find(
+        (listingType) => listingType.id === state.selectedListingtypeId
+      )?.value,
       bedrooms: state.bedrooms,
       bathrooms: state.bathrooms,
     });
@@ -191,19 +212,19 @@ const PropertyListingCreate = () => {
               Select property type
             </Text>
             <PropertyTypes
-              value={""}
+              value={store.propertyDetails.propertyType}
               onChange={(propertyType) => {
-                console.log(propertyType);
+                newPropertyListingUpdatePropertyDetails({ propertyType });
               }}
             />
             <Text fontWeight="semibold" fontSize={16}>
               City
             </Text>
             <PropertyCities
-              value={""}
+              value={store.propertyDetails.city}
               placeholder="Select city"
               onChange={(city) => {
-                console.log(city);
+                newPropertyListingUpdatePropertyDetails({ city });
               }}
             />
             <Text fontWeight="semibold" fontSize={16}>
@@ -217,21 +238,25 @@ const PropertyListingCreate = () => {
             <Text fontWeight="semibold" fontSize={16}>
               Listing type
             </Text>
-            {store.listingType.map((data) => (
-              <BouncyCheckbox
-                key={data.id}
-                size={20}
-                text={data.text}
-                fillColor={checkbox.fillColor}
-                textStyle={checkbox.textStyle as any}
-                isChecked={
-                  store.listingType.find(
-                    (listingType) => listingType.id === data.id
-                  )?.checked
-                }
-                onPress={() => toggleListingTypeCheck(data.id)}
-              />
-            ))}
+            <RadioGroup
+              radioButtons={radioButtons}
+              containerStyle={{
+                alignItems: "flex-start",
+              }}
+              labelStyle={{
+                fontSize: 16,
+                fontFamily: "MontserratSemiBold",
+                color:
+                  colorScheme === "light"
+                    ? Colors.light.text
+                    : Colors.dark.text,
+              }}
+              onPress={(selectedId) =>
+                dispatch({ type: "SET_LISTING_TYPE_ID", payload: selectedId })
+              }
+              selectedId={state.selectedListingtypeId}
+            />
+            <Text>{JSON.stringify(store.propertyDetails, null, 2)}</Text>
           </AnimatedView>
         ) : null}
         {store.currentStepIndex === 1 ? (

@@ -70,6 +70,10 @@ const bathroomFilterSlice = createSlice({
 });
 
 interface CreateaPropertyListing {
+  propertyType: string;
+  listingType: string;
+  city: string;
+  address: string;
   bedrooms: number;
   bathrooms: number;
   areaSize: number;
@@ -130,10 +134,6 @@ const commonResidentialPropertyFeatures = [
 const propertyListingCreateSlice = createSlice({
   name: "propertyListingCreate",
   value: {
-    listingType: [
-      { id: 1, text: "Sale", value: "for-sale", checked: false },
-      { id: 2, text: "Rent", value: "for-rent", checked: false },
-    ],
     propertyFeatures: {
       condominium: [...commonResidentialPropertyFeatures],
       warehouse: [],
@@ -149,6 +149,10 @@ const propertyListingCreateSlice = createSlice({
     ],
     currentStepIndex: 0,
     propertyDetails: {
+      propertyType: "",
+      listingType: "",
+      city: "",
+      address: "",
       bedrooms: 0,
       bathrooms: 1,
       areaSize: 20,
@@ -156,20 +160,6 @@ const propertyListingCreateSlice = createSlice({
     },
   },
   actions: {
-    toggleListingTypeCheck: (id: number) => (state) => ({
-      ...state,
-      listingType: state.listingType
-        .map((listingType) =>
-          listingType.id === id
-            ? { ...listingType, checked: !listingType.checked }
-            : listingType
-        )
-        .map((listingType) =>
-          listingType.id !== id
-            ? { ...listingType, checked: false }
-            : listingType
-        ),
-    }),
     propertyListingCreateNextStep: () => (state) => ({
       ...state,
       currentStepIndex:
