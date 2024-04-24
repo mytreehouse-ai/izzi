@@ -22,7 +22,7 @@ import {
 } from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import * as Progress from "react-native-progress";
-import {
+import Animated, {
   Easing,
   SlideInDown,
   SlideInRight,
@@ -258,127 +258,141 @@ const PropertyListingCreate = () => {
         ) : null}
         {store.currentStepIndex === 2 ? (
           <AnimatedView
-            style={[defaultStyles.removedBackground, styles.formContainer]}
+            style={defaultStyles.removedBackground}
             entering={SlideInRight}
             exiting={SlideOutLeft}
           >
-            <Text fontWeight="semibold" fontSize={16}>
-              Bedrooms
-            </Text>
-            <View
+            <Animated.ScrollView
               style={[
                 defaultStyles.removedBackground,
-                {
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                },
+                { height: Dimensions.get("screen").height },
               ]}
+              contentContainerStyle={{ paddingBottom: 80 }}
+              showsVerticalScrollIndicator={false}
+              scrollEventThrottle={16}
             >
-              <TouchableOpacity
-                style={{
-                  padding: 10,
-                  borderRadius: 8,
-                  backgroundColor:
-                    colorScheme === "light"
-                      ? Colors.common.emerald["200"]
-                      : Colors.common.darkEmerald300,
-                }}
-                onPress={() => dispatch({ type: "REMOVE_BEDROOM" })}
+              <View
+                style={[defaultStyles.removedBackground, styles.formContainer]}
               >
-                <MaterialCommunityIcons name="minus" size={24} />
-              </TouchableOpacity>
-              <Text fontWeight="semibold" fontSize={16}>
-                {store.propertyDetails.bedrooms ?? state.bedrooms}
-              </Text>
-              <TouchableOpacity
-                style={{
-                  padding: 10,
-                  borderRadius: 8,
-                  backgroundColor:
-                    colorScheme === "light"
-                      ? store.propertyDetails.bedrooms === 6
-                        ? Colors.common.emerald["100"]
-                        : Colors.common.emerald["200"]
-                      : Colors.common.darkEmerald300,
-                }}
-                disabled={store.propertyDetails.bedrooms === 6}
-                onPress={() => dispatch({ type: "ADD_BEDROOM" })}
-              >
-                <MaterialCommunityIcons name="plus" size={24} />
-              </TouchableOpacity>
-            </View>
-            <Text fontWeight="semibold" fontSize={16}>
-              Bathrooms
-            </Text>
-            <View
-              style={[
-                defaultStyles.removedBackground,
-                {
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                },
-              ]}
-            >
-              <TouchableOpacity
-                style={{
-                  padding: 10,
-                  borderRadius: 8,
-                  backgroundColor:
-                    colorScheme === "light"
-                      ? Colors.common.emerald["200"]
-                      : Colors.common.darkEmerald300,
-                }}
-                onPress={() => dispatch({ type: "REMOVE_BATHROOM" })}
-              >
-                <MaterialCommunityIcons name="minus" size={24} />
-              </TouchableOpacity>
-              <Text fontWeight="semibold" fontSize={16}>
-                {store.propertyDetails.bathrooms}
-              </Text>
-              <TouchableOpacity
-                style={{
-                  padding: 10,
-                  borderRadius: 8,
-                  backgroundColor:
-                    colorScheme === "light"
-                      ? store.propertyDetails.bathrooms === 6
-                        ? Colors.common.emerald["100"]
-                        : Colors.common.emerald["200"]
-                      : Colors.common.darkEmerald300,
-                }}
-                disabled={store.propertyDetails.bathrooms === 6}
-                onPress={() => dispatch({ type: "ADD_BATHROOM" })}
-              >
-                <MaterialCommunityIcons name="plus" size={24} />
-              </TouchableOpacity>
-            </View>
-            <Text fontWeight="semibold" fontSize={16}>
-              Property size
-            </Text>
-            <Input
-              type="number"
-              value={store.propertyDetails.areaSize}
-              onChange={(data) =>
-                newPropertyListingUpdatePropertyDetails({
-                  areaSize: Number(data),
-                })
-              }
-            />
-            <Text fontWeight="semibold" fontSize={16}>
-              Description
-            </Text>
-            <Input
-              value={store.propertyDetails.description}
-              multiline={true}
-              onChange={(data) =>
-                newPropertyListingUpdatePropertyDetails({
-                  description: String(data),
-                })
-              }
-            />
-            <Text>{JSON.stringify(store.propertyDetails, null, 2)}</Text>
+                <Text fontWeight="semibold" fontSize={16}>
+                  Bedrooms
+                </Text>
+                <View
+                  style={[
+                    defaultStyles.removedBackground,
+                    {
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    },
+                  ]}
+                >
+                  <TouchableOpacity
+                    style={{
+                      padding: 10,
+                      borderRadius: 8,
+                      backgroundColor:
+                        colorScheme === "light"
+                          ? Colors.common.emerald["200"]
+                          : Colors.common.darkEmerald300,
+                    }}
+                    onPress={() => dispatch({ type: "REMOVE_BEDROOM" })}
+                  >
+                    <MaterialCommunityIcons name="minus" size={24} />
+                  </TouchableOpacity>
+                  <Text fontWeight="semibold" fontSize={16}>
+                    {store.propertyDetails.bedrooms ?? state.bedrooms}
+                  </Text>
+                  <TouchableOpacity
+                    style={{
+                      padding: 10,
+                      borderRadius: 8,
+                      backgroundColor:
+                        colorScheme === "light"
+                          ? store.propertyDetails.bedrooms === 6
+                            ? Colors.common.emerald["100"]
+                            : Colors.common.emerald["200"]
+                          : Colors.common.darkEmerald300,
+                    }}
+                    disabled={store.propertyDetails.bedrooms === 6}
+                    onPress={() => dispatch({ type: "ADD_BEDROOM" })}
+                  >
+                    <MaterialCommunityIcons name="plus" size={24} />
+                  </TouchableOpacity>
+                </View>
+                <Text fontWeight="semibold" fontSize={16}>
+                  Bathrooms
+                </Text>
+                <View
+                  style={[
+                    defaultStyles.removedBackground,
+                    {
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    },
+                  ]}
+                >
+                  <TouchableOpacity
+                    style={{
+                      padding: 10,
+                      borderRadius: 8,
+                      backgroundColor:
+                        colorScheme === "light"
+                          ? Colors.common.emerald["200"]
+                          : Colors.common.darkEmerald300,
+                    }}
+                    onPress={() => dispatch({ type: "REMOVE_BATHROOM" })}
+                  >
+                    <MaterialCommunityIcons name="minus" size={24} />
+                  </TouchableOpacity>
+                  <Text fontWeight="semibold" fontSize={16}>
+                    {store.propertyDetails.bathrooms}
+                  </Text>
+                  <TouchableOpacity
+                    style={{
+                      padding: 10,
+                      borderRadius: 8,
+                      backgroundColor:
+                        colorScheme === "light"
+                          ? store.propertyDetails.bathrooms === 6
+                            ? Colors.common.emerald["100"]
+                            : Colors.common.emerald["200"]
+                          : Colors.common.darkEmerald300,
+                    }}
+                    disabled={store.propertyDetails.bathrooms === 6}
+                    onPress={() => dispatch({ type: "ADD_BATHROOM" })}
+                  >
+                    <MaterialCommunityIcons name="plus" size={24} />
+                  </TouchableOpacity>
+                </View>
+                <Text fontWeight="semibold" fontSize={16}>
+                  Property size
+                </Text>
+                <Input
+                  type="number"
+                  value={store.propertyDetails.areaSize}
+                  onChange={(data) =>
+                    newPropertyListingUpdatePropertyDetails({
+                      areaSize: Number(data),
+                    })
+                  }
+                />
+                <Text fontWeight="semibold" fontSize={16}>
+                  Description
+                </Text>
+                <Input
+                  value={store.propertyDetails.description}
+                  multiline={true}
+                  onChange={(data) =>
+                    newPropertyListingUpdatePropertyDetails({
+                      description: String(data),
+                    })
+                  }
+                />
+                <Text>{JSON.stringify(store.propertyDetails, null, 2)}</Text>
+              </View>
+            </Animated.ScrollView>
           </AnimatedView>
         ) : null}
         {store.currentStepIndex === 3 ? (
