@@ -2,7 +2,7 @@ import { Ionicons, Text, View } from "@/components/Themed";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
 import { useAuth, useUser } from "@clerk/clerk-expo";
-import { Link, useRouter } from "expo-router";
+import { Link } from "expo-router";
 import React, { Fragment } from "react";
 import { StyleSheet, TouchableOpacity, useColorScheme } from "react-native";
 import Animated from "react-native-reanimated";
@@ -20,7 +20,7 @@ const services = [
     id: 1,
     title: "Post your property",
     subtitle: "Your first 2 listings are free",
-    href: "/(modals)/property-listings",
+    href: "/(modals)/property-listing-create",
   },
   {
     id: 2,
@@ -32,7 +32,6 @@ const services = [
 
 const Menu = () => {
   const { user } = useUser();
-  const router = useRouter();
   const colorScheme = useColorScheme();
   const { signOut, isLoaded, isSignedIn, getToken } = useAuth();
 

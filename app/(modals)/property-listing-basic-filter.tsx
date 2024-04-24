@@ -16,7 +16,7 @@ import Animated from "react-native-reanimated";
 const PropertyListingBasicFilter = () => {
   const colorScheme = useColorScheme();
   const router = useRouter();
-  const propertyListingFilter = usePropertyListingFilter();
+  const store = usePropertyListingFilter();
 
   return (
     <Animated.ScrollView
@@ -28,11 +28,16 @@ const PropertyListingBasicFilter = () => {
         lightColor={Colors.common.gray["100"]}
       >
         <ListingTypes />
-        <PropertyTypes />
+        <PropertyTypes
+          value={store.propertyListingFilters.property_type!}
+          onChange={(propertyType) => {
+            store.updateFilters({ property_type: propertyType });
+          }}
+        />
         <ListingPrice />
         <PropertySqm />
         {["house", "condominium"].includes(
-          propertyListingFilter.propertyListingFilters.property_type || ""
+          store.propertyListingFilters.property_type || ""
         ) && (
           <Fragment>
             <PropertyBedroom />

@@ -1,3 +1,4 @@
+import Input from "@/components/Input";
 import {
   AnimatedView,
   Ionicons,
@@ -16,21 +17,25 @@ import React, { useEffect } from "react";
 import {
   Dimensions,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   useColorScheme,
 } from "react-native";
 import * as Progress from "react-native-progress";
-import { Easing, SlideInDown, SlideInRight } from "react-native-reanimated";
+import {
+  Easing,
+  SlideInDown,
+  SlideInRight,
+  SlideOutLeft,
+} from "react-native-reanimated";
 
 const PropertyValuation = () => {
   const router = useRouter();
   const { user } = useUser();
   const { isLoaded, isSignedIn } = useAuth();
   const colorScheme = useColorScheme();
-  const store = useStore((state) => state.propertyValuation);
-  const nextStep = useStore((action) => action.nextStep);
-  const prevStep = useStore((action) => action.prevStep);
+  const propertyValuation = useStore((state) => state.propertyValuation);
+  const nextStep = useStore((action) => action.propertyValuationNextStep);
+  const prevStep = useStore((action) => action.propertyValuationPrevStep);
   const updatePropertyDetails = useStore(
     (action) => action.updatePropertyDetails
   );
@@ -40,21 +45,6 @@ const PropertyValuation = () => {
       updatePropertyDetails({ userId: user.id });
     }
   }, [isLoaded, isSignedIn]);
-
-  function onChanged(text: string) {
-    let newText = "";
-    let numbers = "0123456789";
-
-    for (var i = 0; i < text.length; i++) {
-      if (numbers.indexOf(text[i]) > -1) {
-        newText = newText + text[i];
-      } else {
-        alert("Please enter numbers only.");
-      }
-    }
-
-    updatePropertyDetails({ propertySize: Number(newText) });
-  }
 
   return (
     <View style={defaultStyles.container}>
@@ -75,7 +65,12 @@ const PropertyValuation = () => {
           ]}
         >
           <TouchableOpacity
-            style={{ position: "absolute", left: 16, bottom: 16, zIndex: 1 }}
+            style={{
+              position: "absolute",
+              left: 16,
+              bottom: 14,
+              zIndex: 1,
+            }}
             onPress={() => router.back()}
             activeOpacity={0.75}
           >
@@ -92,7 +87,10 @@ const PropertyValuation = () => {
             ]}
           >
             <Text fontWeight="semibold" fontSize={18}>
-              {store.steps[store.currentStepIndex].title}
+              {
+                propertyValuation.steps[propertyValuation.currentStepIndex]
+                  .title
+              }
             </Text>
           </View>
         </View>
@@ -106,7 +104,10 @@ const PropertyValuation = () => {
             height={12}
             borderRadius={0}
             borderWidth={0}
-            progress={store.steps[store.currentStepIndex].progress}
+            progress={
+              propertyValuation.steps[propertyValuation.currentStepIndex]
+                .progress
+            }
             color={
               colorScheme === "light"
                 ? Colors.common.emerald["200"]
@@ -114,19 +115,20 @@ const PropertyValuation = () => {
             }
             width={Dimensions.get("screen").width}
           />
-          {store.currentStepIndex === 0 ? (
+          {propertyValuation.currentStepIndex === 0 ? (
             <AnimatedView
               style={[
                 defaultStyles.removedBackground,
                 { padding: 16, gap: 12 },
               ]}
               entering={SlideInRight}
+              exiting={SlideOutLeft}
             >
               <Text fontWeight="semibold" fontSize={16}>
                 Property type
               </Text>
               <PropertyTypes
-                forPropertyValuation={true}
+                value={propertyValuation.propertyDetails.propertyType}
                 onChange={(propertyType) =>
                   updatePropertyDetails({ propertyType })
                 }
@@ -134,113 +136,113 @@ const PropertyValuation = () => {
               <Text fontWeight="semibold" fontSize={16}>
                 Property size
               </Text>
-              <TextInput
-                style={styles.textInput}
-                keyboardType="numeric"
-                maxLength={5}
-                value={
-                  store.propertyDetails.propertySize
-                    ? String(store.propertyDetails.propertySize)
-                    : ""
+              <Input
+                type="number"
+                value={propertyValuation.propertyDetails.propertySize}
+                onChange={(data) =>
+                  updatePropertyDetails({ propertySize: Number(data) })
                 }
-                onChangeText={onChanged}
               />
               <Text fontWeight="semibold" fontSize={16}>
                 Address
               </Text>
-              <TextInput
-                style={styles.textInput}
-                onChangeText={(text) =>
-                  updatePropertyDetails({ address: text })
+              <Input
+                value={propertyValuation.propertyDetails.address}
+                onChange={(data) =>
+                  updatePropertyDetails({ address: String(data) })
                 }
               />
               <Text fontWeight="semibold" fontSize={16}>
                 City
               </Text>
               <PropertyCities
-                forPropertyValuation={true}
+                objKey="title"
+                value={propertyValuation.propertyDetails.city}
                 onChange={(city) => updatePropertyDetails({ city })}
               />
+              <Text>
+                {JSON.stringify(propertyValuation.propertyDetails, null, 2)}
+              </Text>
             </AnimatedView>
           ) : null}
-          {store.currentStepIndex === 1 ? (
+          {propertyValuation.currentStepIndex === 1 ? (
             <AnimatedView
               style={[
                 defaultStyles.removedBackground,
                 { padding: 16, gap: 12 },
               ]}
               entering={SlideInRight}
+              exiting={SlideOutLeft}
             >
               <Text>Processing</Text>
             </AnimatedView>
           ) : null}
-          {store.currentStepIndex === 2 ? (
+          {propertyValuation.currentStepIndex === 2 ? (
             <AnimatedView
               style={[
                 defaultStyles.removedBackground,
                 { padding: 16, gap: 12 },
               ]}
               entering={SlideInRight}
+              exiting={SlideOutLeft}
             >
               <Text>Valuation result</Text>
             </AnimatedView>
           ) : null}
-          <AnimatedView
-            style={[
-              defaultStyles.footer,
-              styles.footerExtra,
-              {
-                borderColor:
-                  colorScheme === "light"
-                    ? Colors.common.gray["300"]
-                    : Colors.common.gray["700"],
-              },
-            ]}
-            entering={SlideInDown.duration(1000).easing(
-              Easing.out(Easing.cubic)
-            )}
-          >
-            {store.currentStepIndex === 0 ? null : (
-              <TouchableOpacity
-                style={[
-                  styles.stepBtn,
-                  {
-                    width: "45%",
-                    backgroundColor:
-                      colorScheme === "light"
-                        ? Colors.common.emerald["200"]
-                        : Colors.common.darkEmerald300,
-                  },
-                ]}
-                onPress={prevStep}
-                activeOpacity={0.65}
-              >
-                <Text fontWeight="semibold" fontSize={16}>
-                  Previous Step
-                </Text>
-              </TouchableOpacity>
-            )}
-            <TouchableOpacity
-              style={[
-                styles.stepBtn,
-                {
-                  width: store.currentStepIndex === 0 ? "90%" : "45%",
-                  backgroundColor:
-                    colorScheme === "light"
-                      ? Colors.common.emerald["200"]
-                      : Colors.common.darkEmerald300,
-                },
-              ]}
-              onPress={nextStep}
-              activeOpacity={0.65}
-            >
-              <Text fontWeight="semibold" fontSize={16}>
-                Next Step
-              </Text>
-            </TouchableOpacity>
-          </AnimatedView>
         </View>
       </View>
+      <AnimatedView
+        style={[
+          defaultStyles.footer,
+          styles.footerExtra,
+          {
+            borderColor:
+              colorScheme === "light"
+                ? Colors.common.gray["300"]
+                : Colors.common.gray["700"],
+          },
+        ]}
+        entering={SlideInDown.duration(1000).easing(Easing.out(Easing.cubic))}
+      >
+        {propertyValuation.currentStepIndex === 0 ? null : (
+          <TouchableOpacity
+            style={[
+              styles.stepBtn,
+              {
+                width: "45%",
+                backgroundColor:
+                  colorScheme === "light"
+                    ? Colors.common.emerald["200"]
+                    : Colors.common.darkEmerald300,
+              },
+            ]}
+            onPress={prevStep}
+            activeOpacity={0.65}
+          >
+            <Text fontWeight="semibold" fontSize={16}>
+              Previous Step
+            </Text>
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity
+          style={[
+            styles.stepBtn,
+            {
+              width: propertyValuation.currentStepIndex === 0 ? "90%" : "45%",
+              backgroundColor:
+                colorScheme === "light"
+                  ? Colors.common.emerald["200"]
+                  : Colors.common.darkEmerald300,
+            },
+          ]}
+          onPress={nextStep}
+          activeOpacity={0.65}
+        >
+          <Text fontWeight="semibold" fontSize={16}>
+            Next Step
+          </Text>
+        </TouchableOpacity>
+      </AnimatedView>
     </View>
   );
 };
@@ -256,13 +258,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexDirection: "row",
     gap: 8,
-  },
-  textInput: {
-    backgroundColor: Colors.common.white,
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    fontFamily: "MontserratSemiBold",
   },
 });
 

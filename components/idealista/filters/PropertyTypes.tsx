@@ -1,14 +1,13 @@
 import { Ionicons, Text, View } from "@/components/Themed";
 import Colors from "@/constants/Colors";
-import { usePropertyListingFilter } from "@/store";
-import { useStore } from "@/store/slices";
 import React from "react";
 import { StyleSheet, useColorScheme } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 
 interface PropertyTypesProps {
-  forPropertyValuation?: boolean;
-  onChange?: (propertyType: string) => void;
+  objKey?: "title" | "value";
+  value?: string;
+  onChange: (propertyType: string) => void;
 }
 
 const dropDownValues = [
@@ -31,14 +30,11 @@ const dropDownValues = [
 ];
 
 const PropertyTypes: React.FC<PropertyTypesProps> = ({
-  forPropertyValuation = false,
+  objKey = "value",
+  value = "",
   onChange,
 }) => {
   const colorScheme = useColorScheme();
-  const propertyListingFilter = usePropertyListingFilter();
-  const valuationPropertyDetails = useStore(
-    (state) => state.propertyValuation.propertyDetails
-  );
 
   function defaultValue(propertyType: string, key: "title" | "value") {
     return dropDownValues.find((data) => data[key] === propertyType);
@@ -47,22 +43,9 @@ const PropertyTypes: React.FC<PropertyTypesProps> = ({
   return (
     <SelectDropdown
       data={dropDownValues}
-      defaultValue={
-        forPropertyValuation
-          ? defaultValue(valuationPropertyDetails.propertyType, "title")
-          : defaultValue(
-              propertyListingFilter.propertyListingFilters.property_type!,
-              "value"
-            )
-      }
+      defaultValue={value ? defaultValue(value, objKey) : ""}
       onSelect={(selectedItem, _index) => {
-        if (forPropertyValuation) {
-          onChange && onChange(selectedItem.title);
-        } else {
-          propertyListingFilter.updateFilters({
-            property_type: String(selectedItem.value),
-          });
-        }
+        onChange(selectedItem[objKey]);
       }}
       renderButton={(selectedItem, isOpened) => {
         return (

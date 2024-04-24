@@ -247,6 +247,14 @@ function RootLayoutNav() {
           }}
         />
         <Stack.Screen
+          name="(modals)/property-listing-create"
+          options={{
+            title: "",
+            headerShown: false,
+            headerTransparent: true,
+          }}
+        />
+        <Stack.Screen
           name="(modals)/property-valuation"
           options={{
             title: "",

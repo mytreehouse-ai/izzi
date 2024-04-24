@@ -69,6 +69,75 @@ const bathroomFilterSlice = createSlice({
   },
 });
 
+interface CreateaPropertyListing {
+  bedrooms: number;
+  bathrooms: number;
+  areaSize: number;
+  description: string;
+}
+
+const propertyListingCreateSlice = createSlice({
+  name: "propertyListingCreate",
+  value: {
+    listingType: [
+      { id: 1, text: "Sale", value: "for-sale", checked: false },
+      { id: 2, text: "Rent", value: "for-rent", checked: false },
+    ],
+    steps: [
+      { id: 1, title: "Property Information", progress: 0.2 },
+      { id: 2, title: "Contact Information", progress: 0.4 },
+      { id: 3, title: "Property Features", progress: 0.6 },
+      { id: 4, title: "Property Photos", progress: 0.8 },
+      { id: 5, title: "Listing Preview", progress: 1.0 },
+    ],
+    currentStepIndex: 0,
+    propertyDetails: {
+      bedrooms: 0,
+      bathrooms: 1,
+      areaSize: 20,
+      description: "",
+    },
+  },
+  actions: {
+    toggleListingTypeCheck: (id: number) => (state) => ({
+      ...state,
+      listingType: state.listingType
+        .map((listingType) =>
+          listingType.id === id
+            ? { ...listingType, checked: !listingType.checked }
+            : listingType
+        )
+        .map((listingType) =>
+          listingType.id !== id
+            ? { ...listingType, checked: false }
+            : listingType
+        ),
+    }),
+    propertyListingCreateNextStep: () => (state) => ({
+      ...state,
+      currentStepIndex:
+        state.currentStepIndex < state.steps.length - 1
+          ? state.currentStepIndex + 1
+          : state.currentStepIndex,
+    }),
+    propertyListingCreatePrevStep: () => (state) => ({
+      ...state,
+      currentStepIndex:
+        state.currentStepIndex > 0
+          ? state.currentStepIndex - 1
+          : state.currentStepIndex,
+    }),
+    newPropertyListingUpdatePropertyDetails:
+      (details: Partial<CreateaPropertyListing>) => (state) => ({
+        ...state,
+        propertyDetails: {
+          ...state.propertyDetails,
+          ...(details as typeof state.propertyDetails),
+        },
+      }),
+  },
+});
+
 interface ValuationPropertyDetails {
   propertyType: string;
   propertySize: number | null;
@@ -95,14 +164,14 @@ const propertyValuationSlice = createSlice({
     },
   },
   actions: {
-    nextStep: () => (state) => ({
+    propertyValuationNextStep: () => (state) => ({
       ...state,
       currentStepIndex:
         state.currentStepIndex < state.steps.length - 1
           ? state.currentStepIndex + 1
           : state.currentStepIndex,
     }),
-    prevStep: () => (state) => ({
+    propertyValuationPrevStep: () => (state) => ({
       ...state,
       currentStepIndex:
         state.currentStepIndex > 0
@@ -121,5 +190,10 @@ const propertyValuationSlice = createSlice({
 });
 
 export const useStore = create(
-  withSlices(bedroomFilterSlice, bathroomFilterSlice, propertyValuationSlice)
+  withSlices(
+    bedroomFilterSlice,
+    bathroomFilterSlice,
+    propertyListingCreateSlice,
+    propertyValuationSlice
+  )
 );

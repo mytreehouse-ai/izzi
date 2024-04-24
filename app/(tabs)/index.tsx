@@ -4,6 +4,7 @@ import PropertyTypes from "@/components/idealista/filters/PropertyTypes";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
 import { usePropertyListingFilter } from "@/store";
+import { useAuth } from "@clerk/clerk-expo";
 import { Link, Stack } from "expo-router";
 import { Fragment, useRef } from "react";
 import {
@@ -20,7 +21,8 @@ import Animated from "react-native-reanimated";
 const windowWidth = Dimensions.get("window").width;
 const platformIOS = Platform as PlatformIOSStatic;
 
-export default function TabOneScreen() {
+export default function Home() {
+  const { isSignedIn } = useAuth();
   const colorScheme = useColorScheme();
   const mainScrollViewRef = useRef<Animated.ScrollView>(null);
   const store = usePropertyListingFilter();
@@ -75,7 +77,12 @@ export default function TabOneScreen() {
                 darkColor={Colors.dark.primary}
               >
                 <ListingTypes />
-                <PropertyTypes />
+                <PropertyTypes
+                  value={store.propertyListingFilters.property_type!}
+                  onChange={(propertyType) => {
+                    store.updateFilters({ property_type: propertyType });
+                  }}
+                />
                 <Link
                   href="/(modals)/property-listing-advance-filter"
                   style={{
@@ -145,7 +152,7 @@ export default function TabOneScreen() {
         scrollEventThrottle={16}
       >
         <View style={{ gap: 16 }}>
-          <TouchableOpacity
+          <Link
             style={[
               defaultStyles.btn,
               {
@@ -156,18 +163,24 @@ export default function TabOneScreen() {
                     : Colors.common.darkEmerald300,
               },
             ]}
-            activeOpacity={0.7}
-            onPress={() => alert("Feature not working")}
+            href={
+              isSignedIn
+                ? "/(modals)/property-listing-create"
+                : "/(modals)/login"
+            }
+            asChild
           >
-            <Text
-              fontWeight="semibold"
-              fontSize={16}
-              lightColor={Colors.light.primary}
-              darkColor={Colors.dark.primary}
-            >
-              Post your listing
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity activeOpacity={0.7}>
+              <Text
+                fontWeight="semibold"
+                fontSize={16}
+                lightColor={Colors.light.primary}
+                darkColor={Colors.dark.primary}
+              >
+                Post your listing
+              </Text>
+            </TouchableOpacity>
+          </Link>
           <Text fontWeight="semibold" fontSize={16}>
             Your Searches
           </Text>
