@@ -74,11 +74,6 @@ function propertyListingReducer(
   }
 }
 
-const textStyle = {
-  textDecorationLine: "none",
-  fontFamily: "MontserratSemiBold",
-};
-
 const PropertyListingCreate = () => {
   const router = useRouter();
   const colorScheme = useColorScheme();
@@ -94,9 +89,16 @@ const PropertyListingCreate = () => {
     (action) => action.newPropertyListingUpdatePropertyDetails
   );
 
-  const fillColor = useMemo(
-    () =>
-      colorScheme === "light" ? Colors.light.primary : Colors.dark.primary,
+  const checkbox = useMemo(
+    () => ({
+      fillColor:
+        colorScheme === "light" ? Colors.light.primary : Colors.dark.primary,
+      textStyle: {
+        textDecorationLine: "none",
+        fontFamily: "MontserratSemiBold",
+        color: colorScheme === "light" ? Colors.light.text : Colors.dark.text,
+      },
+    }),
     [colorScheme]
   );
 
@@ -195,14 +197,6 @@ const PropertyListingCreate = () => {
               }}
             />
             <Text fontWeight="semibold" fontSize={16}>
-              Address
-            </Text>
-            <Input
-              value=""
-              placeholder="Address"
-              onChange={(data) => console.log(data)}
-            />
-            <Text fontWeight="semibold" fontSize={16}>
               City
             </Text>
             <PropertyCities
@@ -213,6 +207,14 @@ const PropertyListingCreate = () => {
               }}
             />
             <Text fontWeight="semibold" fontSize={16}>
+              Address
+            </Text>
+            <Input
+              value=""
+              placeholder="Address"
+              onChange={(data) => console.log(data)}
+            />
+            <Text fontWeight="semibold" fontSize={16}>
               Listing type
             </Text>
             {store.listingType.map((data) => (
@@ -220,8 +222,8 @@ const PropertyListingCreate = () => {
                 key={data.id}
                 size={20}
                 text={data.text}
-                fillColor={fillColor}
-                textStyle={textStyle as any}
+                fillColor={checkbox.fillColor}
+                textStyle={checkbox.textStyle as any}
                 isChecked={
                   store.listingType.find(
                     (listingType) => listingType.id === data.id
@@ -267,7 +269,7 @@ const PropertyListingCreate = () => {
                 defaultStyles.removedBackground,
                 { height: Dimensions.get("screen").height },
               ]}
-              contentContainerStyle={{ paddingBottom: 80 }}
+              contentContainerStyle={{ paddingBottom: 200 }}
               showsVerticalScrollIndicator={false}
               scrollEventThrottle={16}
             >
@@ -379,6 +381,20 @@ const PropertyListingCreate = () => {
                   }
                 />
                 <Text fontWeight="semibold" fontSize={16}>
+                  House features
+                </Text>
+                {store.propertyFeatures.house.map((data) => (
+                  <BouncyCheckbox
+                    key={data.id}
+                    size={20}
+                    text={data.text}
+                    fillColor={checkbox.fillColor}
+                    textStyle={checkbox.textStyle as any}
+                    isChecked={false}
+                    onPress={() => console.log(data.id)}
+                  />
+                ))}
+                <Text fontWeight="semibold" fontSize={16}>
                   Description
                 </Text>
                 <Input
@@ -390,7 +406,6 @@ const PropertyListingCreate = () => {
                     })
                   }
                 />
-                <Text>{JSON.stringify(store.propertyDetails, null, 2)}</Text>
               </View>
             </Animated.ScrollView>
           </AnimatedView>

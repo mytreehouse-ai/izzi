@@ -76,6 +76,57 @@ interface CreateaPropertyListing {
   description: string;
 }
 
+const commonResidentialPropertyFeatures = [
+  {
+    id: 1,
+    text: "Fitted Wardrobes",
+    value: "fitted-wardrobes",
+    checked: false,
+  },
+  {
+    id: 2,
+    text: "Air Conditioning",
+    value: "air-conditioning",
+    checked: false,
+  },
+  {
+    id: 3,
+    text: "Parking Space",
+    value: "parking-space",
+    checked: false,
+  },
+  {
+    id: 4,
+    text: "Storage Space",
+    value: "storage-space",
+    checked: false,
+  },
+  {
+    id: 5,
+    text: "Terrace",
+    value: "terrace",
+    checked: false,
+  },
+  {
+    id: 6,
+    text: "Balcony",
+    value: "balcony",
+    checked: false,
+  },
+  {
+    id: 7,
+    text: "Garden",
+    value: "garden",
+    checked: false,
+  },
+  {
+    id: 8,
+    text: "Pool",
+    value: "pool",
+    checked: false,
+  },
+];
+
 const propertyListingCreateSlice = createSlice({
   name: "propertyListingCreate",
   value: {
@@ -83,6 +134,12 @@ const propertyListingCreateSlice = createSlice({
       { id: 1, text: "Sale", value: "for-sale", checked: false },
       { id: 2, text: "Rent", value: "for-rent", checked: false },
     ],
+    propertyFeatures: {
+      condominium: [...commonResidentialPropertyFeatures],
+      warehouse: [],
+      house: [...commonResidentialPropertyFeatures],
+      land: [],
+    },
     steps: [
       { id: 1, title: "Property Information", progress: 0.2 },
       { id: 2, title: "Contact Information", progress: 0.4 },
