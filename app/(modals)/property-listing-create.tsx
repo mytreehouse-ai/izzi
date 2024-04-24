@@ -7,7 +7,6 @@ import {
   Text,
   View,
 } from "@/components/Themed";
-import PropertyCities from "@/components/idealista/filters/PropertyCity";
 import PropertyTypes from "@/components/idealista/filters/PropertyTypes";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
@@ -21,6 +20,7 @@ import {
   useColorScheme,
 } from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import * as Progress from "react-native-progress";
 import RadioGroup, { RadioButtonProps } from "react-native-radio-buttons-group";
 import Animated, {
@@ -218,24 +218,6 @@ const PropertyListingCreate = () => {
               }}
             />
             <Text fontWeight="semibold" fontSize={16}>
-              City
-            </Text>
-            <PropertyCities
-              value={store.propertyDetails.city}
-              placeholder="Select city"
-              onChange={(city) => {
-                newPropertyListingUpdatePropertyDetails({ city });
-              }}
-            />
-            <Text fontWeight="semibold" fontSize={16}>
-              Address
-            </Text>
-            <Input
-              value=""
-              placeholder="Address"
-              onChange={(data) => console.log(data)}
-            />
-            <Text fontWeight="semibold" fontSize={16}>
               Listing type
             </Text>
             <RadioGroup
@@ -256,6 +238,48 @@ const PropertyListingCreate = () => {
               }
               selectedId={state.selectedListingtypeId}
             />
+            <View
+              style={{
+                backgroundColor: "transparent",
+                zIndex: 1,
+                height: 200,
+              }}
+            >
+              <GooglePlacesAutocomplete
+                styles={{
+                  textInput: {
+                    fontSize: 16,
+                    fontFamily: "MontserratSemiBold",
+                    color:
+                      colorScheme === "light"
+                        ? Colors.light.text
+                        : Colors.dark.text,
+                  },
+                  textInputContainer: {
+                    fontSize: 16,
+                    fontFamily: "MontserratSemiBold",
+                    color:
+                      colorScheme === "light"
+                        ? Colors.light.text
+                        : Colors.dark.text,
+                  },
+                  predefinedPlacesDescription: {
+                    fontFamily: "Montserrat",
+                  },
+                }}
+                placeholder="Search"
+                fetchDetails={true}
+                onFail={(error) => console.error(error)}
+                onPress={(data, details = null) => {
+                  console.log(JSON.stringify(data, null, 2));
+                  console.log(JSON.stringify(details, null, 2));
+                }}
+                query={{
+                  key: "AIzaSyCbbffTl2VZUFLLTjOP8NAOrstilmnl-9M",
+                  language: "en",
+                }}
+              />
+            </View>
             <Text>{JSON.stringify(store.propertyDetails, null, 2)}</Text>
           </AnimatedView>
         ) : null}
