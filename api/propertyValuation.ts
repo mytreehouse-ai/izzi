@@ -1,12 +1,31 @@
 import { ApiBaseResponse } from "@/interfaces/apiBaseResponse";
-import { PropertyListing } from "@/interfaces/propertyListing";
 import { GetToken } from "@clerk/types";
 import Constants from "expo-constants";
+
+interface ValuationResult {
+  average_price: string;
+  price_per_sqm: string;
+  similar_properties: {
+    id: number;
+    listing_title: string;
+    listing_url: string;
+    price_formatted: string;
+  }[];
+}
 
 export async function fetchPropertyValuation(
   getToken: GetToken,
   queryParams?: string
-): Promise<ApiBaseResponse<PropertyListing[]>> {
+): Promise<
+  ApiBaseResponse<{
+    data: {
+      valuation: {
+        sale: ValuationResult;
+        rent: ValuationResult;
+      };
+    };
+  }>
+> {
   try {
     const token = await getToken();
 

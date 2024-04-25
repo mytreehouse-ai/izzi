@@ -10,7 +10,7 @@
     "userInterfaceStyle": "automatic",
     "extra": {
       "clerkPublishableKey": "pk_test_Z2xhZC1ibG93ZmlzaC0yMS5jbGVyay5hY2NvdW50cy5kZXYk",
-      "googlePlacesApiKey": "AIzaSyCbbffTl2VZUFLLTjOP8NAOrstilmnl-9M",
+      "googlePlacesApiKey": "AIzaSyAGlqWrF4F0WYrGTq8UzpzEmSELQNsi9KY",
       "apiUrl": "https://izzi-azure-func.azurewebsites.net",
       "router": {
         "origin": false

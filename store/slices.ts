@@ -186,13 +186,13 @@ const propertyListingCreateSlice = createSlice({
 });
 
 interface ValuationPropertyDetails {
-  propertyType: string;
-  propertySize: number | null;
-  userId: string;
+  property_type: string;
+  sqm: number | null;
+  user_id: string;
   address: string;
   city: string;
-  google_places_data: string;
-  google_places_details: string;
+  google_places_data_id: string;
+  google_places_details_id: string;
 }
 
 const propertyValuationSlice = createSlice({
@@ -205,13 +205,13 @@ const propertyValuationSlice = createSlice({
     ],
     currentStepIndex: 0,
     propertyDetails: {
-      propertyType: "House",
-      propertySize: 0,
-      userId: "",
+      property_type: "House",
+      sqm: 0,
+      user_id: "",
       address: "",
       city: "",
-      google_places_data: "",
-      google_places_details: "",
+      google_places_data_id: "",
+      google_places_details_id: "",
     },
   },
   actions: {
@@ -237,6 +237,19 @@ const propertyValuationSlice = createSlice({
           ...(details as typeof state.propertyDetails),
         },
       }),
+    resetPropertyValuation: () => (state) => ({
+      ...state,
+      currentStepIndex: 0,
+      propertyDetails: {
+        property_type: "House",
+        sqm: 0,
+        user_id: "",
+        address: "",
+        city: "",
+        google_places_data_id: "",
+        google_places_details_id: "",
+      },
+    }),
   },
 });
 

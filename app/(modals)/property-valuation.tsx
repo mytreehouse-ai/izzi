@@ -10,10 +10,11 @@ import {
 import PropertyTypes from "@/components/idealista/filters/PropertyTypes";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
+import { usePropertyValuationQuery } from "@/hooks/usePropertyValuationQuery";
 import { useStore } from "@/store/slices";
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dimensions,
   StyleSheet,
@@ -31,20 +32,53 @@ import {
 const PropertyValuation = () => {
   const router = useRouter();
   const { user } = useUser();
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isLoaded, isSignedIn, getToken } = useAuth();
   const colorScheme = useColorScheme();
+  const [showButton, setShowButton] = useState(false);
   const propertyValuation = useStore((state) => state.propertyValuation);
   const nextStep = useStore((action) => action.propertyValuationNextStep);
   const prevStep = useStore((action) => action.propertyValuationPrevStep);
+  const resetPropertyValuation = useStore(
+    (action) => action.resetPropertyValuation
+  );
   const updatePropertyDetails = useStore(
     (action) => action.updatePropertyDetails
   );
 
   useEffect(() => {
     if (isLoaded && isSignedIn && user) {
-      updatePropertyDetails({ userId: user.id });
+      updatePropertyDetails({ user_id: user.id });
     }
   }, [isLoaded, isSignedIn]);
+
+  function isObjectValuesNotNullish<T extends object>(obj: T): boolean {
+    return Object.values(obj).every(
+      (value) => value !== null && value !== undefined && value !== ""
+    );
+  }
+
+  const { isLoading, isSuccess, data } = usePropertyValuationQuery({
+    getToken,
+    filter: propertyValuation.propertyDetails,
+    enabled: propertyValuation.currentStepIndex === 1,
+  });
+
+  useEffect(() => {
+    const testPassed = isObjectValuesNotNullish(
+      propertyValuation.propertyDetails
+    );
+
+    console.log(propertyValuation.propertyDetails);
+    console.log(testPassed);
+
+    setShowButton(testPassed);
+  }, [propertyValuation.propertyDetails]);
+
+  useEffect(() => {
+    if (!isLoading && isSuccess) {
+      nextStep();
+    }
+  }, [isLoading, isSuccess]);
 
   return (
     <View style={defaultStyles.container}>
@@ -71,7 +105,10 @@ const PropertyValuation = () => {
               bottom: 14,
               zIndex: 1,
             }}
-            onPress={() => router.back()}
+            onPress={() => {
+              router.back();
+              resetPropertyValuation();
+            }}
             activeOpacity={0.75}
           >
             <Ionicons name="arrow-back" size={24} />
@@ -128,9 +165,10 @@ const PropertyValuation = () => {
                 Property type
               </Text>
               <PropertyTypes
-                value={propertyValuation.propertyDetails.propertyType}
+                objKey="title"
+                value={propertyValuation.propertyDetails.property_type}
                 onChange={(propertyType) =>
-                  updatePropertyDetails({ propertyType })
+                  updatePropertyDetails({ property_type: propertyType })
                 }
               />
               <Text fontWeight="semibold" fontSize={16}>
@@ -138,9 +176,9 @@ const PropertyValuation = () => {
               </Text>
               <Input
                 type="number"
-                value={propertyValuation.propertyDetails.propertySize}
+                value={propertyValuation.propertyDetails.sqm}
                 onChange={(data) =>
-                  updatePropertyDetails({ propertySize: Number(data) })
+                  updatePropertyDetails({ sqm: Number(data) })
                 }
               />
               <Text fontWeight="semibold" fontSize={16}>
@@ -148,10 +186,12 @@ const PropertyValuation = () => {
               </Text>
               <GooglePlacesSearch
                 onPress={(data, details) => {
-                  console.log(data.description);
-                  console.log(details?.formatted_address);
-                  console.log(details?.vicinity);
-                  console.log(details?.geometry);
+                  updatePropertyDetails({
+                    city: details ? details.vicinity : "",
+                    address: details ? details.formatted_address : "",
+                    google_places_data_id: data.place_id,
+                    google_places_details_id: details?.place_id ?? "",
+                  });
                 }}
               />
             </AnimatedView>
@@ -178,62 +218,70 @@ const PropertyValuation = () => {
               exiting={SlideOutLeft}
             >
               <Text>Valuation result</Text>
+              <Text>{JSON.stringify(data, null, 2)}</Text>
             </AnimatedView>
           ) : null}
         </View>
       </View>
-      <AnimatedView
-        style={[
-          defaultStyles.footer,
-          styles.footerExtra,
-          {
-            borderColor:
-              colorScheme === "light"
-                ? Colors.common.gray["300"]
-                : Colors.common.gray["700"],
-          },
-        ]}
-        entering={SlideInDown.duration(1000).easing(Easing.out(Easing.cubic))}
-      >
-        {propertyValuation.currentStepIndex === 0 ? null : (
-          <TouchableOpacity
-            style={[
-              styles.stepBtn,
-              {
-                width: "45%",
-                backgroundColor:
-                  colorScheme === "light"
-                    ? Colors.common.emerald["200"]
-                    : Colors.common.darkEmerald300,
-              },
-            ]}
-            onPress={prevStep}
-            activeOpacity={0.65}
-          >
-            <Text fontWeight="semibold" fontSize={16}>
-              Previous Step
-            </Text>
-          </TouchableOpacity>
-        )}
-        <TouchableOpacity
+      {showButton && [0, 2].includes(propertyValuation.currentStepIndex) ? (
+        <AnimatedView
           style={[
-            styles.stepBtn,
+            defaultStyles.footer,
+            styles.footerExtra,
             {
-              width: propertyValuation.currentStepIndex === 0 ? "90%" : "45%",
-              backgroundColor:
+              borderColor:
                 colorScheme === "light"
-                  ? Colors.common.emerald["200"]
-                  : Colors.common.darkEmerald300,
+                  ? Colors.common.gray["300"]
+                  : Colors.common.gray["700"],
             },
           ]}
-          onPress={nextStep}
-          activeOpacity={0.65}
+          entering={SlideInDown.duration(1000).easing(Easing.out(Easing.cubic))}
         >
-          <Text fontWeight="semibold" fontSize={16}>
-            Next Step
-          </Text>
-        </TouchableOpacity>
-      </AnimatedView>
+          {propertyValuation.currentStepIndex === 0 ? (
+            <TouchableOpacity
+              style={[
+                styles.stepBtn,
+                {
+                  width: "95%",
+                  backgroundColor:
+                    colorScheme === "light"
+                      ? Colors.common.emerald["200"]
+                      : Colors.common.darkEmerald300,
+                },
+              ]}
+              onPress={nextStep}
+              activeOpacity={0.65}
+            >
+              <Text fontWeight="semibold" fontSize={16}>
+                Valuate my property
+              </Text>
+            </TouchableOpacity>
+          ) : null}
+          {propertyValuation.currentStepIndex === 2 ? (
+            <TouchableOpacity
+              style={[
+                styles.stepBtn,
+                {
+                  width: "95%",
+                  backgroundColor:
+                    colorScheme === "light"
+                      ? Colors.common.emerald["200"]
+                      : Colors.common.darkEmerald300,
+                },
+              ]}
+              onPress={() => {
+                resetPropertyValuation();
+                setShowButton(false); // Explicitly set to false to ensure button state is reset correctly
+              }}
+              activeOpacity={0.65}
+            >
+              <Text fontWeight="semibold" fontSize={16}>
+                Valuate again
+              </Text>
+            </TouchableOpacity>
+          ) : null}
+        </AnimatedView>
+      ) : null}
     </View>
   );
 };
