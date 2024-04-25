@@ -191,6 +191,8 @@ interface ValuationPropertyDetails {
   userId: string;
   address: string;
   city: string;
+  google_places_data: string;
+  google_places_details: string;
 }
 
 const propertyValuationSlice = createSlice({
@@ -208,6 +210,8 @@ const propertyValuationSlice = createSlice({
       userId: "",
       address: "",
       city: "",
+      google_places_data: "",
+      google_places_details: "",
     },
   },
   actions: {

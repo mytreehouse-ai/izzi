@@ -3,11 +3,27 @@ import { defaultStyles } from "@/constants/Styles";
 import Constants from "expo-constants";
 import React, { useMemo } from "react";
 import { StyleSheet, useColorScheme } from "react-native";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import {
+  GooglePlaceData,
+  GooglePlaceDetail,
+  GooglePlacesAutocomplete,
+} from "react-native-google-places-autocomplete";
 import { View } from "./Themed";
 
-const GooglePlacesSearch = () => {
+interface GooglePlacesSearchProps {
+  onPress?: (data: GooglePlaceData, details: GooglePlaceDetail | null) => void;
+}
+
+const GooglePlacesSearch: React.FC<GooglePlacesSearchProps> = ({ onPress }) => {
   const colorScheme = useColorScheme();
+
+  const backgroundColor = useMemo(
+    () =>
+      colorScheme === "light"
+        ? Colors.light.background
+        : Colors.common.gray["800"],
+    [colorScheme]
+  );
 
   const textStyle = useMemo(
     () => ({
@@ -19,26 +35,42 @@ const GooglePlacesSearch = () => {
   );
 
   return (
-    <View
-      style={[defaultStyles.removedBackground, { height: "100%", zIndex: 1 }]}
-    >
+    <View style={[defaultStyles.removedBackground, { height: "100%" }]}>
       <GooglePlacesAutocomplete
         styles={{
-          textInput: textStyle,
+          textInput: {
+            ...textStyle,
+            backgroundColor: backgroundColor,
+          },
           textInputContainer: {
             ...textStyle,
+            borderRadius: 8,
           },
-          predefinedPlacesDescription: {
+          description: {
             fontFamily: "Montserrat",
+            color: textStyle.color,
+            fontSize: 14,
+          },
+          row: {
+            backgroundColor: backgroundColor,
           },
         }}
+        debounce={100}
         placeholder="Search address"
+        textInputProps={{
+          placeholderTextColor:
+            colorScheme === "light"
+              ? Colors.common.gray["300"]
+              : Colors.common.gray["600"],
+          cursorColor:
+            colorScheme === "light"
+              ? Colors.light.primary
+              : Colors.dark.primary,
+        }}
         fetchDetails={true}
         onFail={(error) => console.error(error)}
-        onPress={(data, details = null) => {
-          console.log(JSON.stringify(data, null, 2));
-          console.log(JSON.stringify(details, null, 2));
-        }}
+        onPress={(data, details = null) => onPress && onPress(data, details)}
+        enablePoweredByContainer={false}
         query={{
           key: Constants.expoConfig?.extra?.googlePlacesApiKey ?? "",
           language: "en",

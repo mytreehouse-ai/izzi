@@ -419,6 +419,15 @@ const PropertyListingCreate = () => {
             entering={SlideInRight}
             exiting={SlideOutLeft}
           >
+            <Text>Property Photos</Text>
+          </AnimatedView>
+        ) : null}
+        {store.currentStepIndex === 3 ? (
+          <AnimatedView
+            style={[defaultStyles.removedBackground, styles.formContainer]}
+            entering={SlideInRight}
+            exiting={SlideOutLeft}
+          >
             <Text fontWeight="semibold" fontSize={16}>
               Contact name
             </Text>
@@ -435,15 +444,6 @@ const PropertyListingCreate = () => {
               placeholder="+63"
               onChange={(data) => console.log(data)}
             />
-          </AnimatedView>
-        ) : null}
-        {store.currentStepIndex === 3 ? (
-          <AnimatedView
-            style={[defaultStyles.removedBackground, styles.formContainer]}
-            entering={SlideInRight}
-            exiting={SlideOutLeft}
-          >
-            <Text>Property Photos</Text>
           </AnimatedView>
         ) : null}
         {store.currentStepIndex === 4 ? (

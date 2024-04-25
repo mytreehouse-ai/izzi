@@ -1,3 +1,4 @@
+import GooglePlacesSearch from "@/components/GooglePlacesSearch";
 import Input from "@/components/Input";
 import {
   AnimatedView,
@@ -6,7 +7,6 @@ import {
   Text,
   View,
 } from "@/components/Themed";
-import PropertyCities from "@/components/idealista/filters/PropertyCity";
 import PropertyTypes from "@/components/idealista/filters/PropertyTypes";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
@@ -144,25 +144,16 @@ const PropertyValuation = () => {
                 }
               />
               <Text fontWeight="semibold" fontSize={16}>
-                Address
+                Property address
               </Text>
-              <Input
-                value={propertyValuation.propertyDetails.address}
-                onChange={(data) =>
-                  updatePropertyDetails({ address: String(data) })
-                }
+              <GooglePlacesSearch
+                onPress={(data, details) => {
+                  console.log(data.description);
+                  console.log(details?.formatted_address);
+                  console.log(details?.vicinity);
+                  console.log(details?.geometry);
+                }}
               />
-              <Text fontWeight="semibold" fontSize={16}>
-                City
-              </Text>
-              <PropertyCities
-                objKey="title"
-                value={propertyValuation.propertyDetails.city}
-                onChange={(city) => updatePropertyDetails({ city })}
-              />
-              <Text>
-                {JSON.stringify(propertyValuation.propertyDetails, null, 2)}
-              </Text>
             </AnimatedView>
           ) : null}
           {propertyValuation.currentStepIndex === 1 ? (

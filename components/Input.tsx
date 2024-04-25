@@ -24,6 +24,7 @@ const Input: React.FC<InputProps> = ({
       style={[
         styles.textInput,
         {
+          color: colorScheme === "light" ? Colors.light.text : Colors.dark.text,
           height: multiline ? 150 : "auto",
           backgroundColor:
             colorScheme === "light"
@@ -34,7 +35,16 @@ const Input: React.FC<InputProps> = ({
       value={String(value)}
       multiline={multiline}
       numberOfLines={multiline ? 5 : 1}
+      cursorColor={
+        colorScheme === "light" ? Colors.light.primary : Colors.dark.primary
+      }
       placeholder={placeholder}
+      clearButtonMode="always"
+      placeholderTextColor={
+        colorScheme === "light"
+          ? Colors.common.gray["300"]
+          : Colors.common.gray["600"]
+      }
       onChangeText={onChange}
     />
   ) : (
@@ -42,6 +52,7 @@ const Input: React.FC<InputProps> = ({
       style={[
         styles.textInput,
         {
+          color: colorScheme === "light" ? Colors.light.text : Colors.dark.text,
           backgroundColor:
             colorScheme === "light"
               ? Colors.light.background
@@ -51,7 +62,16 @@ const Input: React.FC<InputProps> = ({
       maxLength={5}
       keyboardType="numeric"
       value={String(value)}
+      cursorColor={
+        colorScheme === "light" ? Colors.light.primary : Colors.dark.primary
+      }
       placeholder={placeholder}
+      placeholderTextColor={
+        colorScheme === "light"
+          ? Colors.common.gray["300"]
+          : Colors.common.gray["600"]
+      }
+      clearButtonMode="always"
       onChangeText={(text) => {
         let newText = "";
         let numbers = "0123456789";
