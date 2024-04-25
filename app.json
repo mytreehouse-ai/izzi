@@ -10,6 +10,7 @@
     "userInterfaceStyle": "automatic",
     "extra": {
       "clerkPublishableKey": "pk_test_Z2xhZC1ibG93ZmlzaC0yMS5jbGVyay5hY2NvdW50cy5kZXYk",
+      "googlePlacesApiKey": "AIzaSyCbbffTl2VZUFLLTjOP8NAOrstilmnl-9M",
       "apiUrl": "https://izzi-azure-func.azurewebsites.net",
       "router": {
         "origin": false
@@ -26,7 +27,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "bundleIdentifier": "realst-izzi.com",
-      "supportsTablet": false,
+      "supportsTablet": true,
       "config": {
         "googleMapsApiKey": "AIzaSyAGjLINOZ1IY6g_iYWnuH9AvTovVkJ48Rk"
       }

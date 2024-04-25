@@ -1,3 +1,4 @@
+import GooglePlacesSearch from "@/components/GooglePlacesSearch";
 import Input from "@/components/Input";
 import {
   AnimatedView,
@@ -20,7 +21,6 @@ import {
   useColorScheme,
 } from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import * as Progress from "react-native-progress";
 import RadioGroup, { RadioButtonProps } from "react-native-radio-buttons-group";
 import Animated, {
@@ -91,22 +91,6 @@ const PropertyListingCreate = () => {
     (action) => action.newPropertyListingUpdatePropertyDetails
   );
 
-  const radioButtons: RadioButtonProps[] = useMemo(
-    () => [
-      {
-        id: "1",
-        label: "Sale",
-        value: "for-sale",
-      },
-      {
-        id: "2",
-        label: "Rent",
-        value: "for-rent",
-      },
-    ],
-    []
-  );
-
   const checkbox = useMemo(
     () => ({
       fillColor:
@@ -117,6 +101,36 @@ const PropertyListingCreate = () => {
         color: colorScheme === "light" ? Colors.light.text : Colors.dark.text,
       },
     }),
+    [colorScheme]
+  );
+
+  const radioButtons: RadioButtonProps[] = useMemo(
+    () => [
+      {
+        id: "1",
+        label: "Sale",
+        value: "for-sale",
+        borderColor: checkbox.fillColor,
+        color: checkbox.fillColor,
+        labelStyle: {
+          color: checkbox.textStyle.color,
+          fontSize: 16,
+          fontFamily: "MontserratSemiBold",
+        },
+      },
+      {
+        id: "2",
+        label: "Rent",
+        value: "for-rent",
+        borderColor: checkbox.fillColor,
+        color: checkbox.fillColor,
+        labelStyle: {
+          color: checkbox.textStyle.color,
+          fontSize: 16,
+          fontFamily: "MontserratSemiBold",
+        },
+      },
+    ],
     [colorScheme]
   );
 
@@ -209,105 +223,12 @@ const PropertyListingCreate = () => {
             exiting={SlideOutLeft}
           >
             <Text fontWeight="semibold" fontSize={16}>
-              Select property type
+              Property address
             </Text>
-            <PropertyTypes
-              value={store.propertyDetails.propertyType}
-              onChange={(propertyType) => {
-                newPropertyListingUpdatePropertyDetails({ propertyType });
-              }}
-            />
-            <Text fontWeight="semibold" fontSize={16}>
-              Listing type
-            </Text>
-            <RadioGroup
-              radioButtons={radioButtons}
-              containerStyle={{
-                alignItems: "flex-start",
-              }}
-              labelStyle={{
-                fontSize: 16,
-                fontFamily: "MontserratSemiBold",
-                color:
-                  colorScheme === "light"
-                    ? Colors.light.text
-                    : Colors.dark.text,
-              }}
-              onPress={(selectedId) =>
-                dispatch({ type: "SET_LISTING_TYPE_ID", payload: selectedId })
-              }
-              selectedId={state.selectedListingtypeId}
-            />
-            <View
-              style={{
-                backgroundColor: "transparent",
-                zIndex: 1,
-                height: 200,
-              }}
-            >
-              <GooglePlacesAutocomplete
-                styles={{
-                  textInput: {
-                    fontSize: 16,
-                    fontFamily: "MontserratSemiBold",
-                    color:
-                      colorScheme === "light"
-                        ? Colors.light.text
-                        : Colors.dark.text,
-                  },
-                  textInputContainer: {
-                    fontSize: 16,
-                    fontFamily: "MontserratSemiBold",
-                    color:
-                      colorScheme === "light"
-                        ? Colors.light.text
-                        : Colors.dark.text,
-                  },
-                  predefinedPlacesDescription: {
-                    fontFamily: "Montserrat",
-                  },
-                }}
-                placeholder="Search"
-                fetchDetails={true}
-                onFail={(error) => console.error(error)}
-                onPress={(data, details = null) => {
-                  console.log(JSON.stringify(data, null, 2));
-                  console.log(JSON.stringify(details, null, 2));
-                }}
-                query={{
-                  key: "AIzaSyCbbffTl2VZUFLLTjOP8NAOrstilmnl-9M",
-                  language: "en",
-                }}
-              />
-            </View>
-            <Text>{JSON.stringify(store.propertyDetails, null, 2)}</Text>
+            <GooglePlacesSearch />
           </AnimatedView>
         ) : null}
         {store.currentStepIndex === 1 ? (
-          <AnimatedView
-            style={[defaultStyles.removedBackground, styles.formContainer]}
-            entering={SlideInRight}
-            exiting={SlideOutLeft}
-          >
-            <Text fontWeight="semibold" fontSize={16}>
-              Contact name
-            </Text>
-            <Input
-              value=""
-              placeholder="Contact name"
-              onChange={(data) => console.log(data)}
-            />
-            <Text fontWeight="semibold" fontSize={16}>
-              Contact Number
-            </Text>
-            <Input
-              value=""
-              placeholder="+63"
-              onChange={(data) => console.log(data)}
-            />
-          </AnimatedView>
-        ) : null}
-        {store.currentStepIndex === 2 ? (
           <AnimatedView
             style={defaultStyles.removedBackground}
             entering={SlideInRight}
@@ -325,6 +246,39 @@ const PropertyListingCreate = () => {
               <View
                 style={[defaultStyles.removedBackground, styles.formContainer]}
               >
+                <Text fontWeight="semibold" fontSize={16}>
+                  Select property type
+                </Text>
+                <PropertyTypes
+                  value={store.propertyDetails.propertyType}
+                  onChange={(propertyType) => {
+                    newPropertyListingUpdatePropertyDetails({ propertyType });
+                  }}
+                />
+                <Text fontWeight="semibold" fontSize={16}>
+                  Listing type
+                </Text>
+                <RadioGroup
+                  radioButtons={radioButtons}
+                  containerStyle={{
+                    alignItems: "flex-start",
+                  }}
+                  labelStyle={{
+                    fontSize: 16,
+                    fontFamily: "MontserratSemiBold",
+                    color:
+                      colorScheme === "light"
+                        ? Colors.light.text
+                        : Colors.dark.text,
+                  }}
+                  onPress={(selectedId) =>
+                    dispatch({
+                      type: "SET_LISTING_TYPE_ID",
+                      payload: selectedId,
+                    })
+                  }
+                  selectedId={state.selectedListingtypeId}
+                />
                 <Text fontWeight="semibold" fontSize={16}>
                   Bedrooms
                 </Text>
@@ -457,6 +411,30 @@ const PropertyListingCreate = () => {
                 />
               </View>
             </Animated.ScrollView>
+          </AnimatedView>
+        ) : null}
+        {store.currentStepIndex === 2 ? (
+          <AnimatedView
+            style={[defaultStyles.removedBackground, styles.formContainer]}
+            entering={SlideInRight}
+            exiting={SlideOutLeft}
+          >
+            <Text fontWeight="semibold" fontSize={16}>
+              Contact name
+            </Text>
+            <Input
+              value=""
+              placeholder="Contact name"
+              onChange={(data) => console.log(data)}
+            />
+            <Text fontWeight="semibold" fontSize={16}>
+              Contact Number
+            </Text>
+            <Input
+              value=""
+              placeholder="+63"
+              onChange={(data) => console.log(data)}
+            />
           </AnimatedView>
         ) : null}
         {store.currentStepIndex === 3 ? (
