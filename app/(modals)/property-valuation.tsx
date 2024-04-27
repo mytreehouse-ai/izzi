@@ -1,3 +1,4 @@
+import { ExternalLink } from "@/components/ExternalLink";
 import GooglePlacesSearch from "@/components/GooglePlacesSearch";
 import Input from "@/components/Input";
 import {
@@ -22,17 +23,18 @@ import {
   useColorScheme,
 } from "react-native";
 import * as Progress from "react-native-progress";
-import {
+import Animated, {
   Easing,
   SlideInDown,
   SlideInRight,
+  SlideOutDown,
   SlideOutLeft,
 } from "react-native-reanimated";
 
 const PropertyValuation = () => {
   const router = useRouter();
   const { user } = useUser();
-  const { isLoaded, isSignedIn, getToken } = useAuth();
+  const { getToken } = useAuth();
   const colorScheme = useColorScheme();
   const [showButton, setShowButton] = useState(false);
   const propertyValuation = useStore((state) => state.propertyValuation);
@@ -45,19 +47,14 @@ const PropertyValuation = () => {
     (action) => action.updatePropertyDetails
   );
 
-  useEffect(() => {
-    if (isLoaded && isSignedIn && user) {
-      updatePropertyDetails({ user_id: user.id });
-    }
-  }, [isLoaded, isSignedIn]);
-
   function isObjectValuesNotNullish<T extends object>(obj: T): boolean {
     return Object.values(obj).every(
-      (value) => value !== null && value !== undefined && value !== ""
+      (value) =>
+        value !== null && value !== undefined && value !== "" && value !== 0
     );
   }
 
-  const { isLoading, isSuccess, data } = usePropertyValuationQuery({
+  const { isLoading, data: valuation } = usePropertyValuationQuery({
     getToken,
     filter: propertyValuation.propertyDetails,
     enabled: propertyValuation.currentStepIndex === 1,
@@ -75,10 +72,10 @@ const PropertyValuation = () => {
   }, [propertyValuation.propertyDetails]);
 
   useEffect(() => {
-    if (!isLoading && isSuccess) {
+    if (!isLoading && valuation) {
       nextStep();
     }
-  }, [isLoading, isSuccess]);
+  }, [isLoading, valuation, propertyValuation.currentStepIndex]);
 
   return (
     <View style={defaultStyles.container}>
@@ -187,11 +184,26 @@ const PropertyValuation = () => {
               <GooglePlacesSearch
                 onPress={(data, details) => {
                   updatePropertyDetails({
+                    user_id: user?.id,
                     city: details ? details.vicinity : "",
                     address: details ? details.formatted_address : "",
                     google_places_data_id: data.place_id,
                     google_places_details_id: details?.place_id ?? "",
                   });
+                }}
+                // TODO: Hack to listen on text input clear event.
+                onChangeText={(text) => {
+                  if (
+                    !text &&
+                    isObjectValuesNotNullish(propertyValuation.propertyDetails)
+                  ) {
+                    updatePropertyDetails({
+                      city: "",
+                      address: "",
+                      google_places_data_id: "",
+                      google_places_details_id: "",
+                    });
+                  }
                 }}
               />
             </AnimatedView>
@@ -200,12 +212,19 @@ const PropertyValuation = () => {
             <AnimatedView
               style={[
                 defaultStyles.removedBackground,
-                { padding: 16, gap: 12 },
+                {
+                  flex: 1,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 16,
+                  gap: 12,
+                },
               ]}
               entering={SlideInRight}
               exiting={SlideOutLeft}
             >
               <Text>Processing</Text>
+              <Text>(Replace with a loader)</Text>
             </AnimatedView>
           ) : null}
           {propertyValuation.currentStepIndex === 2 ? (
@@ -217,18 +236,83 @@ const PropertyValuation = () => {
               entering={SlideInRight}
               exiting={SlideOutLeft}
             >
-              <Text>Valuation result</Text>
-              <Text>{JSON.stringify(data, null, 2)}</Text>
+              <Text fontWeight="semibold" fontSize={18}>
+                Valuation result
+              </Text>
+              <View style={{ padding: 14, borderRadius: 8, gap: 4 }}>
+                <View style={{ flexDirection: "row", gap: 2 }}>
+                  <Text fontSize={16}>Average sale price:</Text>
+                  <Text fontWeight="semibold" fontSize={16}>
+                    {valuation?.data.valuation.sale.average_price}
+                  </Text>
+                </View>
+                <View style={{ flexDirection: "row", gap: 2 }}>
+                  <Text fontSize={16}>Average sale price per sqm:</Text>
+                  <Text fontWeight="semibold" fontSize={16}>
+                    {valuation?.data.valuation.sale.price_per_sqm}
+                  </Text>
+                </View>
+              </View>
+              <View style={{ padding: 14, borderRadius: 8, gap: 4 }}>
+                <View style={{ flexDirection: "row", gap: 2 }}>
+                  <Text fontSize={16}>Average rent price:</Text>
+                  <Text fontWeight="semibold" fontSize={16}>
+                    {valuation?.data.valuation.rent.average_price}
+                  </Text>
+                </View>
+                <View style={{ flexDirection: "row", gap: 2 }}>
+                  <Text fontSize={16}>Average rent price per sqm:</Text>
+                  <Text fontWeight="semibold" fontSize={16}>
+                    {valuation?.data.valuation.rent.price_per_sqm}
+                  </Text>
+                </View>
+              </View>
+              <Text fontWeight="semibold" fontSize={18}>
+                Similar properties
+              </Text>
+              <Animated.ScrollView
+                style={[
+                  defaultStyles.removedBackground,
+                  { height: Dimensions.get("screen").height },
+                ]}
+                contentContainerStyle={{ paddingBottom: 450 }}
+                showsVerticalScrollIndicator={false}
+                scrollEventThrottle={16}
+              >
+                <View style={[defaultStyles.removedBackground, { gap: 16 }]}>
+                  {valuation?.data.valuation.sale.similar_properties
+                    .concat(valuation?.data.valuation.rent.similar_properties)
+                    .map((property) => (
+                      <View
+                        style={{ padding: 14, borderRadius: 8, gap: 8 }}
+                        key={property.id}
+                      >
+                        <Text>{property.listing_title}</Text>
+                        <View style={{ flexDirection: "row", gap: 4 }}>
+                          <Text>Property price:</Text>
+                          <Text fontWeight="semibold">
+                            {property.price_formatted}
+                          </Text>
+                        </View>
+                        <ExternalLink href={property.listing_url}>
+                          View property
+                        </ExternalLink>
+                      </View>
+                    ))}
+                </View>
+              </Animated.ScrollView>
             </AnimatedView>
           ) : null}
         </View>
       </View>
-      {showButton && [0, 2].includes(propertyValuation.currentStepIndex) ? (
+      {showButton && [0, 2].includes(propertyValuation.currentStepIndex) && (
         <AnimatedView
+          key="1"
           style={[
             defaultStyles.footer,
             styles.footerExtra,
             {
+              zIndex: 1,
               borderColor:
                 colorScheme === "light"
                   ? Colors.common.gray["300"]
@@ -236,13 +320,14 @@ const PropertyValuation = () => {
             },
           ]}
           entering={SlideInDown.duration(1000).easing(Easing.out(Easing.cubic))}
+          exiting={SlideOutDown.duration(1000).easing(Easing.out(Easing.cubic))}
         >
-          {propertyValuation.currentStepIndex === 0 ? (
+          {propertyValuation.currentStepIndex === 0 && (
             <TouchableOpacity
               style={[
                 styles.stepBtn,
                 {
-                  width: "95%",
+                  width: "90%",
                   backgroundColor:
                     colorScheme === "light"
                       ? Colors.common.emerald["200"]
@@ -256,13 +341,13 @@ const PropertyValuation = () => {
                 Valuate my property
               </Text>
             </TouchableOpacity>
-          ) : null}
-          {propertyValuation.currentStepIndex === 2 ? (
+          )}
+          {propertyValuation.currentStepIndex === 2 && (
             <TouchableOpacity
               style={[
                 styles.stepBtn,
                 {
-                  width: "95%",
+                  width: "90%",
                   backgroundColor:
                     colorScheme === "light"
                       ? Colors.common.emerald["200"]
@@ -271,7 +356,7 @@ const PropertyValuation = () => {
               ]}
               onPress={() => {
                 resetPropertyValuation();
-                setShowButton(false); // Explicitly set to false to ensure button state is reset correctly
+                setShowButton(false);
               }}
               activeOpacity={0.65}
             >
@@ -279,9 +364,9 @@ const PropertyValuation = () => {
                 Valuate again
               </Text>
             </TouchableOpacity>
-          ) : null}
+          )}
         </AnimatedView>
-      ) : null}
+      )}
     </View>
   );
 };

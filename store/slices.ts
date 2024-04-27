@@ -77,6 +77,7 @@ interface CreateaPropertyListing {
   bedrooms: number;
   bathrooms: number;
   areaSize: number;
+  images: string[];
   description: string;
 }
 
@@ -136,9 +137,23 @@ const propertyListingCreateSlice = createSlice({
   value: {
     propertyFeatures: {
       condominium: [...commonResidentialPropertyFeatures],
-      warehouse: [],
+      warehouse: [
+        {
+          id: 1,
+          text: "Banker",
+          value: "banker",
+          checked: false,
+        },
+      ],
       house: [...commonResidentialPropertyFeatures],
-      land: [],
+      land: [
+        {
+          id: 1,
+          text: "Central business district",
+          value: "central-business-district",
+          checked: false,
+        },
+      ],
     },
     steps: [
       { id: 1, title: "Address Information", progress: 0.2 },
@@ -156,6 +171,7 @@ const propertyListingCreateSlice = createSlice({
       bedrooms: 0,
       bathrooms: 1,
       areaSize: 20,
+      images: [],
       description: "",
     },
   },

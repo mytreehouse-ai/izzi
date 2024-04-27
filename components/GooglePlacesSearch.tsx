@@ -8,13 +8,17 @@ import {
   GooglePlaceDetail,
   GooglePlacesAutocomplete,
 } from "react-native-google-places-autocomplete";
-import { View } from "./Themed";
+import { Text, View } from "./Themed";
 
 interface GooglePlacesSearchProps {
   onPress?: (data: GooglePlaceData, details: GooglePlaceDetail | null) => void;
+  onChangeText?: (text: string) => void;
 }
 
-const GooglePlacesSearch: React.FC<GooglePlacesSearchProps> = ({ onPress }) => {
+const GooglePlacesSearch: React.FC<GooglePlacesSearchProps> = ({
+  onPress,
+  onChangeText,
+}) => {
   const colorScheme = useColorScheme();
 
   const backgroundColor = useMemo(
@@ -55,7 +59,7 @@ const GooglePlacesSearch: React.FC<GooglePlacesSearchProps> = ({ onPress }) => {
             backgroundColor: backgroundColor,
           },
         }}
-        debounce={100}
+        debounce={200}
         placeholder="Search address"
         textInputProps={{
           placeholderTextColor:
@@ -66,8 +70,11 @@ const GooglePlacesSearch: React.FC<GooglePlacesSearchProps> = ({ onPress }) => {
             colorScheme === "light"
               ? Colors.light.primary
               : Colors.dark.primary,
+          onChangeText: (text) => onChangeText && onChangeText(text),
         }}
         fetchDetails={true}
+        enableHighAccuracyLocation={true}
+        listLoaderComponent={<Text>Address lookup in progress...</Text>}
         onFail={(error) => console.error(error)}
         onPress={(data, details = null) => onPress && onPress(data, details)}
         enablePoweredByContainer={false}

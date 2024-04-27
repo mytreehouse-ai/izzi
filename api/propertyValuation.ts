@@ -1,4 +1,3 @@
-import { ApiBaseResponse } from "@/interfaces/apiBaseResponse";
 import { GetToken } from "@clerk/types";
 import Constants from "expo-constants";
 
@@ -16,16 +15,14 @@ interface ValuationResult {
 export async function fetchPropertyValuation(
   getToken: GetToken,
   queryParams?: string
-): Promise<
-  ApiBaseResponse<{
-    data: {
-      valuation: {
-        sale: ValuationResult;
-        rent: ValuationResult;
-      };
+): Promise<{
+  data: {
+    valuation: {
+      sale: ValuationResult;
+      rent: ValuationResult;
     };
-  }>
-> {
+  };
+}> {
   try {
     const token = await getToken();
 

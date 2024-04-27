@@ -12,8 +12,9 @@ import PropertyTypes from "@/components/idealista/filters/PropertyTypes";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
 import { useStore } from "@/store/slices";
+import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import React, { useEffect, useMemo, useReducer } from "react";
+import React, { Fragment, useEffect, useMemo, useReducer } from "react";
 import {
   Dimensions,
   StyleSheet,
@@ -154,6 +155,24 @@ const PropertyListingCreate = () => {
     });
   }, [state]);
 
+  async function onPickImage() {
+    try {
+      const imagePicker = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 1.0,
+        base64: true,
+      });
+      if (!imagePicker.canceled) {
+        const base64Image = `data:image/jpeg;base64,${imagePicker.assets[0].base64}`;
+        console.log(imagePicker.assets[0]);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error setting property image");
+    }
+  }
+
   return (
     <View style={defaultStyles.container}>
       <SafeAreaView
@@ -225,7 +244,12 @@ const PropertyListingCreate = () => {
             <Text fontWeight="semibold" fontSize={16}>
               Property address
             </Text>
-            <GooglePlacesSearch />
+            <GooglePlacesSearch
+              onPress={(data, details) => {
+                console.log(JSON.stringify(data, null, 2));
+                console.log(JSON.stringify(details, null, 2));
+              }}
+            />
           </AnimatedView>
         ) : null}
         {store.currentStepIndex === 1 ? (
@@ -278,6 +302,15 @@ const PropertyListingCreate = () => {
                     })
                   }
                   selectedId={state.selectedListingtypeId}
+                />
+                <Text fontWeight="semibold" fontSize={16}>
+                  Property price
+                </Text>
+                <Input
+                  type="number"
+                  value=""
+                  placeholder="Property price"
+                  onChange={(text) => console.log(text)}
                 />
                 <Text fontWeight="semibold" fontSize={16}>
                   Bedrooms
@@ -383,20 +416,33 @@ const PropertyListingCreate = () => {
                     })
                   }
                 />
-                <Text fontWeight="semibold" fontSize={16}>
-                  House features
-                </Text>
-                {store.propertyFeatures.house.map((data) => (
-                  <BouncyCheckbox
-                    key={data.id}
-                    size={20}
-                    text={data.text}
-                    fillColor={checkbox.fillColor}
-                    textStyle={checkbox.textStyle as any}
-                    isChecked={false}
-                    onPress={() => console.log(data.id)}
-                  />
-                ))}
+                {store.propertyDetails.propertyType && (
+                  <Fragment>
+                    <Text fontWeight="semibold" fontSize={16}>
+                      {store.propertyDetails.propertyType
+                        .split(" ")
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(" ")}{" "}
+                      features
+                    </Text>
+                    {store.propertyFeatures[
+                      store.propertyDetails
+                        .propertyType as keyof typeof store.propertyFeatures
+                    ].map((feature) => (
+                      <BouncyCheckbox
+                        key={feature.id}
+                        size={20}
+                        text={feature.text}
+                        fillColor={checkbox.fillColor}
+                        textStyle={checkbox.textStyle as any}
+                        isChecked={feature.checked}
+                        onPress={() => console.log(feature.id)}
+                      />
+                    ))}
+                  </Fragment>
+                )}
                 <Text fontWeight="semibold" fontSize={16}>
                   Description
                 </Text>
@@ -419,7 +465,9 @@ const PropertyListingCreate = () => {
             entering={SlideInRight}
             exiting={SlideOutLeft}
           >
-            <Text>Property Photos</Text>
+            <TouchableOpacity onPress={onPickImage}>
+              <Text>Property Photos</Text>
+            </TouchableOpacity>
           </AnimatedView>
         ) : null}
         {store.currentStepIndex === 3 ? (
