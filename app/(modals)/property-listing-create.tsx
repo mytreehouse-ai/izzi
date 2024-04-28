@@ -159,13 +159,13 @@ const PropertyListingCreate = () => {
     try {
       const imagePicker = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
+        allowsEditing: false,
         quality: 1.0,
         base64: true,
       });
       if (!imagePicker.canceled) {
         const base64Image = `data:image/jpeg;base64,${imagePicker.assets[0].base64}`;
-        console.log(imagePicker.assets[0]);
+        console.log(base64Image);
       }
     } catch (error) {
       console.error(error);
