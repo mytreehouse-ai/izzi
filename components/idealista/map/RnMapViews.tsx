@@ -6,17 +6,17 @@ import { PropertyListing } from "@/interfaces/propertyListing";
 import { useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import {
-  ActivityIndicator,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  useColorScheme,
+	ActivityIndicator,
+	Platform,
+	StyleSheet,
+	TouchableOpacity,
+	useColorScheme,
 } from "react-native";
 import MapView, {
-  MapMarker,
-  Marker,
-  PROVIDER_GOOGLE,
-  Polygon,
+	MapMarker,
+	Marker,
+	PROVIDER_GOOGLE,
+	Polygon,
 } from "react-native-maps";
 
 const data: PropertyListing[] = [];
@@ -53,6 +53,7 @@ const RnMapViews = () => {
   };
 
 	const handleMapReady = async() => {
+		setPointBounds([]);
 		// Step size for generating points (adjust as needed)
 		const bounds = await mapView.current?.getMapBoundaries();
 		// You can adjust this value as per your requirement
@@ -62,11 +63,17 @@ const RnMapViews = () => {
 		setPointBounds(b);
 	};
 
+	const handleRegionChangeComplete = async (newRegion: any) => {
+		handleMapReady();
+	};
+
 	const handleMapDrawPanEnd = async() => {
 		if (points.length > 0) {
 			const pointToPolygon: Coordinate[] = [];
 			pointBounds.map(bb=> {
 				if (isPointInsidePolygon(bb, points)) {
+					console.log('Point bounds: ', bb);
+					
 					pointToPolygon.push(bb);
 				}
 			});
@@ -92,38 +99,37 @@ const RnMapViews = () => {
 			return points;
 	}
 
-	const isPointInsidePolygon = (point: Coordinate, polygon: Coordinate[]): boolean => {
-    const x = point.longitude;
-    const y = point.latitude;
-    let inside = false;
-    const n = polygon.length;
-    let p1x: number, p1y: number, p2x: number, p2y: number;
+	const isPointInsidePolygon = (point: Coordinate, polygon: Coordinate[]):  boolean => {
+		const x = point.longitude;
+		const y = point.latitude;
+		let inside = false;
+		const n = polygon.length;
+		let p1x: number, p1y: number, p2x: number, p2y: number;
 
-    p1x = polygon[0].longitude;
-    p1y = polygon[0].latitude;
+		p1x = polygon[0].longitude;
+		p1y = polygon[0].latitude;
 
-    for (let i = 0; i < n + 1; i++) {
-        p2x = polygon[i % n].longitude;
-        p2y = polygon[i % n].latitude;
+		for (let i = 0; i < n + 1; i++) {
+				p2x = polygon[i % n].longitude;
+				p2y = polygon[i % n].latitude;
 
-        if (y > Math.min(p1y, p2y)) {
-            if (y <= Math.max(p1y, p2y)) {
-                if (x <= Math.max(p1x, p2x)) {
-                    if (p1y !== p2y) {
-                        const xinters = (y - p1y) * (p2x - p1x) / (p2y - p1y) + p1x;
-                        if (p1x === p2x || x <= xinters) {
-                            inside = !inside;
-                        }
-                    }
-                }
-            }
-        }
-        p1x = p2x;
-        p1y = p2y;
-    }
-
+				if (y > Math.min(p1y, p2y)) {
+						if (y <= Math.max(p1y, p2y)) {
+								if (x <= Math.max(p1x, p2x)) {
+										if (p1y !== p2y) {
+												const xinters = (y - p1y) * (p2x - p1x) / (p2y - p1y) + p1x;
+												if (p1x === p2x || x <= xinters) {
+														inside = !inside;
+												}
+										}
+								}
+						}
+				}
+				p1x = p2x;
+				p1y = p2y;
+		}
     return inside;
-}
+	}
 
   return (
     <View style={defaultStyles.container}>
@@ -147,6 +153,7 @@ const RnMapViews = () => {
         }}
         scrollEnabled={!isDrawState}
 				onMapReady={handleMapReady}
+				onRegionChangeComplete={handleRegionChangeComplete}
         onPanDrag={handleMapDrawOnPan} // Log coordinates/points while map is on pan
         onTouchEnd={handleMapDrawPanEnd} // Call API to fetch properties by tracked "Points | Coordinates"
       >
@@ -164,8 +171,7 @@ const RnMapViews = () => {
           />
         ))}
 
-        {// Render polygon drawing
-          points.length > 0 && (
+        { points.length > 0 && (
             <Polygon
               coordinates={points.map((point) => ({
                 latitude: point.latitude,
@@ -176,60 +182,32 @@ const RnMapViews = () => {
           )
         }
 
-        {
-<<<<<<< Updated upstream
-          // Drawing Pen Marker
-          isDrawState == true && currentCoordinate !== undefined && (
-            <Marker
-              draggable
-              coordinate={{
-                latitude: currentCoordinate.latitude,
-                longitude: currentCoordinate.longitude,
-              }}
-              children={<DrawMarker />}
-            />
-          )
-        }
-=======
-					// Drawing Pen Marker
-				(isDrawState == true && currentCoordinate !== undefined) && (
-          <Marker
-            draggable
-            coordinate={{
-              latitude: currentCoordinate.latitude,
-              longitude: currentCoordinate.longitude,
-            }}
-						children={<DrawMarker/>}
-          />
-        )}
+        { (isDrawState == true && currentCoordinate !== undefined) && (
+          	<Marker
+								draggable
+								coordinate={{
+									latitude: currentCoordinate.latitude,
+									longitude: currentCoordinate.longitude,
+								}}
+								children={<DrawMarker/>}
+							/>
+						)
+				}
 
+				{/* { points.map((i,k) => {
+						return <Marker
+								key={`mk_${k}`}
+								draggable
+								coordinate={{
+									latitude: i.latitude,
+									longitude: i.longitude,
+								}}
+							/>
+						}
+					)
+				} */}
 
-				{/* {points.map((i,k) => {
-					return <Marker
-							key={`mk_${k}`}
-							draggable
-							coordinate={{
-								latitude: i.latitude,
-								longitude: i.longitude,
-							}}
-						/>
-				})} */}
-
-				{/* {
-				pointBounds.map((i,k) => {
-					return <Marker
-							key={`mb_${k}`}
-							draggable
-							coordinate={{
-								latitude: i.latitude,
-								longitude: i.longitude,
-							}}
-							children={<Text>.</Text>}
-						/>
-				})} */}
-
-				{
-					insideBounds.map((i,k) => {
+				{/* { pointBounds.map((i,k) => {
 						return <Marker
 								key={`mb_${k}`}
 								draggable
@@ -239,21 +217,35 @@ const RnMapViews = () => {
 								}}
 								children={<Text>.</Text>}
 							/>
-				})}
+						}
+					)
+				} */}
 
->>>>>>> Stashed changes
+				{ insideBounds.map((i,k) => {
+						return <Marker
+								key={`mb_${k}`}
+								draggable
+								coordinate={{
+									latitude: i.latitude,
+									longitude: i.longitude,
+								}}
+								children={<Text>.</Text>}
+							/>
+						}
+					)
+				}
+
       </MapView>
 
-			{/* TODO: Future Draw Feature Implementation For Improvement */}
-			{/* {
-				isDrawState == true && mapView.current != null && 
-				<Draw
-					mapView={mapView.current}
-					points={points}
-					setPoints={updatePoints}
-					isDrawState={isDrawState}
-				/>
-			} */}
+			{ // TODO: Future Draw Feature Implementation For Improvement
+				// isDrawState == true && mapView.current != null && 
+				// <Draw
+				// 	mapView={mapView.current}
+				// 	points={points}
+				// 	setPoints={updatePoints}
+				// 	isDrawState={isDrawState}
+				// />
+			}
 
       {isDrawState == false && (
         <View style={styles.buttonContainer}>
