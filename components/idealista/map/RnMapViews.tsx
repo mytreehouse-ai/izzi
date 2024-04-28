@@ -6,17 +6,17 @@ import { PropertyListing } from "@/interfaces/propertyListing";
 import { useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import {
-	ActivityIndicator,
-	Platform,
-	StyleSheet,
-	TouchableOpacity,
-	useColorScheme,
+  ActivityIndicator,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  useColorScheme,
 } from "react-native";
 import MapView, {
-	MapMarker,
-	Marker,
-	PROVIDER_GOOGLE,
-	Polygon,
+  MapMarker,
+  Marker,
+  PROVIDER_GOOGLE,
+  Polygon,
 } from "react-native-maps";
 
 const data: PropertyListing[] = [];
@@ -26,13 +26,7 @@ interface Coordinate {
 }
 
 const DrawMarker = () => {
-	return (
-		<Ionicons
-			name="pencil"
-			size={25}
-      lightColor="black"
-		/>
-	);
+  return <Ionicons name="pencil" size={25} lightColor="black" />;
 };
 
 const RnMapViews = () => {
@@ -87,7 +81,6 @@ const RnMapViews = () => {
           <MapMarker
             key={propertyListing.id}
             id={String(propertyListing.id)}
-            price={propertyListing.price_formatted}
             coordinate={{
               latitude: propertyListing.coordinates[0],
               longitude: propertyListing.coordinates[1],
@@ -112,17 +105,18 @@ const RnMapViews = () => {
         }
 
         {
-					// Drawing Pen Marker
-				(isDrawState == true && currentCoordinate !== undefined) && (
-          <Marker
-            draggable
-            coordinate={{
-              latitude: currentCoordinate.latitude,
-              longitude: currentCoordinate.longitude,
-            }}
-						children={<DrawMarker/>}
-          />
-        )}
+          // Drawing Pen Marker
+          isDrawState == true && currentCoordinate !== undefined && (
+            <Marker
+              draggable
+              coordinate={{
+                latitude: currentCoordinate.latitude,
+                longitude: currentCoordinate.longitude,
+              }}
+              children={<DrawMarker />}
+            />
+          )
+        }
       </MapView>
 
       {isDrawState == false && (
