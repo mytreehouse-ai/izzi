@@ -20,10 +20,6 @@ import MapView, {
 } from "react-native-maps";
 
 const data: PropertyListing[] = [];
-interface Coordinate {
-  latitude: number;
-  longitude: number;
-}
 
 const DrawMarker = () => {
   return <Ionicons name="pencil" size={25} lightColor="black" />;
@@ -34,13 +30,16 @@ const RnMapViews = () => {
   const colorScheme = useColorScheme();
 
   const mapView = useRef<MapView>(null);
-  const [points, setPoints] = useState<Coordinate[]>([]);
-  const [currentCoordinate, setCurrentCoordinate] = useState<Coordinate>();
-  const [isDrawState, setIsDrawState] = useState<boolean>(false);
+  const [points, setPoints] = useState<Coordinate[]>([]); // Can be stored
+  const [pointBounds, setPointBounds] = useState<Coordinate[]>([]); // Can be stored
+  const [insideBounds, setInsideBounds] = useState<Coordinate[]>([]); // Can be stored
+  const [currentCoordinate, setCurrentCoordinate] = useState<Coordinate>(); // Can be stored
+  const [isDrawState, setIsDrawState] = useState<boolean>(false); // Can be stored
 
   const handleClearDraw = () => {
     setIsDrawState(false);
     setPoints([]);
+		setInsideBounds([]);
     setCurrentCoordinate(undefined);
   };
 
@@ -52,6 +51,79 @@ const RnMapViews = () => {
       setPoints([...points, coordinate]);
     }
   };
+
+	const handleMapReady = async() => {
+		// Step size for generating points (adjust as needed)
+		const bounds = await mapView.current?.getMapBoundaries();
+		// You can adjust this value as per your requirement
+		var step = 0.0001; 
+		// Generate points covering the entire area within the bounds
+		var b = getPointsInBounds(bounds, step);
+		setPointBounds(b);
+	};
+
+	const handleMapDrawPanEnd = async() => {
+		if (points.length > 0) {
+			const pointToPolygon: Coordinate[] = [];
+			pointBounds.map(bb=> {
+				if (isPointInsidePolygon(bb, points)) {
+					pointToPolygon.push(bb);
+				}
+			});
+
+			setInsideBounds(pointToPolygon);
+		}
+	};
+
+	// Function to generate points covering the entire area within given bounds
+	const getPointsInBounds = (bounds: any, step: any) => {
+			var minLat = bounds.southWest.latitude;
+			var maxLat = bounds.northEast.latitude;
+			var minLng = bounds.southWest.longitude;
+			var maxLng = bounds.northEast.longitude;
+
+			var points = [];
+			for (var lat = minLat; lat <= maxLat; lat += step) {
+					for (var lng = minLng; lng <= maxLng; lng += step) {
+							points.push({ latitude: lat, longitude: lng });
+					}
+			}
+
+			return points;
+	}
+
+	const isPointInsidePolygon = (point: Coordinate, polygon: Coordinate[]): boolean => {
+    const x = point.longitude;
+    const y = point.latitude;
+    let inside = false;
+    const n = polygon.length;
+    let p1x: number, p1y: number, p2x: number, p2y: number;
+
+    p1x = polygon[0].longitude;
+    p1y = polygon[0].latitude;
+
+    for (let i = 0; i < n + 1; i++) {
+        p2x = polygon[i % n].longitude;
+        p2y = polygon[i % n].latitude;
+
+        if (y > Math.min(p1y, p2y)) {
+            if (y <= Math.max(p1y, p2y)) {
+                if (x <= Math.max(p1x, p2x)) {
+                    if (p1y !== p2y) {
+                        const xinters = (y - p1y) * (p2x - p1x) / (p2y - p1y) + p1x;
+                        if (p1x === p2x || x <= xinters) {
+                            inside = !inside;
+                        }
+                    }
+                }
+            }
+        }
+        p1x = p2x;
+        p1y = p2y;
+    }
+
+    return inside;
+}
 
   return (
     <View style={defaultStyles.container}>
@@ -74,8 +146,9 @@ const RnMapViews = () => {
           longitudeDelta: 0.005,
         }}
         scrollEnabled={!isDrawState}
+				onMapReady={handleMapReady}
         onPanDrag={handleMapDrawOnPan} // Log coordinates/points while map is on pan
-        onTouchEnd={() => console.log(points)} // Call API to fetch properties by tracked "Points | Coordinates"
+        onTouchEnd={handleMapDrawPanEnd} // Call API to fetch properties by tracked "Points | Coordinates"
       >
         {data.map((propertyListing) => (
           <MapMarker
@@ -91,8 +164,7 @@ const RnMapViews = () => {
           />
         ))}
 
-        {
-          // Render polygon drawing
+        {// Render polygon drawing
           points.length > 0 && (
             <Polygon
               coordinates={points.map((point) => ({
@@ -105,6 +177,7 @@ const RnMapViews = () => {
         }
 
         {
+<<<<<<< Updated upstream
           // Drawing Pen Marker
           isDrawState == true && currentCoordinate !== undefined && (
             <Marker
@@ -117,7 +190,70 @@ const RnMapViews = () => {
             />
           )
         }
+=======
+					// Drawing Pen Marker
+				(isDrawState == true && currentCoordinate !== undefined) && (
+          <Marker
+            draggable
+            coordinate={{
+              latitude: currentCoordinate.latitude,
+              longitude: currentCoordinate.longitude,
+            }}
+						children={<DrawMarker/>}
+          />
+        )}
+
+
+				{/* {points.map((i,k) => {
+					return <Marker
+							key={`mk_${k}`}
+							draggable
+							coordinate={{
+								latitude: i.latitude,
+								longitude: i.longitude,
+							}}
+						/>
+				})} */}
+
+				{/* {
+				pointBounds.map((i,k) => {
+					return <Marker
+							key={`mb_${k}`}
+							draggable
+							coordinate={{
+								latitude: i.latitude,
+								longitude: i.longitude,
+							}}
+							children={<Text>.</Text>}
+						/>
+				})} */}
+
+				{
+					insideBounds.map((i,k) => {
+						return <Marker
+								key={`mb_${k}`}
+								draggable
+								coordinate={{
+									latitude: i.latitude,
+									longitude: i.longitude,
+								}}
+								children={<Text>.</Text>}
+							/>
+				})}
+
+>>>>>>> Stashed changes
       </MapView>
+
+			{/* TODO: Future Draw Feature Implementation For Improvement */}
+			{/* {
+				isDrawState == true && mapView.current != null && 
+				<Draw
+					mapView={mapView.current}
+					points={points}
+					setPoints={updatePoints}
+					isDrawState={isDrawState}
+				/>
+			} */}
 
       {isDrawState == false && (
         <View style={styles.buttonContainer}>
