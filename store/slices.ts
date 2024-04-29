@@ -70,14 +70,19 @@ const bathroomFilterSlice = createSlice({
 });
 
 interface CreateaPropertyListing {
+  listingTitle: string;
   propertyType: string;
   listingType: string;
+  price: number;
   city: string;
   address: string;
   bedrooms: number;
   bathrooms: number;
   areaSize: number;
+  features: string[];
   images: string[];
+  longitude: number;
+  latitude: number;
   description: string;
 }
 
@@ -164,14 +169,19 @@ const propertyListingCreateSlice = createSlice({
     ],
     currentStepIndex: 0,
     propertyDetails: {
+      listingTitle: "",
       propertyType: "",
       listingType: "",
+      price: 0,
       city: "",
       address: "",
       bedrooms: 0,
       bathrooms: 1,
       areaSize: 20,
+      features: [],
       images: [],
+      longitude: 0,
+      latitude: 0,
       description: "",
     },
   },

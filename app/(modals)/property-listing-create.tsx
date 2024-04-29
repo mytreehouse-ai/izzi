@@ -9,9 +9,15 @@ import {
   View,
 } from "@/components/Themed";
 import PropertyTypes from "@/components/idealista/filters/PropertyTypes";
+import ListingCard from "@/components/idealista/listing/ListingCard";
+import ListingFooter from "@/components/idealista/listing/ListingFooter";
+import ListingImages from "@/components/idealista/listing/ListingImages";
+import ListingInfo from "@/components/idealista/listing/ListingInfo";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
+import { useCreateListingImageMutation } from "@/hooks/useCreateListingImageMutation";
 import { useStore } from "@/store/slices";
+import { useAuth } from "@clerk/clerk-expo";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import React, { Fragment, useEffect, useMemo, useReducer } from "react";
@@ -82,6 +88,7 @@ function propertyListingReducer(
 
 const PropertyListingCreate = () => {
   const router = useRouter();
+  const { getToken } = useAuth();
   const colorScheme = useColorScheme();
   const store = useStore((state) => state.propertyListingCreate);
   const [state, dispatch] = useReducer(propertyListingReducer, initialState);
@@ -91,6 +98,12 @@ const PropertyListingCreate = () => {
   const newPropertyListingUpdatePropertyDetails = useStore(
     (action) => action.newPropertyListingUpdatePropertyDetails
   );
+
+  const {
+    mutateAsync,
+    isPending,
+    data: image,
+  } = useCreateListingImageMutation();
 
   const checkbox = useMemo(
     () => ({
@@ -155,6 +168,15 @@ const PropertyListingCreate = () => {
     });
   }, [state]);
 
+  useEffect(() => {
+    if (!isPending && image) {
+      newPropertyListingUpdatePropertyDetails({
+        ...store.propertyDetails,
+        images: [...store.propertyDetails.images, image.blobUrl],
+      });
+    }
+  }, [isPending, image]);
+
   async function onPickImage() {
     try {
       const imagePicker = await ImagePicker.launchImageLibraryAsync({
@@ -165,7 +187,7 @@ const PropertyListingCreate = () => {
       });
       if (!imagePicker.canceled) {
         const base64Image = `data:image/jpeg;base64,${imagePicker.assets[0].base64}`;
-        console.log(base64Image);
+        mutateAsync({ getToken, base64: base64Image });
       }
     } catch (error) {
       console.error(error);
@@ -248,6 +270,12 @@ const PropertyListingCreate = () => {
               onPress={(data, details) => {
                 console.log(JSON.stringify(data, null, 2));
                 console.log(JSON.stringify(details, null, 2));
+                newPropertyListingUpdatePropertyDetails({
+                  address: data?.description,
+                  city: details?.vicinity,
+                  longitude: details?.geometry.location.lng,
+                  latitude: details?.geometry.location.lat,
+                });
               }}
             />
           </AnimatedView>
@@ -270,6 +298,18 @@ const PropertyListingCreate = () => {
               <View
                 style={[defaultStyles.removedBackground, styles.formContainer]}
               >
+                <Text fontWeight="semibold" fontSize={16}>
+                  Listing title
+                </Text>
+                <Input
+                  value={store.propertyDetails.listingTitle}
+                  placeholder="Listing title"
+                  onChange={(text) =>
+                    newPropertyListingUpdatePropertyDetails({
+                      listingTitle: String(text),
+                    })
+                  }
+                />
                 <Text fontWeight="semibold" fontSize={16}>
                   Select property type
                 </Text>
@@ -308,107 +348,118 @@ const PropertyListingCreate = () => {
                 </Text>
                 <Input
                   type="number"
-                  value=""
+                  value={store.propertyDetails.price}
                   placeholder="Property price"
-                  onChange={(text) => console.log(text)}
+                  onChange={(text) =>
+                    newPropertyListingUpdatePropertyDetails({
+                      price: Number(text),
+                    })
+                  }
                 />
-                <Text fontWeight="semibold" fontSize={16}>
-                  Bedrooms
-                </Text>
-                <View
-                  style={[
-                    defaultStyles.removedBackground,
-                    {
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    },
-                  ]}
-                >
-                  <TouchableOpacity
-                    style={{
-                      padding: 10,
-                      borderRadius: 8,
-                      backgroundColor:
-                        colorScheme === "light"
-                          ? Colors.common.emerald["200"]
-                          : Colors.common.darkEmerald300,
-                    }}
-                    onPress={() => dispatch({ type: "REMOVE_BEDROOM" })}
-                  >
-                    <MaterialCommunityIcons name="minus" size={24} />
-                  </TouchableOpacity>
-                  <Text fontWeight="semibold" fontSize={16}>
-                    {store.propertyDetails.bedrooms ?? state.bedrooms}
-                  </Text>
-                  <TouchableOpacity
-                    style={{
-                      padding: 10,
-                      borderRadius: 8,
-                      backgroundColor:
-                        colorScheme === "light"
-                          ? store.propertyDetails.bedrooms === 6
-                            ? Colors.common.emerald["100"]
-                            : Colors.common.emerald["200"]
-                          : Colors.common.darkEmerald300,
-                    }}
-                    disabled={store.propertyDetails.bedrooms === 6}
-                    onPress={() => dispatch({ type: "ADD_BEDROOM" })}
-                  >
-                    <MaterialCommunityIcons name="plus" size={24} />
-                  </TouchableOpacity>
-                </View>
-                <Text fontWeight="semibold" fontSize={16}>
-                  Bathrooms
-                </Text>
-                <View
-                  style={[
-                    defaultStyles.removedBackground,
-                    {
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    },
-                  ]}
-                >
-                  <TouchableOpacity
-                    style={{
-                      padding: 10,
-                      borderRadius: 8,
-                      backgroundColor:
-                        colorScheme === "light"
-                          ? Colors.common.emerald["200"]
-                          : Colors.common.darkEmerald300,
-                    }}
-                    onPress={() => dispatch({ type: "REMOVE_BATHROOM" })}
-                  >
-                    <MaterialCommunityIcons name="minus" size={24} />
-                  </TouchableOpacity>
-                  <Text fontWeight="semibold" fontSize={16}>
-                    {store.propertyDetails.bathrooms}
-                  </Text>
-                  <TouchableOpacity
-                    style={{
-                      padding: 10,
-                      borderRadius: 8,
-                      backgroundColor:
-                        colorScheme === "light"
-                          ? store.propertyDetails.bathrooms === 6
-                            ? Colors.common.emerald["100"]
-                            : Colors.common.emerald["200"]
-                          : Colors.common.darkEmerald300,
-                    }}
-                    disabled={store.propertyDetails.bathrooms === 6}
-                    onPress={() => dispatch({ type: "ADD_BATHROOM" })}
-                  >
-                    <MaterialCommunityIcons name="plus" size={24} />
-                  </TouchableOpacity>
-                </View>
+                {["condominium", "house"].includes(
+                  store.propertyDetails.propertyType
+                ) && (
+                  <Fragment>
+                    <Text fontWeight="semibold" fontSize={16}>
+                      Bedrooms
+                    </Text>
+                    <View
+                      style={[
+                        defaultStyles.removedBackground,
+                        {
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        },
+                      ]}
+                    >
+                      <TouchableOpacity
+                        style={{
+                          padding: 10,
+                          borderRadius: 8,
+                          backgroundColor:
+                            colorScheme === "light"
+                              ? Colors.common.emerald["200"]
+                              : Colors.common.darkEmerald300,
+                        }}
+                        onPress={() => dispatch({ type: "REMOVE_BEDROOM" })}
+                      >
+                        <MaterialCommunityIcons name="minus" size={24} />
+                      </TouchableOpacity>
+                      <Text fontWeight="semibold" fontSize={16}>
+                        {store.propertyDetails.bedrooms ?? state.bedrooms}
+                      </Text>
+                      <TouchableOpacity
+                        style={{
+                          padding: 10,
+                          borderRadius: 8,
+                          backgroundColor:
+                            colorScheme === "light"
+                              ? store.propertyDetails.bedrooms === 6
+                                ? Colors.common.emerald["100"]
+                                : Colors.common.emerald["200"]
+                              : Colors.common.darkEmerald300,
+                        }}
+                        disabled={store.propertyDetails.bedrooms === 6}
+                        onPress={() => dispatch({ type: "ADD_BEDROOM" })}
+                      >
+                        <MaterialCommunityIcons name="plus" size={24} />
+                      </TouchableOpacity>
+                    </View>
+                    <Text fontWeight="semibold" fontSize={16}>
+                      Bathrooms
+                    </Text>
+                    <View
+                      style={[
+                        defaultStyles.removedBackground,
+                        {
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        },
+                      ]}
+                    >
+                      <TouchableOpacity
+                        style={{
+                          padding: 10,
+                          borderRadius: 8,
+                          backgroundColor:
+                            colorScheme === "light"
+                              ? Colors.common.emerald["200"]
+                              : Colors.common.darkEmerald300,
+                        }}
+                        onPress={() => dispatch({ type: "REMOVE_BATHROOM" })}
+                      >
+                        <MaterialCommunityIcons name="minus" size={24} />
+                      </TouchableOpacity>
+                      <Text fontWeight="semibold" fontSize={16}>
+                        {store.propertyDetails.bathrooms}
+                      </Text>
+                      <TouchableOpacity
+                        style={{
+                          padding: 10,
+                          borderRadius: 8,
+                          backgroundColor:
+                            colorScheme === "light"
+                              ? store.propertyDetails.bathrooms === 6
+                                ? Colors.common.emerald["100"]
+                                : Colors.common.emerald["200"]
+                              : Colors.common.darkEmerald300,
+                        }}
+                        disabled={store.propertyDetails.bathrooms === 6}
+                        onPress={() => dispatch({ type: "ADD_BATHROOM" })}
+                      >
+                        <MaterialCommunityIcons name="plus" size={24} />
+                      </TouchableOpacity>
+                    </View>
+                  </Fragment>
+                )}
                 <Text fontWeight="semibold" fontSize={16}>
                   Property size
                 </Text>
                 <Input
                   type="number"
+                  maxLength={5}
                   value={store.propertyDetails.areaSize}
                   onChange={(data) =>
                     newPropertyListingUpdatePropertyDetails({
@@ -466,7 +517,7 @@ const PropertyListingCreate = () => {
             exiting={SlideOutLeft}
           >
             <TouchableOpacity onPress={onPickImage}>
-              <Text>Property Photos</Text>
+              <Text>Property Photos {isPending && "..."}</Text>
             </TouchableOpacity>
           </AnimatedView>
         ) : null}
@@ -500,7 +551,32 @@ const PropertyListingCreate = () => {
             entering={SlideInRight}
             exiting={SlideOutLeft}
           >
-            <Text>Listing Preview</Text>
+            <ListingCard
+              image={
+                <TouchableOpacity activeOpacity={0.8}>
+                  <ListingImages
+                    mainImage={store.propertyDetails.images[0]}
+                    IMAGE_HEIGHT={300}
+                  />
+                </TouchableOpacity>
+              }
+              media={<Fragment />}
+              info={
+                <ListingInfo
+                  data={{
+                    listing_title: store.propertyDetails.listingTitle,
+                    price_formatted: `₱${store.propertyDetails.price.toLocaleString(
+                      "en-PH"
+                    )}`,
+                    price_sqm: "1,345 price/sqm",
+                    city: store.propertyDetails.city,
+                    area: "",
+                    sqm: `${store.propertyDetails.areaSize} sqm`,
+                  }}
+                />
+              }
+              footer={<ListingFooter />}
+            />
           </AnimatedView>
         ) : null}
       </View>
@@ -552,7 +628,7 @@ const PropertyListingCreate = () => {
           activeOpacity={0.65}
         >
           <Text fontWeight="semibold" fontSize={16}>
-            Next Step
+            {store.currentStepIndex === 4 ? "Submit" : "Next Step"}
           </Text>
         </TouchableOpacity>
       </AnimatedView>

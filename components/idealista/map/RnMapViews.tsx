@@ -229,8 +229,8 @@ const RnMapViews = () => {
 
   function calculateDistanceBasedOnZoom(zoomLevel: number): number {
     // Example logic: adjust these values based on your application's requirements
-    if (zoomLevel > 15) return 75; // 70 meters between points when zoomed in closely
-    if (zoomLevel > 13) return 55; // 50 meters for intermediate zoom
+    if (zoomLevel > 15) return 75; // 75 meters between points when zoomed in closely
+    if (zoomLevel > 13) return 55; // 55 meters for intermediate zoom
     return 40; // 40 meters when zoomed out
   }
 

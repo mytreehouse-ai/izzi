@@ -5,6 +5,7 @@ import { StyleSheet, TextInput, useColorScheme } from "react-native";
 interface InputProps {
   type?: "text" | "number";
   value: string | number;
+  maxLength?: number;
   multiline?: boolean;
   placeholder?: string;
   onChange: (data: string | number) => void;
@@ -13,6 +14,7 @@ interface InputProps {
 const Input: React.FC<InputProps> = ({
   type = "text",
   value,
+  maxLength,
   multiline = false,
   placeholder,
   onChange,
@@ -59,7 +61,7 @@ const Input: React.FC<InputProps> = ({
               : Colors.common.gray["800"],
         },
       ]}
-      maxLength={5}
+      maxLength={maxLength}
       keyboardType="numeric"
       value={String(value)}
       cursorColor={
