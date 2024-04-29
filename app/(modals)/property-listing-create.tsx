@@ -94,7 +94,6 @@ const PropertyListingCreate = () => {
   const [state, dispatch] = useReducer(propertyListingReducer, initialState);
   const nextStep = useStore((action) => action.propertyListingCreateNextStep);
   const prevStep = useStore((action) => action.propertyListingCreatePrevStep);
-
   const newPropertyListingUpdatePropertyDetails = useStore(
     (action) => action.newPropertyListingUpdatePropertyDetails
   );

@@ -81,6 +81,7 @@ const GooglePlacesSearch: React.FC<GooglePlacesSearchProps> = ({
         query={{
           key: Constants.expoConfig?.extra?.googlePlacesApiKey ?? "",
           language: "en",
+          components: "country:ph",
         }}
       />
     </View>
