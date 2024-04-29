@@ -226,12 +226,11 @@ const RnMapViews = () => {
 
     return points;
   };
-
   function calculateDistanceBasedOnZoom(zoomLevel: number): number {
-    // Example logic: adjust these values based on your application's requirements
-    if (zoomLevel > 15) return 200; // 75 meters between points when zoomed in closely
-    if (zoomLevel > 13) return 100; // 55 meters for intermediate zoom
-    return 50; // 40 meters when zoomed out
+    // Adjusted values for optimized performance and user experience
+    if (zoomLevel > 15) return 50; // 50 meters between points when zoomed in closely for detailed view
+    if (zoomLevel > 13) return 150; // 150 meters for intermediate zoom to balance detail and performance
+    return 300; // 300 meters when zoomed out to reduce load while providing an overview
   }
 
   return (
@@ -243,7 +242,7 @@ const RnMapViews = () => {
         loadingEnabled={Platform.OS === "android" ? true : false}
         provider={PROVIDER_GOOGLE}
         style={StyleSheet.absoluteFill}
-        minZoomLevel={10}
+        minZoomLevel={13}
         maxZoomLevel={20}
         zoomEnabled={!isDrawState}
         zoomTapEnabled={false}
@@ -260,7 +259,12 @@ const RnMapViews = () => {
         onMapReady={handleMapReady}
         onRegionChangeComplete={handleRegionChangeComplete}
         onPanDrag={handleMapDrawOnPan} // Log coordinates/points while map is on pan
-        onTouchEnd={() => void handleMapDrawPanEndUsingTurf(14)} // Call API to fetch properties by tracked "Points | Coordinates"
+        onTouchEnd={async () => {
+          const camera = await mapView.current?.getCamera();
+          if (camera?.zoom) {
+            void handleMapDrawPanEndUsingTurf(camera.zoom);
+          }
+        }}
       >
         {data.map((propertyListing) => (
           <MapMarker
