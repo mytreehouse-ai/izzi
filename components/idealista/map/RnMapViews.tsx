@@ -229,9 +229,9 @@ const RnMapViews = () => {
 
   function calculateDistanceBasedOnZoom(zoomLevel: number): number {
     // Example logic: adjust these values based on your application's requirements
-    if (zoomLevel > 15) return 75; // 75 meters between points when zoomed in closely
-    if (zoomLevel > 13) return 55; // 55 meters for intermediate zoom
-    return 40; // 40 meters when zoomed out
+    if (zoomLevel > 15) return 200; // 75 meters between points when zoomed in closely
+    if (zoomLevel > 13) return 100; // 55 meters for intermediate zoom
+    return 50; // 40 meters when zoomed out
   }
 
   return (
@@ -243,6 +243,8 @@ const RnMapViews = () => {
         loadingEnabled={Platform.OS === "android" ? true : false}
         provider={PROVIDER_GOOGLE}
         style={StyleSheet.absoluteFill}
+        minZoomLevel={10}
+        maxZoomLevel={20}
         zoomEnabled={!isDrawState}
         zoomTapEnabled={false}
         showsUserLocation={true}
@@ -258,7 +260,7 @@ const RnMapViews = () => {
         onMapReady={handleMapReady}
         onRegionChangeComplete={handleRegionChangeComplete}
         onPanDrag={handleMapDrawOnPan} // Log coordinates/points while map is on pan
-        onTouchEnd={() => void handleMapDrawPanEndUsingTurf(9)} // Call API to fetch properties by tracked "Points | Coordinates"
+        onTouchEnd={() => void handleMapDrawPanEndUsingTurf(14)} // Call API to fetch properties by tracked "Points | Coordinates"
       >
         {data.map((propertyListing) => (
           <MapMarker
@@ -331,7 +333,6 @@ const RnMapViews = () => {
                 latitude: i.latitude,
                 longitude: i.longitude,
               }}
-              children={<Text>.</Text>}
             />
           );
         })}
