@@ -3,6 +3,9 @@ import Colors from "@/constants/Colors";
 import { mapDarkModeStyle } from "@/constants/MapStyles";
 import { defaultStyles } from "@/constants/Styles";
 import { PropertyListing } from "@/interfaces/propertyListing";
+import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
+import destination from "@turf/destination";
+import { point, polygon } from "@turf/helpers";
 import { useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import {
@@ -20,6 +23,11 @@ import MapView, {
 } from "react-native-maps";
 
 const data: PropertyListing[] = [];
+
+interface Bounds {
+  southWest: Coordinate;
+  northEast: Coordinate;
+}
 
 const DrawMarker = () => {
   return <Ionicons name="pencil" size={25} lightColor="black" />;
@@ -71,7 +79,7 @@ const RnMapViews = () => {
     if (points.length > 0) {
       const pointToPolygon: Coordinate[] = [];
       pointBounds.map((bb) => {
-        if (isPointInsidePolygon(bb, points)) {
+        if (isPointInsidePolygonUsingTurf(bb, points)) {
           console.log("Point bounds: ", bb);
 
           pointToPolygon.push(bb);
@@ -79,6 +87,38 @@ const RnMapViews = () => {
       });
 
       setInsideBounds(pointToPolygon);
+    }
+  };
+
+  const handleMapDrawPanEndUsingTurf = async (zoomLevel: number) => {
+    if (points.length > 0) {
+      const latitudes = points.map((p) => p.latitude);
+      const longitudes = points.map((p) => p.longitude);
+      const bounds: Bounds = {
+        southWest: {
+          latitude: Math.min(...latitudes),
+          longitude: Math.min(...longitudes),
+        },
+        northEast: {
+          latitude: Math.max(...latitudes),
+          longitude: Math.max(...longitudes),
+        },
+      };
+
+      // Calculate distance based on zoom level
+      const distance = calculateDistanceBasedOnZoom(zoomLevel);
+
+      // Generate points within the bounds, using the calculated distance
+      const generatedPoints = generatePointsWithinBounds(bounds, distance);
+
+      // Filter points to ensure they're inside the polygon
+      const insidePoints = generatedPoints.filter((pointCoord) =>
+        isPointInsidePolygonUsingTurf(pointCoord, points)
+      );
+
+      console.log(insidePoints);
+
+      setInsideBounds(insidePoints);
     }
   };
 
@@ -134,6 +174,66 @@ const RnMapViews = () => {
     return inside;
   };
 
+  const isPointInsidePolygonUsingTurf = (
+    pointCoord: Coordinate,
+    polygonCoords: Coordinate[]
+  ): boolean => {
+    // Convert the point and polygon coordinates to the format expected by Turf.js
+    const turfPoint = point([pointCoord.longitude, pointCoord.latitude]);
+    const turfPolygon = polygon([
+      [
+        ...polygonCoords.map((coord) => [coord.longitude, coord.latitude]),
+        [polygonCoords[0].longitude, polygonCoords[0].latitude], // Close the polygon by repeating the first point
+      ],
+    ]);
+
+    // Use Turf.js to check if the point is inside the polygon
+    return booleanPointInPolygon(turfPoint, turfPolygon);
+  };
+
+  const generatePointsWithinBounds = (
+    bounds: Bounds,
+    distanceMeters: number
+  ): Coordinate[] => {
+    let currentLat = bounds.southWest.latitude;
+    let currentLng = bounds.southWest.longitude;
+    const points: Coordinate[] = [];
+
+    while (currentLat <= bounds.northEast.latitude) {
+      while (currentLng <= bounds.northEast.longitude) {
+        points.push({ latitude: currentLat, longitude: currentLng });
+
+        // Move east by the specified distance
+        const eastPoint = destination(
+          [currentLng, currentLat],
+          distanceMeters,
+          90,
+          { units: "meters" }
+        );
+        currentLng = eastPoint.geometry.coordinates[0];
+      }
+
+      // Move north by the specified distance and reset longitude to start again from the west
+      const northPoint = destination(
+        [bounds.southWest.longitude, currentLat],
+        distanceMeters,
+        0,
+        { units: "meters" }
+      );
+      currentLat = northPoint.geometry.coordinates[1];
+      currentLng = bounds.southWest.longitude; // Reset to start longitude
+    }
+
+    return points;
+  };
+
+  function calculateDistanceBasedOnZoom(zoomLevel: number): number {
+    // Example logic: adjust these values based on your application's requirements
+    if (zoomLevel > 15) return 75; // 70 meters between points when zoomed in closely
+    if (zoomLevel > 13) return 55; // 50 meters for intermediate zoom
+    return 40; // 40 meters when zoomed out
+  }
+
   return (
     <View style={defaultStyles.container}>
       <MapView
@@ -158,7 +258,7 @@ const RnMapViews = () => {
         onMapReady={handleMapReady}
         onRegionChangeComplete={handleRegionChangeComplete}
         onPanDrag={handleMapDrawOnPan} // Log coordinates/points while map is on pan
-        onTouchEnd={handleMapDrawPanEnd} // Call API to fetch properties by tracked "Points | Coordinates"
+        onTouchEnd={() => void handleMapDrawPanEndUsingTurf(9)} // Call API to fetch properties by tracked "Points | Coordinates"
       >
         {data.map((propertyListing) => (
           <MapMarker
