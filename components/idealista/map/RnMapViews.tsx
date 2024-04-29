@@ -71,10 +71,6 @@ const RnMapViews = () => {
     setPointBounds(b);
   };
 
-  const handleRegionChangeComplete = async (newRegion: any) => {
-    handleMapReady();
-  };
-
   const handleMapDrawPanEnd = async () => {
     if (points.length > 0) {
       const pointToPolygon: Coordinate[] = [];
@@ -257,7 +253,7 @@ const RnMapViews = () => {
         }}
         scrollEnabled={!isDrawState}
         onMapReady={handleMapReady}
-        onRegionChangeComplete={handleRegionChangeComplete}
+        onRegionChangeComplete={() => setTimeout(handleMapReady, 200)}
         onPanDrag={handleMapDrawOnPan} // Log coordinates/points while map is on pan
         onTouchEnd={async () => {
           const camera = await mapView.current?.getCamera();
