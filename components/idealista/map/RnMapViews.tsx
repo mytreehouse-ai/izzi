@@ -60,17 +60,6 @@ const RnMapViews = () => {
     }
   };
 
-  const handleMapReady = async () => {
-    setPointBounds([]);
-    // Step size for generating points (adjust as needed)
-    const bounds = await mapView.current?.getMapBoundaries();
-    // You can adjust this value as per your requirement
-    var step = 0.0001;
-    // Generate points covering the entire area within the bounds
-    var b = getPointsInBounds(bounds, step);
-    setPointBounds(b);
-  };
-
   const handleMapReadyUsingTurf = async () => {
     // Clear any existing points
     setPointBounds([]);
@@ -84,7 +73,7 @@ const RnMapViews = () => {
       const distanceMeters = 100;
 
       // Generate points within the bounds, spaced approximately 100 meters apart
-      const generatedPoints = generatePointsWithinBounds(
+      const generatedPoints = generatePointsWithinBoundsUsingTurf(
         {
           southWest: {
             latitude: bounds.southWest.latitude,
@@ -100,21 +89,6 @@ const RnMapViews = () => {
 
       // Update state with the generated points
       setPointBounds(generatedPoints);
-    }
-  };
-
-  const handleMapDrawPanEnd = async () => {
-    if (points.length > 0) {
-      const pointToPolygon: Coordinate[] = [];
-      pointBounds.map((bb) => {
-        if (isPointInsidePolygonUsingTurf(bb, points)) {
-          console.log("Point bounds: ", bb);
-
-          pointToPolygon.push(bb);
-        }
-      });
-
-      setInsideBounds(pointToPolygon);
     }
   };
 
@@ -137,7 +111,10 @@ const RnMapViews = () => {
       const distance = calculateDistanceBasedOnZoom(zoomLevel);
 
       // Generate points within the bounds, using the calculated distance
-      const generatedPoints = generatePointsWithinBounds(bounds, distance);
+      const generatedPoints = generatePointsWithinBoundsUsingTurf(
+        bounds,
+        distance
+      );
 
       // Filter points to ensure they're inside the polygon
       const insidePoints = generatedPoints.filter((pointCoord) =>
@@ -167,41 +144,6 @@ const RnMapViews = () => {
     return points;
   };
 
-  const isPointInsidePolygon = (
-    point: Coordinate,
-    polygon: Coordinate[]
-  ): boolean => {
-    const x = point.longitude;
-    const y = point.latitude;
-    let inside = false;
-    const n = polygon.length;
-    let p1x: number, p1y: number, p2x: number, p2y: number;
-
-    p1x = polygon[0].longitude;
-    p1y = polygon[0].latitude;
-
-    for (let i = 0; i < n + 1; i++) {
-      p2x = polygon[i % n].longitude;
-      p2y = polygon[i % n].latitude;
-
-      if (y > Math.min(p1y, p2y)) {
-        if (y <= Math.max(p1y, p2y)) {
-          if (x <= Math.max(p1x, p2x)) {
-            if (p1y !== p2y) {
-              const xinters = ((y - p1y) * (p2x - p1x)) / (p2y - p1y) + p1x;
-              if (p1x === p2x || x <= xinters) {
-                inside = !inside;
-              }
-            }
-          }
-        }
-      }
-      p1x = p2x;
-      p1y = p2y;
-    }
-    return inside;
-  };
-
   const isPointInsidePolygonUsingTurf = (
     pointCoord: Coordinate,
     polygonCoords: Coordinate[]
@@ -219,7 +161,7 @@ const RnMapViews = () => {
     return booleanPointInPolygon(turfPoint, turfPolygon);
   };
 
-  const generatePointsWithinBounds = (
+  const generatePointsWithinBoundsUsingTurf = (
     bounds: Bounds,
     distanceMeters: number
   ): Coordinate[] => {
@@ -287,7 +229,7 @@ const RnMapViews = () => {
         scrollEnabled={!isDrawState}
         onMapReady={handleMapReadyUsingTurf}
         onRegionChangeComplete={() => setTimeout(handleMapReadyUsingTurf, 200)}
-        onPanDrag={handleMapDrawOnPan} // Log coordinates/points while map is on pan
+        onPanDrag={handleMapDrawOnPan}
         onTouchEnd={async () => {
           const camera = await mapView.current?.getCamera();
           if (camera?.zoom) {
