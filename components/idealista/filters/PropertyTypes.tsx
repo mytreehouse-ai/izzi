@@ -12,16 +12,16 @@ interface PropertyTypesProps {
 
 const dropDownValues = [
   {
-    title: "House",
-    value: "house",
-  },
-  {
     title: "Condominium",
     value: "condominium",
   },
   {
     title: "Warehouse",
     value: "warehouse",
+  },
+  {
+    title: "House",
+    value: "house",
   },
   {
     title: "Land",

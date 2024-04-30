@@ -71,6 +71,38 @@ const RnMapViews = () => {
     setPointBounds(b);
   };
 
+  const handleMapReadyUsingTurf = async () => {
+    // Clear any existing points
+    setPointBounds([]);
+
+    // Obtain the current map boundaries
+    const bounds = await mapView.current?.getMapBoundaries();
+
+    if (bounds) {
+      // Define the desired distance between points in meters
+      // For example, 100 meters
+      const distanceMeters = 100;
+
+      // Generate points within the bounds, spaced approximately 100 meters apart
+      const generatedPoints = generatePointsWithinBounds(
+        {
+          southWest: {
+            latitude: bounds.southWest.latitude,
+            longitude: bounds.southWest.longitude,
+          },
+          northEast: {
+            latitude: bounds.northEast.latitude,
+            longitude: bounds.northEast.longitude,
+          },
+        },
+        distanceMeters
+      );
+
+      // Update state with the generated points
+      setPointBounds(generatedPoints);
+    }
+  };
+
   const handleMapDrawPanEnd = async () => {
     if (points.length > 0) {
       const pointToPolygon: Coordinate[] = [];
@@ -222,6 +254,7 @@ const RnMapViews = () => {
 
     return points;
   };
+
   function calculateDistanceBasedOnZoom(zoomLevel: number): number {
     // Adjusted values for optimized performance and user experience
     if (zoomLevel > 15) return 50; // 50 meters between points when zoomed in closely for detailed view
@@ -252,8 +285,8 @@ const RnMapViews = () => {
           longitudeDelta: 0.005,
         }}
         scrollEnabled={!isDrawState}
-        onMapReady={handleMapReady}
-        onRegionChangeComplete={() => setTimeout(handleMapReady, 200)}
+        onMapReady={handleMapReadyUsingTurf}
+        onRegionChangeComplete={() => setTimeout(handleMapReadyUsingTurf, 200)}
         onPanDrag={handleMapDrawOnPan} // Log coordinates/points while map is on pan
         onTouchEnd={async () => {
           const camera = await mapView.current?.getCamera();
