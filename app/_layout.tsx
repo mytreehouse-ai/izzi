@@ -2,7 +2,6 @@ import { Ionicons, SafeAreaView, View } from "@/components/Themed";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
 import { usePropertyListingFilter } from "@/store";
-import { useStore } from "@/store/slices";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import NetInfo from "@react-native-community/netinfo";
@@ -18,7 +17,7 @@ import * as Location from "expo-location";
 import { Stack, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   Platform,
   StyleSheet,
@@ -90,10 +89,7 @@ function RootLayoutNav() {
   const router = useRouter();
   const { isLoaded, isSignedIn } = useAuth();
   const colorScheme = useColorScheme();
-  const [disableAuthAndMapPermission, _] = useState(true);
   const propertyListingFilter = usePropertyListingFilter();
-  const resetBedroomFilter = useStore((action) => action.resetBedroomFilter);
-  const resetBathroomFilter = useStore((action) => action.resetBathroomFilter);
 
   useEffect(() => {
     const removeNetInfoSubscription = NetInfo.addEventListener((state) => {
@@ -105,7 +101,7 @@ function RootLayoutNav() {
   }, []);
 
   useEffect(() => {
-    if (isLoaded && !isSignedIn && disableAuthAndMapPermission === false) {
+    if (isLoaded && !isSignedIn) {
       setTimeout(() => router.push("/(modals)/login"), 100);
     } else {
       (async () => {
@@ -120,39 +116,6 @@ function RootLayoutNav() {
       })();
     }
   }, [isLoaded, isSignedIn]);
-
-  // TODO: Property listing filter reset for warehouse and land
-  useEffect(() => {
-    const propertyType =
-      propertyListingFilter.propertyListingFilters.property_type!;
-
-    if (["warehouse", "land"].includes(propertyType)) {
-      const minBedroom =
-        propertyListingFilter.propertyListingFilters.min_bedrooms;
-      const maxBedroom =
-        propertyListingFilter.propertyListingFilters.max_bedrooms;
-      const minBathroom =
-        propertyListingFilter.propertyListingFilters.min_bathrooms;
-      const maxBathroom =
-        propertyListingFilter.propertyListingFilters.max_bathrooms;
-
-      if (minBedroom && maxBedroom) {
-        propertyListingFilter.updateFilters({
-          min_bedrooms: 0,
-          max_bedrooms: 0,
-        });
-        resetBedroomFilter();
-      }
-
-      if (minBathroom && maxBathroom) {
-        propertyListingFilter.updateFilters({
-          min_bathrooms: 0,
-          max_bathrooms: 0,
-        });
-        resetBathroomFilter();
-      }
-    }
-  }, [propertyListingFilter.propertyListingFilters]);
 
   function HeaderCloseBtn() {
     return (
