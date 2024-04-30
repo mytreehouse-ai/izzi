@@ -127,23 +127,6 @@ const RnMapViews = () => {
     }
   };
 
-  // Function to generate points covering the entire area within given bounds
-  const getPointsInBounds = (bounds: any, step: any) => {
-    var minLat = bounds.southWest.latitude;
-    var maxLat = bounds.northEast.latitude;
-    var minLng = bounds.southWest.longitude;
-    var maxLng = bounds.northEast.longitude;
-
-    var points = [];
-    for (var lat = minLat; lat <= maxLat; lat += step) {
-      for (var lng = minLng; lng <= maxLng; lng += step) {
-        points.push({ latitude: lat, longitude: lng });
-      }
-    }
-
-    return points;
-  };
-
   const isPointInsidePolygonUsingTurf = (
     pointCoord: Coordinate,
     polygonCoords: Coordinate[]
