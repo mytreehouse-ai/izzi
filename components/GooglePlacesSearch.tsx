@@ -39,7 +39,9 @@ const GooglePlacesSearch: React.FC<GooglePlacesSearchProps> = ({
   );
 
   return (
-    <View style={[defaultStyles.removedBackground, { height: "100%" }]}>
+    <View
+      style={[defaultStyles.removedBackground, { height: "100%", zIndex: 1 }]}
+    >
       <GooglePlacesAutocomplete
         styles={{
           textInput: {

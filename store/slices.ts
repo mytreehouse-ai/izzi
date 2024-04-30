@@ -73,12 +73,17 @@ interface CreateaPropertyListing {
   listingTitle: string;
   propertyType: string;
   listingType: string;
+  floorNo: string;
+  unitNo: string;
   price: number;
   city: string;
   address: string;
   bedrooms: number;
   bathrooms: number;
-  areaSize: number;
+  floorArea: number;
+  lotArea: number;
+  buildingArea: number;
+  ceilingHeight: number;
   features: string[];
   images: string[];
   longitude: number;
@@ -89,25 +94,25 @@ interface CreateaPropertyListing {
 const commonResidentialPropertyFeatures = [
   {
     id: 1,
-    text: "Fitted Wardrobes",
+    text: "Fitted wardrobes",
     value: "fitted-wardrobes",
     checked: false,
   },
   {
     id: 2,
-    text: "Air Conditioning",
+    text: "Air conditioning",
     value: "air-conditioning",
     checked: false,
   },
   {
     id: 3,
-    text: "Parking Space",
+    text: "Parking space",
     value: "parking-space",
     checked: false,
   },
   {
     id: 4,
-    text: "Storage Space",
+    text: "Storage space",
     value: "storage-space",
     checked: false,
   },
@@ -142,20 +147,34 @@ const propertyListingCreateSlice = createSlice({
   value: {
     propertyFeatures: {
       condominium: [...commonResidentialPropertyFeatures],
-      warehouse: [
+      house: [...commonResidentialPropertyFeatures],
+      land: [],
+      dormitory: [
         {
           id: 1,
-          text: "Banker",
-          value: "banker",
+          text: "Kitchen",
+          value: "kitchen",
+          checked: false,
+        },
+        {
+          id: 2,
+          text: "Parking space",
+          value: "parking-space",
           checked: false,
         },
       ],
-      house: [...commonResidentialPropertyFeatures],
-      land: [
+      building: [],
+      warehouse: [
         {
           id: 1,
-          text: "Central business district",
-          value: "central-business-district",
+          text: "Peza compliant",
+          value: "peza-compliant",
+          checked: false,
+        },
+        {
+          id: 2,
+          text: "Loading & unloading area",
+          value: "loading-unloading-area",
           checked: false,
         },
       ],
@@ -171,13 +190,18 @@ const propertyListingCreateSlice = createSlice({
     propertyDetails: {
       listingTitle: "",
       propertyType: "",
-      listingType: "",
+      listingType: "for-sale",
+      floorNo: "",
+      unitNo: "",
       price: 0,
       city: "",
       address: "",
       bedrooms: 0,
       bathrooms: 1,
-      areaSize: 20,
+      floorArea: 0,
+      lotArea: 0,
+      buildingArea: 0,
+      ceilingHeight: 0,
       features: [],
       images: [],
       longitude: 0,

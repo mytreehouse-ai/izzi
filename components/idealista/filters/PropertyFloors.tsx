@@ -4,40 +4,22 @@ import React from "react";
 import { StyleSheet, useColorScheme } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 
-interface PropertyTypesProps {
+interface PropertyFloorsProps {
   objKey?: "title" | "value";
   value?: string;
   onChange: (propertyType: string) => void;
 }
 
-const dropDownValues = [
-  {
-    title: "Condominium",
-    value: "condominium",
-  },
-  {
-    title: "House and lot",
-    value: "house",
-  },
-  {
-    title: "Land",
-    value: "land",
-  },
-  {
-    title: "Dormitory",
-    value: "dormitory",
-  },
-  {
-    title: "Building",
-    value: "building",
-  },
-  {
-    title: "Warehouse",
-    value: "warehouse",
-  },
-];
+const dropDownValues = Array.from({ length: 80 }, (_, i) => i + 1)
+  .filter((floor) => floor !== 13)
+  .map((floor) => ({
+    title: `${floor}${
+      floor === 1 ? "st" : floor === 2 ? "nd" : floor === 3 ? "rd" : "th"
+    } floor`,
+    value: `${floor}`,
+  }));
 
-const PropertyTypes: React.FC<PropertyTypesProps> = ({
+const PropertyFloors: React.FC<PropertyFloorsProps> = ({
   objKey = "value",
   value = "",
   onChange,
@@ -73,7 +55,7 @@ const PropertyTypes: React.FC<PropertyTypesProps> = ({
               fontWeight="semibold"
               fontSize={16}
             >
-              {(selectedItem && selectedItem.title) || "Select property type"}
+              {(selectedItem && selectedItem.title) || "Select property floor"}
             </Text>
             <Ionicons
               name={isOpened ? "chevron-up" : "chevron-down"}
@@ -132,4 +114,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PropertyTypes;
+export default PropertyFloors;

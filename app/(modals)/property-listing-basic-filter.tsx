@@ -27,7 +27,7 @@ const PropertyListingBasicFilter = () => {
         style={[defaultStyles.container, { padding: 16, gap: 16 }]}
         lightColor={Colors.common.gray["100"]}
       >
-        <ListingTypes />
+        <ListingTypes type="group-btn" />
         <PropertyTypes
           value={store.propertyListingFilters.property_type!}
           onChange={(propertyType) => {

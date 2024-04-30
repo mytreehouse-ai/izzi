@@ -1,112 +1,49 @@
-import { AnimatedView, Text, View } from "@/components/Themed";
-import Colors from "@/constants/Colors";
 import { mapDarkModeStyle } from "@/constants/MapStyles";
-import { defaultStyles } from "@/constants/Styles";
-import { useRouter } from "expo-router";
 import React from "react";
-import {
-  ActivityIndicator,
-  Platform,
-  StyleSheet,
-  useColorScheme,
-} from "react-native";
-import MapView, { Circle, Marker } from "react-native-maps";
-import { FadeIn, FadeOut } from "react-native-reanimated";
+import { useColorScheme } from "react-native";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
-interface RnsSinglePropertyListingMapViewProps {
-  formattedPrice?: string;
+interface RnMapViewProps {
+  latitude: number;
+  longitude: number;
+  height?: number;
 }
 
-const RnsSinglePropertyListingMapView: React.FC<
-  RnsSinglePropertyListingMapViewProps
-> = ({ formattedPrice }) => {
-  const router = useRouter();
+const RnMapView: React.FC<RnMapViewProps> = ({
+  latitude,
+  longitude,
+  height = 300,
+}) => {
   const colorScheme = useColorScheme();
 
   return (
-    <View style={defaultStyles.container}>
-      <MapView
-        userInterfaceStyle={colorScheme as "light" | "dark"}
-        customMapStyle={colorScheme === "dark" ? mapDarkModeStyle : undefined}
-        loadingEnabled={Platform.OS === "android" ? true : false}
-        style={{ width: "auto", height: 300, borderRadius: 10 }}
-        zoomEnabled={true}
-        zoomTapEnabled={false}
-        showsUserLocation={true}
-        moveOnMarkerPress={false}
-        showsMyLocationButton={true}
-        initialRegion={{
-          latitude: 14.5547,
-          longitude: 121.0244,
-          latitudeDelta: 0.005,
-          longitudeDelta: 0.005,
+    <MapView
+      userInterfaceStyle={colorScheme as "light" | "dark"}
+      customMapStyle={colorScheme === "dark" ? mapDarkModeStyle : undefined}
+      style={{ height, borderRadius: 8 }}
+      provider={PROVIDER_GOOGLE}
+      minZoomLevel={16}
+      zoomEnabled={true}
+      zoomTapEnabled={false}
+      showsUserLocation={false}
+      moveOnMarkerPress={false}
+      showsMyLocationButton={false}
+      initialRegion={{
+        latitude,
+        longitude,
+        latitudeDelta: 0.005,
+        longitudeDelta: 0.005,
+      }}
+    >
+      <Marker
+        tracksViewChanges={false}
+        coordinate={{
+          latitude,
+          longitude,
         }}
-      >
-        <Circle
-          center={{
-            latitude: 14.5547,
-            longitude: 121.0244,
-          }}
-          radius={100}
-          strokeColor={Colors.common.primary}
-          fillColor={Colors.common.primary}
-          strokeWidth={10}
-        />
-        <Marker
-          key={1}
-          tracksViewChanges={false}
-          coordinate={{
-            latitude: 14.5547,
-            longitude: 121.0244,
-          }}
-        >
-          <AnimatedView
-            style={styles.marker}
-            lightColor={Colors.light.primary}
-            darkColor={Colors.dark.primary}
-            entering={FadeIn.duration(500)}
-            exiting={FadeOut.duration(500)}
-          >
-            <Text
-              fontWeight="bold"
-              fontSize={12}
-              style={{ color: Colors.common.white }}
-            >
-              {formattedPrice ?? "100"}
-            </Text>
-          </AnimatedView>
-        </Marker>
-      </MapView>
-      {false && (
-        <View style={styles.loader}>
-          <ActivityIndicator size="large" />
-        </View>
-      )}
-    </View>
+      />
+    </MapView>
   );
 };
 
-const styles = StyleSheet.create({
-  marker: {
-    width: "auto",
-    height: 30,
-    padding: 8,
-    borderRadius: 15,
-    backgroundColor: Colors.common.primary,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  loader: {
-    position: "absolute",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "transparent",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 100,
-  },
-});
-
-export default RnsSinglePropertyListingMapView;
+export default RnMapView;

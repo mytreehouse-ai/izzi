@@ -8,7 +8,10 @@ import {
   Text,
   View,
 } from "@/components/Themed";
+import ListingTypes from "@/components/idealista/filters/ListingTypes";
+import PropertyFloors from "@/components/idealista/filters/PropertyFloors";
 import PropertyTypes from "@/components/idealista/filters/PropertyTypes";
+import WarehouseTypes from "@/components/idealista/filters/WarehouseTypes";
 import ListingCard from "@/components/idealista/listing/ListingCard";
 import ListingFooter from "@/components/idealista/listing/ListingFooter";
 import ListingImages from "@/components/idealista/listing/ListingImages";
@@ -23,18 +26,19 @@ import { useRouter } from "expo-router";
 import React, { Fragment, useEffect, useMemo, useReducer } from "react";
 import {
   Dimensions,
+  Image,
   StyleSheet,
   TouchableOpacity,
   useColorScheme,
 } from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import * as Progress from "react-native-progress";
-import RadioGroup, { RadioButtonProps } from "react-native-radio-buttons-group";
 import Animated, {
   Easing,
   SlideInDown,
   SlideInRight,
   SlideOutLeft,
+  SlideOutRight,
 } from "react-native-reanimated";
 
 type PropertyListingAction =
@@ -117,34 +121,13 @@ const PropertyListingCreate = () => {
     [colorScheme]
   );
 
-  const radioButtons: RadioButtonProps[] = useMemo(
-    () => [
-      {
-        id: "1",
-        label: "Sale",
-        value: "for-sale",
-        borderColor: checkbox.fillColor,
-        color: checkbox.fillColor,
-        labelStyle: {
-          color: checkbox.textStyle.color,
-          fontSize: 16,
-          fontFamily: "MontserratSemiBold",
-        },
-      },
-      {
-        id: "2",
-        label: "Rent",
-        value: "for-rent",
-        borderColor: checkbox.fillColor,
-        color: checkbox.fillColor,
-        labelStyle: {
-          color: checkbox.textStyle.color,
-          fontSize: 16,
-          fontFamily: "MontserratSemiBold",
-        },
-      },
-    ],
-    [colorScheme]
+  const propertyFeatures = useMemo(
+    () =>
+      store.propertyFeatures[
+        store.propertyDetails
+          .propertyType as keyof typeof store.propertyFeatures
+      ],
+    [store.propertyDetails]
   );
 
   useEffect(() => {
@@ -158,16 +141,6 @@ const PropertyListingCreate = () => {
   }, []);
 
   useEffect(() => {
-    newPropertyListingUpdatePropertyDetails({
-      listingType: radioButtons.find(
-        (listingType) => listingType.id === state.selectedListingtypeId
-      )?.value,
-      bedrooms: state.bedrooms,
-      bathrooms: state.bathrooms,
-    });
-  }, [state]);
-
-  useEffect(() => {
     if (!isPending && image) {
       newPropertyListingUpdatePropertyDetails({
         ...store.propertyDetails,
@@ -175,6 +148,13 @@ const PropertyListingCreate = () => {
       });
     }
   }, [isPending, image]);
+
+  useEffect(() => {
+    newPropertyListingUpdatePropertyDetails({
+      bedrooms: state.bedrooms,
+      bathrooms: state.bathrooms,
+    });
+  }, [state.bedrooms, state.bathrooms]);
 
   async function onPickImage() {
     try {
@@ -298,19 +278,15 @@ const PropertyListingCreate = () => {
                 style={[defaultStyles.removedBackground, styles.formContainer]}
               >
                 <Text fontWeight="semibold" fontSize={16}>
-                  Listing title
+                  Listing type
                 </Text>
-                <Input
-                  value={store.propertyDetails.listingTitle}
-                  placeholder="Listing title"
-                  onChange={(text) =>
-                    newPropertyListingUpdatePropertyDetails({
-                      listingTitle: String(text),
-                    })
-                  }
+                <ListingTypes
+                  type="select"
+                  value={store.propertyDetails.listingType}
+                  onChange={(text) => console.log(text)}
                 />
                 <Text fontWeight="semibold" fontSize={16}>
-                  Select property type
+                  Property type
                 </Text>
                 <PropertyTypes
                   value={store.propertyDetails.propertyType}
@@ -318,44 +294,132 @@ const PropertyListingCreate = () => {
                     newPropertyListingUpdatePropertyDetails({ propertyType });
                   }}
                 />
-                <Text fontWeight="semibold" fontSize={16}>
-                  Listing type
-                </Text>
-                <RadioGroup
-                  radioButtons={radioButtons}
-                  containerStyle={{
-                    alignItems: "flex-start",
-                  }}
-                  labelStyle={{
-                    fontSize: 16,
-                    fontFamily: "MontserratSemiBold",
-                    color:
-                      colorScheme === "light"
-                        ? Colors.light.text
-                        : Colors.dark.text,
-                  }}
-                  onPress={(selectedId) =>
-                    dispatch({
-                      type: "SET_LISTING_TYPE_ID",
-                      payload: selectedId,
-                    })
-                  }
-                  selectedId={state.selectedListingtypeId}
-                />
-                <Text fontWeight="semibold" fontSize={16}>
-                  Property price
-                </Text>
-                <Input
-                  type="number"
-                  value={store.propertyDetails.price}
-                  placeholder="Property price"
-                  onChange={(text) =>
-                    newPropertyListingUpdatePropertyDetails({
-                      price: Number(text),
-                    })
-                  }
-                />
-                {["condominium", "house"].includes(
+                {store.propertyDetails.propertyType === "warehouse" && (
+                  <Fragment>
+                    <Text fontWeight="semibold" fontSize={16}>
+                      Warehouse type
+                    </Text>
+                    <WarehouseTypes
+                      value=""
+                      onChange={(text) => console.log(text)}
+                    />
+                  </Fragment>
+                )}
+                {store.propertyDetails.propertyType === "condominium" && (
+                  <Fragment>
+                    <Text fontWeight="semibold" fontSize={16}>
+                      Unit floor
+                    </Text>
+                    <PropertyFloors
+                      value={store.propertyDetails.floorNo}
+                      onChange={(text) => console.log(text)}
+                    />
+                    <Text fontWeight="semibold" fontSize={16}>
+                      Unit no.
+                    </Text>
+                    <Input
+                      value={store.propertyDetails.unitNo}
+                      placeholder="Unit no."
+                      onChange={(text) => console.log(text)}
+                    />
+                  </Fragment>
+                )}
+                {store.propertyDetails.propertyType && (
+                  <Fragment>
+                    <Text fontWeight="semibold" fontSize={16}>
+                      Property price
+                    </Text>
+                    <Input
+                      type="number"
+                      value={store.propertyDetails.price}
+                      placeholder="Property price"
+                      onChange={(text) =>
+                        newPropertyListingUpdatePropertyDetails({
+                          price: Number(text),
+                        })
+                      }
+                    />
+                  </Fragment>
+                )}
+                {["condominium", "house", "dormitory"].includes(
+                  store.propertyDetails.propertyType
+                ) && (
+                  <Fragment>
+                    <Text fontWeight="semibold" fontSize={16}>
+                      Floor area
+                    </Text>
+                    <Input
+                      type="number"
+                      maxLength={5}
+                      value={store.propertyDetails.floorArea}
+                      onChange={(data) =>
+                        newPropertyListingUpdatePropertyDetails({
+                          floorArea: Number(data),
+                        })
+                      }
+                    />
+                  </Fragment>
+                )}
+                {["warehouse", "building"].includes(
+                  store.propertyDetails.propertyType
+                ) && (
+                  <Fragment>
+                    <Text fontWeight="semibold" fontSize={16}>
+                      Building area
+                    </Text>
+                    <Input
+                      type="number"
+                      maxLength={5}
+                      value={store.propertyDetails.buildingArea}
+                      onChange={(data) =>
+                        newPropertyListingUpdatePropertyDetails({
+                          buildingArea: Number(data),
+                        })
+                      }
+                    />
+                  </Fragment>
+                )}
+                {store.propertyDetails.propertyType === "warehouse" && (
+                  <Fragment>
+                    <Text fontWeight="semibold" fontSize={16}>
+                      Ceiling height
+                    </Text>
+                    <Input
+                      type="number"
+                      maxLength={5}
+                      value={store.propertyDetails.ceilingHeight}
+                      onChange={(data) =>
+                        newPropertyListingUpdatePropertyDetails({
+                          ceilingHeight: Number(data),
+                        })
+                      }
+                    />
+                  </Fragment>
+                )}
+                {[
+                  "land",
+                  "house",
+                  "dormitory",
+                  "building",
+                  "warehouse",
+                ].includes(store.propertyDetails.propertyType) && (
+                  <Fragment>
+                    <Text fontWeight="semibold" fontSize={16}>
+                      Lot area
+                    </Text>
+                    <Input
+                      type="number"
+                      maxLength={5}
+                      value={store.propertyDetails.lotArea}
+                      onChange={(data) =>
+                        newPropertyListingUpdatePropertyDetails({
+                          lotArea: Number(data),
+                        })
+                      }
+                    />
+                  </Fragment>
+                )}
+                {["condominium", "house", "dormitory"].includes(
                   store.propertyDetails.propertyType
                 ) && (
                   <Fragment>
@@ -453,20 +517,8 @@ const PropertyListingCreate = () => {
                     </View>
                   </Fragment>
                 )}
-                <Text fontWeight="semibold" fontSize={16}>
-                  Property size
-                </Text>
-                <Input
-                  type="number"
-                  maxLength={5}
-                  value={store.propertyDetails.areaSize}
-                  onChange={(data) =>
-                    newPropertyListingUpdatePropertyDetails({
-                      areaSize: Number(data),
-                    })
-                  }
-                />
-                {store.propertyDetails.propertyType && (
+                {propertyFeatures?.length &&
+                store.propertyDetails.propertyType ? (
                   <Fragment>
                     <Text fontWeight="semibold" fontSize={16}>
                       {store.propertyDetails.propertyType
@@ -477,10 +529,7 @@ const PropertyListingCreate = () => {
                         .join(" ")}{" "}
                       features
                     </Text>
-                    {store.propertyFeatures[
-                      store.propertyDetails
-                        .propertyType as keyof typeof store.propertyFeatures
-                    ].map((feature) => (
+                    {propertyFeatures.map((feature) => (
                       <BouncyCheckbox
                         key={feature.id}
                         size={20}
@@ -488,23 +537,29 @@ const PropertyListingCreate = () => {
                         fillColor={checkbox.fillColor}
                         textStyle={checkbox.textStyle as any}
                         isChecked={feature.checked}
-                        onPress={() => console.log(feature.id)}
+                        onPress={(isChecked) =>
+                          console.log(`${feature.id} - ${isChecked}`)
+                        }
                       />
                     ))}
                   </Fragment>
+                ) : null}
+                {store.propertyDetails.propertyType && (
+                  <Fragment>
+                    <Text fontWeight="semibold" fontSize={16}>
+                      Description
+                    </Text>
+                    <Input
+                      value={store.propertyDetails.description}
+                      multiline={true}
+                      onChange={(data) =>
+                        newPropertyListingUpdatePropertyDetails({
+                          description: String(data),
+                        })
+                      }
+                    />
+                  </Fragment>
                 )}
-                <Text fontWeight="semibold" fontSize={16}>
-                  Description
-                </Text>
-                <Input
-                  value={store.propertyDetails.description}
-                  multiline={true}
-                  onChange={(data) =>
-                    newPropertyListingUpdatePropertyDetails({
-                      description: String(data),
-                    })
-                  }
-                />
               </View>
             </Animated.ScrollView>
           </AnimatedView>
@@ -518,6 +573,30 @@ const PropertyListingCreate = () => {
             <TouchableOpacity onPress={onPickImage}>
               <Text>Property Photos {isPending && "..."}</Text>
             </TouchableOpacity>
+            <Animated.ScrollView
+              contentContainerStyle={{
+                gap: 16,
+                paddingBottom: 125,
+              }}
+              showsVerticalScrollIndicator={false}
+              scrollEventThrottle={16}
+            >
+              {store.propertyDetails.images
+                .map((image, index) => (
+                  <AnimatedView
+                    key={index}
+                    style={defaultStyles.removedBackground}
+                    entering={SlideInRight}
+                    exiting={SlideOutRight}
+                  >
+                    <Image
+                      style={{ width: "100%", height: 300, borderRadius: 8 }}
+                      source={{ uri: image }}
+                    />
+                  </AnimatedView>
+                ))
+                .reverse()}
+            </Animated.ScrollView>
           </AnimatedView>
         ) : null}
         {store.currentStepIndex === 3 ? (
@@ -570,7 +649,7 @@ const PropertyListingCreate = () => {
                     price_sqm: "1,345 price/sqm",
                     city: store.propertyDetails.city,
                     area: "",
-                    sqm: `${store.propertyDetails.areaSize} sqm`,
+                    sqm: "1 sqm",
                   }}
                 />
               }
