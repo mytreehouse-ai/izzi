@@ -17,7 +17,7 @@ const dropDownValues = [
   },
   {
     title: "House and lot",
-    value: "house",
+    value: "house-and-lot",
   },
   {
     title: "Land",

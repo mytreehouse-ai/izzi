@@ -24,6 +24,9 @@ export const dummyPropertyListingsData: PropertyListing[] = [
     area: "Asturias",
     address: "Asturias",
     features: [],
+    features_with_icon: [],
+    equipments: [],
+    equipments_with_icon: [],
     main_image_url:
       "https://static-ph.lamudi.com/static/media/bm9uZS9ub25l/2x2x5x880x396/1ad1092baf4cef.jpg",
     property_images: [],
@@ -32,6 +35,7 @@ export const dummyPropertyListingsData: PropertyListing[] = [
     longitude_in_text: null,
     description:
       "Calling all aspiring farmers! Your ‘Dream Farm’ awaits!Explore the endless possibilities of owning this 1.9 hectares prime farm land near Hacienda Luisita and conveniently close to SCTEX, located in Brgy. Asturias, Tarlac City. ",
+    is_peza_compliant: false,
     created_at: "2024-04-09T01:52:28.357Z",
   },
   {
@@ -57,6 +61,9 @@ export const dummyPropertyListingsData: PropertyListing[] = [
     area: "Asturias",
     address: "Asturias",
     features: [],
+    features_with_icon: [],
+    equipments: [],
+    equipments_with_icon: [],
     main_image_url:
       "https://static-ph.lamudi.com/static/media/bm9uZS9ub25l/2x2x5x880x396/1ad1092baf4cef.jpg",
     property_images: [],
@@ -65,6 +72,7 @@ export const dummyPropertyListingsData: PropertyListing[] = [
     longitude_in_text: null,
     description:
       "Calling all aspiring farmers! Your ‘Dream Farm’ awaits!Explore the endless possibilities of owning this 1.9 hectares prime farm land near Hacienda Luisita and conveniently close to SCTEX, located in Brgy. Asturias, Tarlac City. ",
+    is_peza_compliant: false,
     created_at: "2024-04-09T01:52:28.357Z",
   },
 ];

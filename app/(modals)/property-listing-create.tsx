@@ -638,7 +638,6 @@ const PropertyListingCreate = () => {
                   />
                 </TouchableOpacity>
               }
-              media={<Fragment />}
               info={
                 <ListingInfo
                   data={{
@@ -646,10 +645,8 @@ const PropertyListingCreate = () => {
                     price_formatted: `₱${store.propertyDetails.price.toLocaleString(
                       "en-PH"
                     )}`,
-                    price_sqm: "1,345 price/sqm",
                     city: store.propertyDetails.city,
                     area: "",
-                    sqm: "1 sqm",
                   }}
                 />
               }

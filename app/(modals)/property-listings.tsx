@@ -11,7 +11,6 @@ import ListingCardLoader from "@/components/idealista/listing/ListingCardLoader"
 import ListingFooter from "@/components/idealista/listing/ListingFooter";
 import ListingImages from "@/components/idealista/listing/ListingImages";
 import ListingInfo from "@/components/idealista/listing/ListingInfo";
-import ListingMedia from "@/components/idealista/listing/ListingMedia";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
 import { usePropertyListingsQuery } from "@/hooks/usePropertyListingsQuery";
@@ -73,21 +72,16 @@ const PropertyListingsPage = () => {
             </TouchableOpacity>
           </Link>
         }
-        media={<ListingMedia />}
         info={
           <ListingInfo
             data={{
               listing_title: item.listing_title,
               price_formatted: item.price_formatted,
-              price_sqm: "** price/sqm",
               city: item.city,
               area: item.area,
-              sqm: `${
-                item?.floor_area ||
-                item?.lot_area ||
-                item?.building_size ||
-                "N/A"
-              } sqm`,
+              floor_area: item?.floor_area || 0,
+              lot_area: item?.lot_area || 0,
+              building_area: item?.building_size || 0,
             }}
           />
         }

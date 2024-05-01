@@ -3,7 +3,6 @@ import ListingAgent from "@/components/idealista/listing/ListingAgent";
 import ListingDescription from "@/components/idealista/listing/ListingDescription";
 import ListingFeatures from "@/components/idealista/listing/ListingFeatures";
 import ListingInfo from "@/components/idealista/listing/ListingInfo";
-import ListingMedia from "@/components/idealista/listing/ListingMedia";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
 import { usePropertyListingQuery } from "@/hooks/usePropertyListingQuery";
@@ -198,22 +197,17 @@ const PropertyListing = () => {
             <SkeletonLoader />
           ) : (
             <Fragment>
-              <ListingMedia singleView={true} />
               {propertyListing?.data && (
                 <Fragment>
                   <ListingInfo
                     data={{
                       listing_title: propertyListing.data.listing_title,
                       price_formatted: propertyListing.data.price_formatted,
-                      price_sqm: "** price/sqm",
+                      floor_area: propertyListing.data.floor_area || 0,
+                      lot_area: propertyListing.data.lot_area || 0,
+                      building_area: propertyListing.data.building_size || 0,
                       city: propertyListing.data.city,
                       area: propertyListing.data.area,
-                      sqm: `${
-                        propertyListing.data?.floor_area ||
-                        propertyListing.data?.lot_area ||
-                        propertyListing.data?.building_size ||
-                        "N/A"
-                      } sqm`,
                     }}
                     singleView={true}
                   />

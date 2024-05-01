@@ -76,7 +76,7 @@ export default function Home() {
                 lightColor={Colors.light.primary}
                 darkColor={Colors.dark.primary}
               >
-                <ListingTypes />
+                <ListingTypes type="group-btn" />
                 <PropertyTypes
                   value={store.propertyListingFilters.property_type!}
                   onChange={(propertyType) => {

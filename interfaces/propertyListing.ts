@@ -3,6 +3,12 @@ export interface PropertyImage {
   url: string;
 }
 
+export interface Feature {
+  name: string;
+  icon_label: string;
+  icon_provider: string;
+}
+
 export interface PropertyListing {
   id: number;
   listing_title: string;
@@ -25,12 +31,15 @@ export interface PropertyListing {
   area: string;
   address: string;
   features: string[];
+  features_with_icon: Feature[];
   equipments: string[];
+  equipments_with_icon: Feature[];
   main_image_url: string;
   property_images: PropertyImage[] | null;
   coordinates: [number, number];
   latitude_in_text: string | null;
   longitude_in_text: string | null;
+  is_peza_compliant: boolean;
   description: string;
   created_at: string;
 }

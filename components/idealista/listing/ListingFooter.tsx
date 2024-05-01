@@ -30,12 +30,13 @@ const ListingFooter = () => {
         >
           <Ionicons
             name="call"
-            size={20}
+            size={24}
             lightColor={Colors.light.primary}
             darkColor={Colors.dark.primary}
           />
           <Text
             fontWeight="semibold"
+            fontSize={16}
             lightColor={Colors.light.primary}
             darkColor={Colors.dark.primary}
           >
@@ -48,12 +49,13 @@ const ListingFooter = () => {
         >
           <Ionicons
             name="chatbox-ellipses"
-            size={20}
+            size={24}
             lightColor={Colors.light.primary}
             darkColor={Colors.dark.primary}
           />
           <Text
             fontWeight="semibold"
+            fontSize={16}
             lightColor={Colors.light.primary}
             darkColor={Colors.dark.primary}
           >
@@ -64,7 +66,7 @@ const ListingFooter = () => {
       <TouchableOpacity activeOpacity={0.5}>
         <Ionicons
           name="heart-outline"
-          size={24}
+          size={26}
           lightColor={Colors.common.red["600"]}
           darkColor={Colors.common.darkRed}
         />

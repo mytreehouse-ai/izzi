@@ -6,7 +6,7 @@ interface PartialPropertyListingFilters
   extends Partial<PropertyListingFilters> {}
 
 const propertyListingFilterInitialState = {
-  property_type: "house",
+  property_type: "house-and-lot",
   listing_type: "for-sale",
   min_price: 10_000,
   max_price: 5_000_000_001,

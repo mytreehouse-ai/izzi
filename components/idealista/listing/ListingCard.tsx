@@ -6,17 +6,11 @@ import { FadeInRight, FadeOutLeft } from "react-native-reanimated";
 
 interface ListingCardProps {
   image: React.ReactNode;
-  media: React.ReactNode;
   info: React.ReactNode;
   footer: React.ReactNode;
 }
 
-const ListingCard: React.FC<ListingCardProps> = ({
-  image,
-  media,
-  info,
-  footer,
-}) => {
+const ListingCard: React.FC<ListingCardProps> = ({ image, info, footer }) => {
   const colorScheme = useColorScheme();
 
   return (
@@ -39,10 +33,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
       exiting={Platform.OS === "android" ? FadeOutLeft.delay(100) : FadeOutLeft}
     >
       {image}
-      <View style={{ padding: 16, gap: 8 }}>
-        {media}
-        {info}
-      </View>
+      <View style={{ padding: 16 }}>{info}</View>
       <View
         style={{
           borderBottomWidth: StyleSheet.hairlineWidth,
