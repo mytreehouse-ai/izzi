@@ -7,7 +7,7 @@ import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import destination from "@turf/destination";
 import { point, polygon } from "@turf/helpers";
 import { useRouter } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useReducer, useRef } from "react";
 import {
   ActivityIndicator,
   Platform,
@@ -33,37 +33,80 @@ const DrawMarker = () => {
   return <Ionicons name="pencil" size={25} lightColor="black" />;
 };
 
+interface State {
+  points: Coordinate[];
+  pointBounds: Coordinate[];
+  insideBounds: Coordinate[];
+  centerPoint: Coordinate | null;
+  currentCoordinate: Coordinate | undefined;
+  isDrawState: boolean;
+}
+
+interface Action {
+  type: string;
+  payload?: any;
+}
+
+const initialState: State = {
+  points: [],
+  pointBounds: [],
+  insideBounds: [],
+  centerPoint: null,
+  currentCoordinate: undefined,
+  isDrawState: false,
+};
+
+function mapReducer(state: State, action: Action): State {
+  switch (action.type) {
+    case "SET_POINTS":
+      return { ...state, points: action.payload };
+    case "SET_POINT_BOUNDS":
+      return { ...state, pointBounds: action.payload };
+    case "SET_INSIDE_BOUNDS":
+      return { ...state, insideBounds: action.payload };
+    case "SET_CENTER_POINT":
+      return { ...state, centerPoint: action.payload };
+    case "SET_CURRENT_COORDINATE":
+      return { ...state, currentCoordinate: action.payload };
+    case "TOGGLE_DRAW_STATE":
+      return { ...state, isDrawState: !state.isDrawState };
+    case "CLEAR_DRAW":
+      return { ...initialState, isDrawState: false };
+    default:
+      return state;
+  }
+}
+
 const RnMapViews = () => {
   const router = useRouter();
   const colorScheme = useColorScheme();
   const mapView = useRef<MapView>(null);
-  const [points, setPoints] = useState<Coordinate[]>([]);
-  const [pointBounds, setPointBounds] = useState<Coordinate[]>([]);
-  const [insideBounds, setInsideBounds] = useState<Coordinate[]>([]);
-  const [centerPoint, setCenterPoint] = useState<Coordinate | null>(null);
-  const [currentCoordinate, setCurrentCoordinate] = useState<Coordinate>();
-  const [isDrawState, setIsDrawState] = useState<boolean>(false);
+  const [state, dispatch] = useReducer(mapReducer, initialState);
+  const {
+    points,
+    pointBounds,
+    insideBounds,
+    centerPoint,
+    currentCoordinate,
+    isDrawState,
+  } = state;
 
   const handleClearDraw = () => {
-    setIsDrawState(false);
-    setPoints([]);
-    setInsideBounds([]);
-    setCenterPoint(null);
-    setCurrentCoordinate(undefined);
+    dispatch({ type: "CLEAR_DRAW" });
   };
 
   const handleMapDrawOnPan = (event: any) => {
     if (isDrawState) {
       const { nativeEvent } = event;
       const { coordinate } = nativeEvent;
-      setCurrentCoordinate(coordinate);
-      setPoints([...points, coordinate]);
+      dispatch({ type: "SET_CURRENT_COORDINATE", payload: coordinate });
+      dispatch({ type: "SET_POINTS", payload: [...points, coordinate] });
     }
   };
 
   const handleMapReadyUsingTurf = async () => {
     // Clear any existing points
-    setPointBounds([]);
+    dispatch({ type: "SET_POINT_BOUNDS", payload: [] });
 
     // Obtain the current map boundaries
     const bounds = await mapView.current?.getMapBoundaries();
@@ -89,7 +132,7 @@ const RnMapViews = () => {
       );
 
       // Update state with the generated points
-      setPointBounds(generatedPoints);
+      dispatch({ type: "SET_POINT_BOUNDS", payload: generatedPoints });
     }
   };
 
@@ -123,7 +166,7 @@ const RnMapViews = () => {
         isPointInsidePolygonUsingTurf(pointCoord, points)
       );
 
-      setInsideBounds(insidePoints);
+      dispatch({ type: "SET_INSIDE_BOUNDS", payload: insidePoints });
     }
   };
 
@@ -209,7 +252,7 @@ const RnMapViews = () => {
     if (insideBounds.length >= 4) {
       console.log(insideBounds);
       const centerPoint = getPolygonCenterPoint(insideBounds);
-      setCenterPoint(centerPoint);
+      dispatch({ type: "SET_CENTER_POINT", payload: centerPoint });
     }
   }, [insideBounds]);
 
@@ -280,33 +323,6 @@ const RnMapViews = () => {
           />
         )}
 
-        {/* { points.map((i,k) => {
-						return <Marker
-								key={`mk_${k}`}
-								draggable
-								coordinate={{
-									latitude: i.latitude,
-									longitude: i.longitude,
-								}}
-							/>
-						}
-					)
-				} */}
-
-        {/* {pointBounds.map((i, k) => {
-          return (
-            <Marker
-              key={`mb_${k}`}
-              draggable
-              coordinate={{
-                latitude: i.latitude,
-                longitude: i.longitude,
-              }}
-              children={<Text>.</Text>}
-            />
-          );
-        })} */}
-
         {centerPoint && (
           <Marker
             draggable
@@ -332,23 +348,12 @@ const RnMapViews = () => {
         })}
       </MapView>
 
-      {
-        // TODO: Future Draw Feature Implementation For Improvement
-        // isDrawState == true && mapView.current != null &&
-        // <Draw
-        // 	mapView={mapView.current}
-        // 	points={points}
-        // 	setPoints={updatePoints}
-        // 	isDrawState={isDrawState}
-        // />
-      }
-
       {isDrawState == false && (
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={{ ...styles.buttonTouch, ...styles.shadowProp }}
             activeOpacity={0.75}
-            onPress={() => setIsDrawState(!isDrawState)}
+            onPress={() => dispatch({ type: "TOGGLE_DRAW_STATE" })}
           >
             <Ionicons
               name="color-wand"
