@@ -38,12 +38,12 @@ const RnMapViews = () => {
   const colorScheme = useColorScheme();
 
   const mapView = useRef<MapView>(null);
-  const [points, setPoints] = useState<Coordinate[]>([]); // Can be stored
-  const [pointBounds, setPointBounds] = useState<Coordinate[]>([]); // Can be stored
-  const [insideBounds, setInsideBounds] = useState<Coordinate[]>([]); // Can be
+  const [points, setPoints] = useState<Coordinate[]>([]);
+  const [pointBounds, setPointBounds] = useState<Coordinate[]>([]);
+  const [insideBounds, setInsideBounds] = useState<Coordinate[]>([]);
   const [centerPoint, setCenterPoint] = useState<Coordinate | null>(null);
-  const [currentCoordinate, setCurrentCoordinate] = useState<Coordinate>(); // Can be stored
-  const [isDrawState, setIsDrawState] = useState<boolean>(false); // Can be stored
+  const [currentCoordinate, setCurrentCoordinate] = useState<Coordinate>();
+  const [isDrawState, setIsDrawState] = useState<boolean>(false);
 
   const handleClearDraw = () => {
     setIsDrawState(false);
@@ -123,8 +123,6 @@ const RnMapViews = () => {
         isPointInsidePolygonUsingTurf(pointCoord, points)
       );
 
-      console.log(insidePoints);
-
       setInsideBounds(insidePoints);
     }
   };
@@ -183,7 +181,7 @@ const RnMapViews = () => {
   };
 
   function getPolygonCenterPoint(insidePoints: Coordinate[]) {
-    const sum = insideBounds.reduce(
+    const sum = insidePoints.reduce(
       (acc, coord) => {
         acc.lat += coord.latitude;
         acc.lng += coord.longitude;
@@ -193,8 +191,8 @@ const RnMapViews = () => {
     );
 
     const centerPoint = {
-      latitude: sum.lat / insideBounds.length,
-      longitude: sum.lng / insideBounds.length,
+      latitude: sum.lat / insidePoints.length,
+      longitude: sum.lng / insidePoints.length,
     };
 
     return centerPoint;
@@ -203,8 +201,8 @@ const RnMapViews = () => {
   function calculateDistanceBasedOnZoom(zoomLevel: number): number {
     // Adjusted values for optimized performance and user experience
     if (zoomLevel > 15) return 50; // 50 meters between points when zoomed in closely for detailed view
-    if (zoomLevel > 13) return 150; // 150 meters for intermediate zoom to balance detail and performance
-    return 300; // 300 meters when zoomed out to reduce load while providing an overview
+    if (zoomLevel > 13) return 100; // 100 meters for intermediate zoom to balance detail and performance
+    return 150; // 150 meters when zoomed out to reduce load while providing an overview
   }
 
   useEffect(() => {
@@ -223,13 +221,12 @@ const RnMapViews = () => {
         loadingEnabled={Platform.OS === "android" ? true : false}
         provider={PROVIDER_GOOGLE}
         style={StyleSheet.absoluteFill}
-        minZoomLevel={13}
-        maxZoomLevel={20}
+        minZoomLevel={14}
+        maxZoomLevel={16}
         zoomEnabled={!isDrawState}
         zoomTapEnabled={false}
         showsUserLocation={true}
         moveOnMarkerPress={false}
-        showsMyLocationButton={true}
         initialRegion={{
           latitude: 14.5547,
           longitude: 121.0244,
