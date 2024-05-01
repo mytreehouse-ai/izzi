@@ -4,13 +4,17 @@ import React from "react";
 import { StyleSheet, useColorScheme } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 
-interface WarehouseTypesProps {
+interface PropertyClassificationTypesProps {
   objKey?: "title" | "value";
   value?: string;
   onChange: (propertyType: string) => void;
 }
 
 const dropDownValues = [
+  {
+    title: "Residential",
+    value: "residential",
+  },
   {
     title: "Industrial",
     value: "industrial",
@@ -21,11 +25,9 @@ const dropDownValues = [
   },
 ];
 
-const WarehouseTypes: React.FC<WarehouseTypesProps> = ({
-  objKey = "value",
-  value = "",
-  onChange,
-}) => {
+const PropertyClassificationTypes: React.FC<
+  PropertyClassificationTypesProps
+> = ({ objKey = "value", value = "", onChange }) => {
   const colorScheme = useColorScheme();
 
   function defaultValue(propertyType: string, key: "title" | "value") {
@@ -57,7 +59,8 @@ const WarehouseTypes: React.FC<WarehouseTypesProps> = ({
               fontWeight="semibold"
               fontSize={16}
             >
-              {(selectedItem && selectedItem.title) || "Select warehouse type"}
+              {(selectedItem && selectedItem.title) ||
+                "Select classification type"}
             </Text>
             <Ionicons
               name={isOpened ? "chevron-up" : "chevron-down"}
@@ -116,4 +119,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WarehouseTypes;
+export default PropertyClassificationTypes;

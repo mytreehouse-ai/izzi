@@ -36,7 +36,7 @@ const PropertyListingBasicFilter = () => {
         />
         <ListingPrice />
         <PropertySqm />
-        {["house", "condominium"].includes(
+        {["house-and-lot", "condominium"].includes(
           store.propertyListingFilters.property_type || ""
         ) && (
           <Fragment>

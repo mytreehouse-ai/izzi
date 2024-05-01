@@ -7,7 +7,7 @@ import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import destination from "@turf/destination";
 import { point, polygon } from "@turf/helpers";
 import { useRouter } from "expo-router";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Platform,
@@ -40,7 +40,8 @@ const RnMapViews = () => {
   const mapView = useRef<MapView>(null);
   const [points, setPoints] = useState<Coordinate[]>([]); // Can be stored
   const [pointBounds, setPointBounds] = useState<Coordinate[]>([]); // Can be stored
-  const [insideBounds, setInsideBounds] = useState<Coordinate[]>([]); // Can be stored
+  const [insideBounds, setInsideBounds] = useState<Coordinate[]>([]); // Can be
+  const [centerPoint, setCenterPoint] = useState<Coordinate | null>(null);
   const [currentCoordinate, setCurrentCoordinate] = useState<Coordinate>(); // Can be stored
   const [isDrawState, setIsDrawState] = useState<boolean>(false); // Can be stored
 
@@ -48,6 +49,7 @@ const RnMapViews = () => {
     setIsDrawState(false);
     setPoints([]);
     setInsideBounds([]);
+    setCenterPoint(null);
     setCurrentCoordinate(undefined);
   };
 
@@ -69,10 +71,10 @@ const RnMapViews = () => {
 
     if (bounds) {
       // Define the desired distance between points in meters
-      // For example, 100 meters
-      const distanceMeters = 100;
+      // For example, 50 meters
+      const distanceMeters = 50;
 
-      // Generate points within the bounds, spaced approximately 100 meters apart
+      // Generate points within the bounds, spaced approximately 50 meters apart
       const generatedPoints = generatePointsWithinBoundsUsingTurf(
         {
           southWest: {
@@ -180,12 +182,37 @@ const RnMapViews = () => {
     return points;
   };
 
+  function getPolygonCenterPoint(insidePoints: Coordinate[]) {
+    const sum = insideBounds.reduce(
+      (acc, coord) => {
+        acc.lat += coord.latitude;
+        acc.lng += coord.longitude;
+        return acc;
+      },
+      { lat: 0, lng: 0 }
+    );
+
+    const centerPoint = {
+      latitude: sum.lat / insideBounds.length,
+      longitude: sum.lng / insideBounds.length,
+    };
+
+    return centerPoint;
+  }
+
   function calculateDistanceBasedOnZoom(zoomLevel: number): number {
     // Adjusted values for optimized performance and user experience
     if (zoomLevel > 15) return 50; // 50 meters between points when zoomed in closely for detailed view
     if (zoomLevel > 13) return 150; // 150 meters for intermediate zoom to balance detail and performance
     return 300; // 300 meters when zoomed out to reduce load while providing an overview
   }
+
+  useEffect(() => {
+    if (insideBounds.length >= 4) {
+      const centerPoint = getPolygonCenterPoint(insideBounds);
+      setCenterPoint(centerPoint);
+    }
+  }, [insideBounds]);
 
   return (
     <View style={defaultStyles.container}>
@@ -268,19 +295,29 @@ const RnMapViews = () => {
 					)
 				} */}
 
-        {/* { pointBounds.map((i,k) => {
-						return <Marker
-								key={`mb_${k}`}
-								draggable
-								coordinate={{
-									latitude: i.latitude,
-									longitude: i.longitude,
-								}}
-								children={<Text>.</Text>}
-							/>
-						}
-					)
-				} */}
+        {/* {pointBounds.map((i, k) => {
+          return (
+            <Marker
+              key={`mb_${k}`}
+              draggable
+              coordinate={{
+                latitude: i.latitude,
+                longitude: i.longitude,
+              }}
+              children={<Text>.</Text>}
+            />
+          );
+        })} */}
+
+        {centerPoint && (
+          <Marker
+            draggable
+            coordinate={{
+              latitude: centerPoint.latitude,
+              longitude: centerPoint.longitude,
+            }}
+          />
+        )}
 
         {insideBounds.map((i, k) => {
           return (
@@ -291,6 +328,7 @@ const RnMapViews = () => {
                 latitude: i.latitude,
                 longitude: i.longitude,
               }}
+              children={<Text>.</Text>}
             />
           );
         })}

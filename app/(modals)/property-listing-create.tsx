@@ -9,9 +9,9 @@ import {
   View,
 } from "@/components/Themed";
 import ListingTypes from "@/components/idealista/filters/ListingTypes";
+import PropertyClassificationTypes from "@/components/idealista/filters/PropertyClassificationTypes";
 import PropertyFloors from "@/components/idealista/filters/PropertyFloors";
 import PropertyTypes from "@/components/idealista/filters/PropertyTypes";
-import WarehouseTypes from "@/components/idealista/filters/WarehouseTypes";
 import ListingCard from "@/components/idealista/listing/ListingCard";
 import ListingFooter from "@/components/idealista/listing/ListingFooter";
 import ListingImages from "@/components/idealista/listing/ListingImages";
@@ -297,9 +297,9 @@ const PropertyListingCreate = () => {
                 {store.propertyDetails.propertyType === "warehouse" && (
                   <Fragment>
                     <Text fontWeight="semibold" fontSize={16}>
-                      Warehouse type
+                      Classification type
                     </Text>
-                    <WarehouseTypes
+                    <PropertyClassificationTypes
                       value=""
                       onChange={(text) => console.log(text)}
                     />
@@ -341,7 +341,7 @@ const PropertyListingCreate = () => {
                     />
                   </Fragment>
                 )}
-                {["condominium", "house", "dormitory"].includes(
+                {["condominium", "house-and-lot", "dormitory"].includes(
                   store.propertyDetails.propertyType
                 ) && (
                   <Fragment>
@@ -398,7 +398,7 @@ const PropertyListingCreate = () => {
                 )}
                 {[
                   "land",
-                  "house",
+                  "house-and-lot",
                   "dormitory",
                   "building",
                   "warehouse",
@@ -419,7 +419,7 @@ const PropertyListingCreate = () => {
                     />
                   </Fragment>
                 )}
-                {["condominium", "house", "dormitory"].includes(
+                {["condominium", "house-and-lot", "dormitory"].includes(
                   store.propertyDetails.propertyType
                 ) && (
                   <Fragment>
