@@ -36,7 +36,6 @@ const DrawMarker = () => {
 const RnMapViews = () => {
   const router = useRouter();
   const colorScheme = useColorScheme();
-
   const mapView = useRef<MapView>(null);
   const [points, setPoints] = useState<Coordinate[]>([]);
   const [pointBounds, setPointBounds] = useState<Coordinate[]>([]);
@@ -98,6 +97,7 @@ const RnMapViews = () => {
     if (points.length > 0) {
       const latitudes = points.map((p) => p.latitude);
       const longitudes = points.map((p) => p.longitude);
+
       const bounds: Bounds = {
         southWest: {
           latitude: Math.min(...latitudes),
@@ -207,6 +207,7 @@ const RnMapViews = () => {
 
   useEffect(() => {
     if (insideBounds.length >= 4) {
+      console.log(insideBounds);
       const centerPoint = getPolygonCenterPoint(insideBounds);
       setCenterPoint(centerPoint);
     }
@@ -221,7 +222,7 @@ const RnMapViews = () => {
         loadingEnabled={Platform.OS === "android" ? true : false}
         provider={PROVIDER_GOOGLE}
         style={StyleSheet.absoluteFill}
-        minZoomLevel={14}
+        minZoomLevel={12}
         maxZoomLevel={16}
         zoomEnabled={!isDrawState}
         zoomTapEnabled={false}
@@ -270,7 +271,7 @@ const RnMapViews = () => {
 
         {isDrawState == true && currentCoordinate !== undefined && (
           <Marker
-            draggable
+            draggable={true}
             coordinate={{
               latitude: currentCoordinate.latitude,
               longitude: currentCoordinate.longitude,
