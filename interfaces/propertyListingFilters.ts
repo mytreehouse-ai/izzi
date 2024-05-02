@@ -8,6 +8,7 @@ export interface PropertyListingFilters extends PropertyListingBaseFilter {
   search: string;
   property_type: string | null;
   listing_type: string | null;
+  coordinates: { latitude: number; longitude: number }[];
   min_price: number;
   max_price: number;
   min_bedrooms: number;

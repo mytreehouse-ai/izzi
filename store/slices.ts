@@ -291,7 +291,7 @@ const propertyValuationSlice = createSlice({
       ...state,
       currentStepIndex: 0,
       propertyDetails: {
-        property_type: "House",
+        property_type: "house-and-lot",
         sqm: 0,
         user_id: "",
         address: "",

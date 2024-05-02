@@ -13,7 +13,7 @@
       },
       "env": {
         "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_Z2xhZC1ibG93ZmlzaC0yMS5jbGVyay5hY2NvdW50cy5kZXYk",
-        "EXPO_PUBLIC_DJANGO_API_URL": "https://izzi-azure-func.azurewebsites.net"
+        "EXPO_PUBLIC_DJANGO_API_URL": "http://localhost:7071"
       }
     },
     "preview": {
@@ -24,14 +24,14 @@
       },
       "env": {
         "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_Z2xhZC1ibG93ZmlzaC0yMS5jbGVyay5hY2NvdW50cy5kZXYk",
-        "EXPO_PUBLIC_DJANGO_API_URL": "https://izzi-azure-func.azurewebsites.net8787"
+        "EXPO_PUBLIC_DJANGO_API_URL": "http://localhost:7071"
       }
     },
     "production": {
       "channel": "production",
       "env": {
         "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_Z2xhZC1ibG93ZmlzaC0yMS5jbGVyay5hY2NvdW50cy5kZXYk",
-        "EXPO_PUBLIC_DJANGO_API_URL": "https://izzi-azure-func.azurewebsites.net"
+        "EXPO_PUBLIC_DJANGO_API_URL": "http://localhost:7071"
       }
     }
   },

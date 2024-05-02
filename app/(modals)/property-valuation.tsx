@@ -64,10 +64,6 @@ const PropertyValuation = () => {
     const testPassed = isObjectValuesNotNullish(
       propertyValuation.propertyDetails
     );
-
-    console.log(propertyValuation.propertyDetails);
-    console.log(testPassed);
-
     setShowButton(testPassed);
   }, [propertyValuation.propertyDetails]);
 
@@ -162,7 +158,6 @@ const PropertyValuation = () => {
                 Property type
               </Text>
               <PropertyTypes
-                objKey="title"
                 value={propertyValuation.propertyDetails.property_type}
                 onChange={(propertyType) =>
                   updatePropertyDetails({ property_type: propertyType })

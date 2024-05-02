@@ -3,6 +3,7 @@ import Colors from "@/constants/Colors";
 import { mapDarkModeStyle } from "@/constants/MapStyles";
 import { defaultStyles } from "@/constants/Styles";
 import { PropertyListing } from "@/interfaces/propertyListing";
+import { useAuth } from "@clerk/clerk-expo";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import destination from "@turf/destination";
 import { point, polygon } from "@turf/helpers";
@@ -79,6 +80,7 @@ function mapReducer(state: State, action: Action): State {
 
 const RnMapViews = () => {
   const router = useRouter();
+  const { getToken } = useAuth();
   const colorScheme = useColorScheme();
   const mapView = useRef<MapView>(null);
   const [state, dispatch] = useReducer(mapReducer, initialState);
@@ -250,8 +252,8 @@ const RnMapViews = () => {
 
   useEffect(() => {
     if (insideBounds.length >= 4) {
-      console.log(insideBounds);
       const centerPoint = getPolygonCenterPoint(insideBounds);
+      console.log(centerPoint);
       dispatch({ type: "SET_CENTER_POINT", payload: centerPoint });
     }
   }, [insideBounds]);
@@ -332,6 +334,25 @@ const RnMapViews = () => {
             }}
           />
         )}
+
+        {/* {!isLoading &&
+          propertyListings?.pages
+            .map((page) => page.data)
+            .flat()
+            .map((property) => {
+              console.log(property.coordinates);
+
+              return (
+                <Marker
+                  key={property.id}
+                  draggable
+                  coordinate={{
+                    latitude: property.coordinates[1],
+                    longitude: property.coordinates[0],
+                  }}
+                />
+              );
+            })} */}
 
         {insideBounds.map((i, k) => {
           return (

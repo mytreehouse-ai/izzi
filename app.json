@@ -11,7 +11,7 @@
     "extra": {
       "clerkPublishableKey": "pk_test_Z2xhZC1ibG93ZmlzaC0yMS5jbGVyay5hY2NvdW50cy5kZXYk",
       "googlePlacesApiKey": "AIzaSyAGlqWrF4F0WYrGTq8UzpzEmSELQNsi9KY",
-      "apiUrl": "https://izzi-azure-func.azurewebsites.net",
+      "apiUrl": "http://localhost:7071",
       "router": {
         "origin": false
       },
