@@ -353,6 +353,62 @@ const RnMapViews = () => {
                 />
               );
             })} */}
+        {[
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.5552671, longitude: 121.0182445 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.5511286, longitude: 121.0203178 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.55262726, longitude: 121.0178795 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.55479212, longitude: 121.0189484 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.55659, longitude: 121.0218 },
+          { latitude: 14.55431708, longitude: 121.0216384 },
+          { latitude: 14.55659, longitude: 121.0218 },
+          { latitude: 14.55659, longitude: 121.0218 },
+          { latitude: 14.55441453, longitude: 121.0207374 },
+          { latitude: 14.554123, longitude: 121.020689 },
+          { latitude: 14.55391, longitude: 121.0203 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+          { latitude: 14.550759, longitude: 121.019175 },
+        ].map((property, k) => (
+          <Marker
+            key={`mb_${k}`}
+            draggable
+            coordinate={{
+              latitude: property.latitude,
+              longitude: property.longitude,
+            }}
+          />
+        ))}
 
         {insideBounds.map((i, k) => {
           return (
