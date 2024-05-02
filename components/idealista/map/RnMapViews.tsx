@@ -10,17 +10,18 @@ import { point, polygon } from "@turf/helpers";
 import { useRouter } from "expo-router";
 import React, { useEffect, useReducer, useRef } from "react";
 import {
-  ActivityIndicator,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  useColorScheme,
+	ActivityIndicator,
+	Platform,
+	StyleSheet,
+	TouchableOpacity,
+	useColorScheme,
 } from "react-native";
 import MapView, {
-  MapMarker,
-  Marker,
-  PROVIDER_GOOGLE,
-  Polygon,
+	Circle,
+	MapMarker,
+	Marker,
+	PROVIDER_GOOGLE,
+	Polygon
 } from "react-native-maps";
 
 const data: PropertyListing[] = [];
@@ -38,9 +39,10 @@ interface State {
   points: Coordinate[];
   pointBounds: Coordinate[];
   insideBounds: Coordinate[];
-  centerPoint: Coordinate | null;
+  centerPoint: Coordinate;
   currentCoordinate: Coordinate | undefined;
   isDrawState: boolean;
+	radius: number;
 }
 
 interface Action {
@@ -52,15 +54,18 @@ const initialState: State = {
   points: [],
   pointBounds: [],
   insideBounds: [],
-  centerPoint: null,
+  centerPoint: {latitude: 0, longitude: 0},
   currentCoordinate: undefined,
   isDrawState: false,
+	radius: 0,
 };
 
 function mapReducer(state: State, action: Action): State {
   switch (action.type) {
     case "SET_POINTS":
       return { ...state, points: action.payload };
+    case "SET_RADIUS":
+      return { ...state, radius: action.payload };
     case "SET_POINT_BOUNDS":
       return { ...state, pointBounds: action.payload };
     case "SET_INSIDE_BOUNDS":
@@ -91,6 +96,7 @@ const RnMapViews = () => {
     centerPoint,
     currentCoordinate,
     isDrawState,
+		radius,
   } = state;
 
   const handleClearDraw = () => {
@@ -169,6 +175,9 @@ const RnMapViews = () => {
       );
 
       dispatch({ type: "SET_INSIDE_BOUNDS", payload: insidePoints });
+
+			const radius = calculateAverageRadius(points, centerPoint);
+			dispatch({type: "SET_RADIUS", payload: radius});
     }
   };
 
@@ -235,13 +244,30 @@ const RnMapViews = () => {
       { lat: 0, lng: 0 }
     );
 
-    const centerPoint = {
+    const centerPoint: Coordinate = {
       latitude: sum.lat / insidePoints.length,
       longitude: sum.lng / insidePoints.length,
     };
 
     return centerPoint;
   }
+
+	function calculateAverageRadius(
+		points: Coordinate[], 
+		center: Coordinate) 
+	{
+		let totalDistance = 0;
+		
+		for (const point of points) {
+			const distance = Math.sqrt(
+				Math.pow(point.latitude - center.latitude, 2) +
+					Math.pow(point.longitude - center.longitude, 2)
+			);
+			totalDistance += distance;
+		}
+
+		return totalDistance / points.length;
+	}
 
   function calculateDistanceBasedOnZoom(zoomLevel: number): number {
     // Adjusted values for optimized performance and user experience
@@ -253,7 +279,7 @@ const RnMapViews = () => {
   useEffect(() => {
     if (insideBounds.length >= 4) {
       const centerPoint = getPolygonCenterPoint(insideBounds);
-      console.log(centerPoint);
+      // console.log(centerPoint);
       dispatch({ type: "SET_CENTER_POINT", payload: centerPoint });
     }
   }, [insideBounds]);
@@ -304,7 +330,7 @@ const RnMapViews = () => {
           />
         ))}
 
-        {points.length > 0 && (
+        { (points.length > 0 && radius == 0) && (
           <Polygon
             coordinates={points.map((point) => ({
               latitude: point.latitude,
@@ -313,6 +339,15 @@ const RnMapViews = () => {
             fillColor="rgba(186, 214, 175, 0.3)"
           />
         )}
+
+				{centerPoint && radius != 0 && (
+					<Circle
+						center={{latitude: centerPoint?.latitude, longitude: centerPoint?.longitude}} 
+						radius={radius} 
+						strokeColor="#000" 
+						fillColor="rgba(0, 0, 255, 0.3)" 
+					/>
+				)}
 
         {isDrawState == true && currentCoordinate !== undefined && (
           <Marker
