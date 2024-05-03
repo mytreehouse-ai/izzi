@@ -6,7 +6,9 @@ import { PropertyListing } from "@/interfaces/propertyListing";
 import { useAuth } from "@clerk/clerk-expo";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import destination from "@turf/destination";
-import { point, polygon } from "@turf/helpers";
+import distance from "@turf/distance";
+import nearestPointOnLine from "@turf/nearest-point-on-line";
+import { centroid, lineString, point, polygon } from "@turf/turf";
 import { useRouter } from "expo-router";
 import React, { useEffect, useReducer, useRef } from "react";
 import {
@@ -38,6 +40,7 @@ interface State {
   points: Coordinate[];
   pointBounds: Coordinate[];
   insideBounds: Coordinate[];
+  insideBoundsDistanceToEdge: Coordinate[];
   centerPoint: Coordinate | null;
   currentCoordinate: Coordinate | undefined;
   isDrawState: boolean;
@@ -52,6 +55,7 @@ const initialState: State = {
   points: [],
   pointBounds: [],
   insideBounds: [],
+  insideBoundsDistanceToEdge: [],
   centerPoint: null,
   currentCoordinate: undefined,
   isDrawState: false,
@@ -65,6 +69,8 @@ function mapReducer(state: State, action: Action): State {
       return { ...state, pointBounds: action.payload };
     case "SET_INSIDE_BOUNDS":
       return { ...state, insideBounds: action.payload };
+    case "SET_INSIDE_BOUNDS_DISTANCE_TO_EDGE":
+      return { ...state, insideBoundsDistanceToEdge: action.payload };
     case "SET_CENTER_POINT":
       return { ...state, centerPoint: action.payload };
     case "SET_CURRENT_COORDINATE":
@@ -88,6 +94,7 @@ const RnMapViews = () => {
     points,
     pointBounds,
     insideBounds,
+    insideBoundsDistanceToEdge,
     centerPoint,
     currentCoordinate,
     isDrawState,
@@ -250,10 +257,59 @@ const RnMapViews = () => {
     return 150; // 150 meters when zoomed out to reduce load while providing an overview
   }
 
+  const filterPointsByDistanceToEdgeAndCentroid = (
+    insidePoints: Coordinate[],
+    polygonCoords: Coordinate[]
+  ): Coordinate[] => {
+    // Convert polygonCoords to a LineString for Turf.js
+    const polyLine = lineString(
+      polygonCoords.map((coord) => [coord.longitude, coord.latitude])
+    );
+    // Create a Turf polygon for centroid calculation
+    const poly = polygon([
+      [
+        ...polygonCoords.map((coord) => [coord.longitude, coord.latitude]),
+        [polygonCoords[0].longitude, polygonCoords[0].latitude],
+      ],
+    ]);
+    // Calculate the centroid of the polygon
+    const polyCentroid = centroid(poly);
+
+    // Filter points based on distance to the nearest polygon edge and distance to centroid
+    const filteredPoints = insidePoints.filter((pointCoord) => {
+      const pt = point([pointCoord.longitude, pointCoord.latitude]);
+      const nearest = nearestPointOnLine(polyLine, pt);
+      const distToEdge = distance(pt, nearest, { units: "meters" });
+      const distToCentroid = distance(pt, polyCentroid, { units: "meters" });
+
+      // Determine the maximum allowed distance based on the point's proximity to the centroid
+      // This is a simplified approach; you might need a more complex logic to define "up to the middle"
+      const maxAllowedDistance = Math.min(distToEdge, distToCentroid);
+
+      return maxAllowedDistance <= 50;
+    });
+
+    return filteredPoints;
+  };
+
   useEffect(() => {
     if (insideBounds.length >= 4) {
       const centerPoint = getPolygonCenterPoint(insideBounds);
       console.log(centerPoint);
+      console.log(insideBounds);
+      const uniqueInsideBounds = insideBounds.filter(
+        (value, index, self) =>
+          index ===
+          self.findIndex(
+            (t) =>
+              t.latitude === value.latitude && t.longitude === value.longitude
+          )
+      );
+      const xxx = filterPointsByDistanceToEdgeAndCentroid(
+        uniqueInsideBounds,
+        points
+      );
+      dispatch({ type: "SET_INSIDE_BOUNDS_DISTANCE_TO_EDGE", payload: xxx });
       dispatch({ type: "SET_CENTER_POINT", payload: centerPoint });
     }
   }, [insideBounds]);
@@ -353,62 +409,280 @@ const RnMapViews = () => {
                 />
               );
             })} */}
-        {[
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.5552671, longitude: 121.0182445 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.5511286, longitude: 121.0203178 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.55262726, longitude: 121.0178795 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.55479212, longitude: 121.0189484 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.55659, longitude: 121.0218 },
-          { latitude: 14.55431708, longitude: 121.0216384 },
-          { latitude: 14.55659, longitude: 121.0218 },
-          { latitude: 14.55659, longitude: 121.0218 },
-          { latitude: 14.55441453, longitude: 121.0207374 },
-          { latitude: 14.554123, longitude: 121.020689 },
-          { latitude: 14.55391, longitude: 121.0203 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
-          { latitude: 14.550759, longitude: 121.019175 },
+
+        {/* {[
+          {
+            latitude: "14.55659",
+            longitude: "121.0218",
+          },
+          {
+            latitude: "14.55659",
+            longitude: "121.0218",
+          },
+          {
+            latitude: "14.55659",
+            longitude: "121.0218",
+          },
+          {
+            latitude: "14.55659",
+            longitude: "121.0218",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.5570169",
+            longitude: "121.0275016",
+          },
+          {
+            latitude: "14.55792",
+            longitude: "121.025",
+          },
+          {
+            latitude: "14.55792",
+            longitude: "121.025",
+          },
+          {
+            latitude: "14.55792",
+            longitude: "121.025",
+          },
+          {
+            latitude: "14.55792",
+            longitude: "121.025",
+          },
         ].map((property, k) => (
           <Marker
             key={`mb_${k}`}
             draggable
             coordinate={{
-              latitude: property.latitude,
-              longitude: property.longitude,
+              latitude: Number(property.latitude),
+              longitude: Number(property.longitude),
             }}
           />
-        ))}
+        ))} */}
+
+        {/* {insideBoundsDistanceToEdge.map((i, k) => {
+          return (
+            <Marker
+              key={`mb_${k}`}
+              draggable
+              coordinate={{
+                latitude: i.latitude,
+                longitude: i.longitude,
+              }}
+              children={<Text>.</Text>}
+            />
+          );
+        })} */}
 
         {insideBounds.map((i, k) => {
           return (
