@@ -1,4 +1,6 @@
 import { AnimatedView, Ionicons, Text, View } from "@/components/Themed";
+import Divider from "@/components/custom/Divider";
+import ListingAddress from "@/components/idealista/listing/ListingAddress";
 import ListingAgent from "@/components/idealista/listing/ListingAgent";
 import ListingDescription from "@/components/idealista/listing/ListingDescription";
 import ListingFeatures from "@/components/idealista/listing/ListingFeatures";
@@ -13,23 +15,23 @@ import { MotiView } from "moti";
 import { Skeleton } from "moti/skeleton";
 import React, { Fragment, useLayoutEffect } from "react";
 import {
-  Dimensions,
-  Platform,
-  PlatformIOSStatic,
-  Share,
-  StyleSheet,
-  TouchableOpacity,
-  useColorScheme,
+	Dimensions,
+	Platform,
+	PlatformIOSStatic,
+	Share,
+	StyleSheet,
+	TouchableOpacity,
+	useColorScheme,
 } from "react-native";
 import Animated, {
-  Easing,
-  FadeInRight,
-  FadeOutLeft,
-  SlideInDown,
-  interpolate,
-  useAnimatedScrollHandler,
-  useAnimatedStyle,
-  useSharedValue,
+	Easing,
+	FadeInRight,
+	FadeOutLeft,
+	SlideInDown,
+	interpolate,
+	useAnimatedScrollHandler,
+	useAnimatedStyle,
+	useSharedValue,
 } from "react-native-reanimated";
 
 const IMAGE_HEIGHT = 300;
@@ -205,30 +207,55 @@ const PropertyListing = () => {
             <Fragment>
               {propertyListing?.data && (
                 <Fragment>
-                  <ListingInfo
-                    data={{
-                      listing_title: propertyListing.data.listing_title,
-                      price_formatted: propertyListing.data.price_formatted,
-                      floor_area: propertyListing.data.floor_area || 0,
-                      lot_area: propertyListing.data.lot_area || 0,
-                      building_area: propertyListing.data.building_size || 0,
-                      city: propertyListing.data.city,
-                      area: propertyListing.data.area,
-                    }}
-                    singleView={true}
-                  />
-                  <ListingAgent />
-                  <ListingDescription
-                    description={propertyListing.data.description}
-                    showDescriptionTitle={true}
-                  />
-                  <ListingFeatures />
-                </Fragment>
+									<View style={{marginHorizontal:10}}>
+										
+										<ListingInfo
+											data={{
+												listing_title: propertyListing.data.listing_title,
+												price_formatted: propertyListing.data.price_formatted,
+												floor_area: propertyListing.data.floor_area || 0,
+												lot_area: propertyListing.data.lot_area || 0,
+												building_area: propertyListing.data.building_size || 0,
+												city: propertyListing.data.city,
+												area: propertyListing.data.area,
+											}}
+											singleView={true}
+										/>
+
+										<Divider/>
+
+										<ListingAgent />
+										
+										<Divider/>
+										
+										<ListingDescription
+											description={propertyListing.data.description}
+											showDescriptionTitle={true}
+										/>
+										
+										<Divider/>
+
+										<ListingFeatures 
+											label="Amenities & Features"
+											features={propertyListing.data.features}
+										/>
+											
+										<Divider/>
+
+										<ListingAddress 
+											location={`${propertyListing.data.city}, ${propertyListing.data.address}`}
+										/>
+
+										<Divider/>
+
+									</View>
+								</Fragment>
               )}
             </Fragment>
           )}
         </View>
       </Animated.ScrollView>
+
       {!isLoading && propertyListing && (
         <AnimatedView
           style={[

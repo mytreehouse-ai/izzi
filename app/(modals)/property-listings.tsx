@@ -1,10 +1,10 @@
 import { dummyPropertyListingsData } from "@/assets/data/propertyListings";
 import {
-  AnimatedView,
-  Ionicons,
-  SafeAreaView,
-  Text,
-  View,
+	AnimatedView,
+	Ionicons,
+	SafeAreaView,
+	Text,
+	View,
 } from "@/components/Themed";
 import ListingCard from "@/components/idealista/listing/ListingCard";
 import ListingCardLoader from "@/components/idealista/listing/ListingCardLoader";
@@ -24,11 +24,11 @@ import { MotiView } from "moti";
 import { Skeleton } from "moti/skeleton";
 import React, { useRef } from "react";
 import {
-  Dimensions,
-  Pressable,
-  StyleSheet,
-  TouchableOpacity,
-  useColorScheme,
+	Dimensions,
+	Pressable,
+	StyleSheet,
+	TouchableOpacity,
+	useColorScheme,
 } from "react-native";
 import { FadeIn, FadeOut } from "react-native-reanimated";
 
@@ -60,33 +60,41 @@ const PropertyListingsPage = () => {
   };
 
   function FlashListRowItem({ item }: { item: PropertyListing }) {
-    return (
-      <ListingCard
-        image={
-          <Link href={`/property-listing/${item.id}`} asChild>
-            <TouchableOpacity activeOpacity={0.8}>
-              <ListingImages
-                mainImage={item.main_image_url}
-                IMAGE_HEIGHT={IMAGE_HEIGHT}
-              />
-            </TouchableOpacity>
-          </Link>
-        }
-        info={
-          <ListingInfo
-            data={{
-              listing_title: item.listing_title,
-              price_formatted: item.price_formatted,
-              city: item.city,
-              area: item.area,
-              floor_area: item?.floor_area || 0,
-              lot_area: item?.lot_area || 0,
-              building_area: item?.building_size || 0,
-            }}
-          />
-        }
-        footer={<ListingFooter />}
-      />
+		return (
+			<Link href={`/property-listing/${item.id}`} asChild>
+				<TouchableOpacity activeOpacity={0.8}>
+					<ListingCard
+						image={
+									// <ListingImagePager 
+									// 	uri={[
+									// 		{id:1, url: item.main_image_url}, 
+									// 		...item.property_images ?? []]}
+									// 	height={IMAGE_HEIGHT}
+									// 	showPageIndicator={true}
+									// 	pageIndicatorType="number"				
+									// />
+									<ListingImages
+											mainImage={item.main_image_url}
+											IMAGE_HEIGHT={IMAGE_HEIGHT}
+									/>
+						}
+						info={
+									<ListingInfo
+										data={{
+											listing_title: item.listing_title,
+											price_formatted: item.price_formatted,
+											city: item.city,
+											area: item.area,
+											floor_area: item?.floor_area || 0,
+											lot_area: item?.lot_area || 0,
+											building_area: item?.building_size || 0,
+										}}
+									/>
+						}
+						footer={<ListingFooter />}
+					/>
+				</TouchableOpacity>
+			</Link>
     );
   }
 
