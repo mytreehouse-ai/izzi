@@ -1,49 +1,53 @@
 import { Text, View } from "@/components/Themed";
 import { FlashList } from "@shopify/flash-list";
-import React from "react";
-import { StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, TouchableOpacity } from "react-native";
 
-const ListingFeatures = () => {
+const ListingFeatures: React.FC<{
+	features : Array<string>;
+	label?: string;
+}> = ({
+	features,
+	label = 'Features',
+}) => {
+
+	const [showAll, setShowAll] = useState<boolean>(false);
+
   return (
     <View style={styles.container}>
       <Text fontWeight="semibold" fontSize={16}>
-        Basic features
+       {label}
       </Text>
       <FlashList
-        data={[
-          { key: "Swimming Pool" },
-          { key: "Garden Area" },
-          { key: "24/7 Security" },
-          { key: "Gym Facility" },
-          { key: "Parking Space" },
-        ]}
+        data={
+					(features.length > 7 && !showAll) 
+						? features.slice(0,7) 
+						: features
+				}
         estimatedItemSize={20}
         renderItem={({ item }) => {
           return (
             <View style={{ marginBottom: 8 }}>
-              <Text>{`\u2022 ${item.key}`}</Text>
+              <Text>{`\u2022 ${item}`}</Text>
             </View>
           );
         }}
       />
-      <Text fontWeight="semibold" fontSize={16}>
-        Equipment
-      </Text>
-      <FlashList
-        data={[
-          { key: "High-Speed Internet" },
-          { key: "Smart Home Technology" },
-          { key: "Energy Efficient Appliances" },
-        ]}
-        estimatedItemSize={20}
-        renderItem={({ item }) => {
-          return (
-            <View style={{ marginBottom: 8 }}>
-              <Text>{`\u2022 ${item.key}`}</Text>
-            </View>
-          );
-        }}
-      />
+			<View style={styles.showContainer}>
+				<TouchableOpacity
+					style={styles.showAllButton}
+					onPress={() => setShowAll(!showAll)}
+				>
+					<Text 
+						fontWeight="default" 
+						fontSize={14}>
+						{ !showAll 
+							? `Show all ${features.length} features`
+							: 'Show less'
+						}
+					</Text>
+				</TouchableOpacity>
+			</View>
     </View>
   );
 };
@@ -53,6 +57,18 @@ const styles = StyleSheet.create({
     minHeight: 200,
     gap: 8,
   },
+	showContainer: {
+		display: 'flex',
+		justifyContent:'center',
+		alignItems:'center',
+	},
+	showAllButton: {
+		width:'90%',
+		padding:10,
+		borderWidth:1,
+		borderRadius:5,
+		alignItems:'center',
+	}
 });
 
 export default ListingFeatures;

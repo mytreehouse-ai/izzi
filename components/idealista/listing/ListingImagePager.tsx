@@ -1,3 +1,4 @@
+import { PropertyImage } from "@/interfaces/propertyListing";
 import React, { useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import PagerView from "react-native-pager-view";
@@ -9,10 +10,10 @@ interface Image {
 }
 
 interface ImagePager {
-  uri: Image[];
-  height: number;
-  showPageIndicator?: boolean;
-  pageIndicatorType?: PageIndicatorType | string;
+	uri: PropertyImage[],
+	height: number,
+	showPageIndicator?: boolean,
+	pageIndicatorType?: PageIndicatorType | string
 }
 
 enum PageIndicatorType {
@@ -29,7 +30,7 @@ const ListingImagePager: React.FC<ImagePager> = ({
   const [activeSlide, setActiveSlide] = useState<number>(0);
   const pagerRef = useRef<PagerView>(null);
 
-  // console.log(JSON.stringify(uri, null, 2), height);
+	console.log(JSON.stringify(uri, null, 2));
 
   return (
     <View style={styles.container}>
@@ -42,42 +43,42 @@ const ListingImagePager: React.FC<ImagePager> = ({
       >
         {uri
           ? uri.map((i: Image) => (
-              <ListingImages
-                key={i.id}
-                mainImage={i.url}
-                IMAGE_HEIGHT={height}
-                animated={true}
-              />
+							<ListingImages
+								key={i.id}
+								mainImage={i.url}
+								IMAGE_HEIGHT={height}
+								animated={true}
+							/>
             ))
           : null}
       </PagerView>
-      {showPageIndicator && (
-        <View>
-          {pageIndicatorType == PageIndicatorType.IDots && (
-            <View style={styles.dotsContainer}>
-              {uri.map((_, index) => (
-                <View
-                  key={index}
-                  style={[
-                    styles.dot,
-                    index === activeSlide && styles.activeDot,
-                  ]}
-                />
-              ))}
-            </View>
-          )}
+			{
+				showPageIndicator &&
+					<View>
+						{
+							pageIndicatorType == PageIndicatorType.IDots && (
+								<View style={styles.dotsContainer}>
+									{uri && uri.map((_, index) => (
+										<View
+											key={index}
+											style={[styles.dot, index === activeSlide && styles.activeDot]}
+										/>
+									))}
+								</View>
+							)
+						}
 
-          {pageIndicatorType == PageIndicatorType.INumber && (
-            <View style={styles.numberDotContainer}>
-              <View style={styles.numberDot}>
-                <Text style={styles.numberDotText}>
-                  {activeSlide + 1} / {uri.length}
-                </Text>
-              </View>
-            </View>
-          )}
-        </View>
-      )}
+						{
+							pageIndicatorType == PageIndicatorType.INumber && (
+								<View style={styles.numberDotContainer}>
+									<View style={styles.numberDot}>
+										<Text style={styles.numberDotText}>{activeSlide + 1} / {uri && uri.length}</Text>
+									</View>
+								</View>
+							)
+						}
+					</View>
+			}
     </View>
   );
 };
